@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2023 Idiap Research Institute, EPFL
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
+numpy>=1.25
+scipy>=1.11
+networkx>=2.6,<3
+matplotlib
+pandas
+geopandas>=0.13.2,<0.14
+plotly>=5.16.1
