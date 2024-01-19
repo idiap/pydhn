@@ -67,3 +67,16 @@ def affine_by_parts(values, arr):
 def compute_relative_error(current, target):
     """Computes the absolute relative error between two values"""
     return np.abs(safe_divide(current - target, target))
+
+
+def docstring_parameters(*args, **kwargs):
+    """
+    Decorator that allows the use of variables in docstrings.
+    See: https://stackoverflow.com/questions/10307696/
+    """
+
+    def dec(obj):
+        obj.__doc__ = obj.__doc__.format(*args, **kwargs)
+        return obj
+
+    return dec

@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 
-"""Default vector functions for components"""  # TODO: add more?
+"""Default vector functions for components"""
 
 from collections import defaultdict
 
@@ -34,3 +34,6 @@ COMPONENT_FUNCTIONS_DICT["base_producer"] = {"temperatures": compute_prod_temp_n
 
 # Add base branch valve
 COMPONENT_FUNCTIONS_DICT["base_branch_valve"] = {"delta_p": compute_dp_valve_net}
+
+# Add Lagrangian pipe
+COMPONENT_FUNCTIONS_DICT["lagrangian_pipe"] = {"delta_p": compute_pipe_temp_net}

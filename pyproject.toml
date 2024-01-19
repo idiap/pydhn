@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pydhn"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = [
 	"Roberto Boghetti <roberto.boghetti@idiap.ch>",

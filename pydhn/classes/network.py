@@ -22,6 +22,7 @@ from pydhn.components import BranchPump
 from pydhn.components import BranchValve
 from pydhn.components import BypassPipe
 from pydhn.components import Consumer
+from pydhn.components import LagrangianPipe
 from pydhn.components import Pipe
 from pydhn.components import Producer
 from pydhn.default_values import *
@@ -395,6 +396,69 @@ class Network(AbstractNetwork):
             casing_thickness=casing_thickness,
             dz=delta_z,
             discretization=discretization,
+            line=line,
+            **kwargs,
+        )
+
+        # Add entry to graph
+        self.add_component(
+            name=name, component=component, start_node=start_node, end_node=end_node
+        )
+
+    def add_lagrangian_pipe(
+        self,
+        name,
+        start_node,
+        end_node,
+        diameter=D_PIPES,
+        depth=DEPTH,
+        k_insulation=K_INSULATION,
+        insulation_thickness=INSULATION_THICKNESS,
+        length=L_PIPES,
+        roughness=ROUGHNESS,
+        k_internal_pipe=K_INTERNAL_PIPE,
+        internal_pipe_thickness=INTERNAL_PIPE_THICKNESS,
+        k_casing=K_CASING,
+        casing_thickness=CASING_THICKNESS,
+        rho_wall=RHO_INTERNAL_PIPE,
+        cp_wall=CP_INTERNAL_PIPE,
+        h_ext=H_EXT,
+        stepsize=STEPSIZE,
+        line=None,
+        **kwargs,
+    ):
+        """
+        Adds a single edge of type "lagrangian_pipe" to the directed graph of the
+        network.
+        """
+
+        # Compute delta z
+        try:
+            start_z = nx.get_node_attributes(self._graph, "z")[start_node]
+            end_z = nx.get_node_attributes(self._graph, "z")[end_node]
+            delta_z = end_z - start_z
+        except:
+            delta_z = 0.0
+            warn("Can't compute delta z, height of nodes unknown.")
+
+        component = LagrangianPipe(
+            name=name,
+            component_type="base_pipe",
+            diameter=diameter,
+            depth=depth,
+            k_insulation=k_insulation,
+            insulation_thickness=insulation_thickness,
+            length=length,
+            roughness=roughness,
+            k_internal_pipe=k_internal_pipe,
+            internal_pipe_thickness=internal_pipe_thickness,
+            k_casing=k_casing,
+            casing_thickness=casing_thickness,
+            rho_wall=rho_wall,
+            cp_wall=cp_wall,
+            h_ext=h_ext,
+            dz=delta_z,
+            stepsize=stepsize,
             line=line,
             **kwargs,
         )

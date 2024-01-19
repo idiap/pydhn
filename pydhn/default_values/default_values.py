@@ -46,7 +46,10 @@ CASING_THICKNESS = 0.003  # Thickness of external pipe casing [m]
 L_PIPES = 1.0  # Length of the pipe [m]
 ROUGHNESS = 0.045  # Roughness [mm]
 DISCRETIZATION = 10  # Length [m] of segments used to discretize the pipe
-
+CP_INTERNAL_PIPE = 2000.0  # Specific heat capacity of internal pipe [J/(kg·K)]
+RHO_INTERNAL_PIPE = 940.0  # Density of internal pipe [kg/m³]
+DELTA_Z = 0.0  # Altitude difference [m]
+H_EXT = 0.0  # External heat transfer coefficient [W/(m²·K)]
 
 """Default values for consumers"""
 HEAT_DEMAND = 5000.0  # Hourly heat demand [Wh]
@@ -123,3 +126,4 @@ DELTA_P_FRICTION = 0.0  # Initial pressure difference due to friction [Pa]
 TEMPERATURE = 50.0  # Initial edges temperature [°C]
 INLET_TEMPERATURE = 50.0  # Initial edges inlet temperature [°C]
 OUTLET_TEMPERATURE = 50.0  # Initial edges outlet temperature [°C]
+STEPSIZE = 5.0  # Size of a time-step in dynamic simulations [s]

@@ -22,14 +22,13 @@ TOLERANCE = 0.1  # %
 
 sys.path.append(os.path.join(BASE_DIR, "pipe_test"))
 
-from pipe_test import run_pipe_test
-
 
 class PIPETEST(unittest.TestCase):
     def test_pipe(self):
         """
         Test RMSE values
         """
+        from pipe_test import run_pipe_test
 
         errors = run_pipe_test()
 
@@ -38,6 +37,19 @@ class PIPETEST(unittest.TestCase):
             0.012230725387647308,
             0.04095136560435463,
         ]
+
+        for e, error in enumerate(errors):
+            self.assertLessEqual(error, target_max_rmse[e] * (1 + TOLERANCE / 100))
+
+    def test_lagrangian_pipe(self):
+        """
+        Test RMSE values
+        """
+        from lagrangian_pipe_test import run_pipe_test
+
+        errors = run_pipe_test()
+
+        target_max_rmse = [0.15820353706994073, 0.5882826946115817, 0.07311031368296524]
 
         for e, error in enumerate(errors):
             self.assertLessEqual(error, target_max_rmse[e] * (1 + TOLERANCE / 100))

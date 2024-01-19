@@ -14,3 +14,4 @@ from pydhn.components.base_producer import Producer
 from pydhn.components.base_branch_valve import BranchValve
 from pydhn.components.base_bypass_pipe import BypassPipe
 from pydhn.components.branch_pump import BranchPump
+from pydhn.components.lagrangian_pipe import LagrangianPipe

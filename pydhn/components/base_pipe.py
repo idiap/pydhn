@@ -33,6 +33,7 @@ from pydhn.default_values import OUTLET_TEMPERATURE
 from pydhn.default_values import ROUGHNESS
 from pydhn.default_values import TEMPERATURE
 from pydhn.fluids.dimensionless_numbers import compute_reynolds
+from pydhn.utilities import docstring_parameters
 
 
 class Pipe(Component):
@@ -41,6 +42,19 @@ class Pipe(Component):
     steady-state conditions.
     """
 
+    @docstring_parameters(
+        D_PIPES,
+        DEPTH,
+        INSULATION_THICKNESS,
+        L_PIPES,
+        K_INSULATION,
+        ROUGHNESS,
+        K_INTERNAL_PIPE,
+        INTERNAL_PIPE_THICKNESS,
+        K_CASING,
+        CASING_THICKNESS,
+        DISCRETIZATION,
+    )
     def __init__(
         self,
         diameter=D_PIPES,
@@ -58,44 +72,40 @@ class Pipe(Component):
         line=None,
         **kwargs
     ):
-        __doc__ = """
+        """
         Inits Pipe.
 
         Parameters
         ----------
         diameter : float, optional
-            Internal diameter of the pipe (m). The default is {D_PIPES}.
+            Internal diameter of the pipe (m). The default is {}.
         depth : float, optional
-            Bury depth of the pipe (m). The default is {DEPTH}.
+            Burying depth of the pipe (m). The default is {}.
         insulation_thickness : float, optional
-            Thickness of the insulation layer (m). The default is
-            {INSULATION_THICKNESS}.
+            Thickness of the insulation layer (m). The default is {}.
         length : float, optional
-            Length of the pipe (m). The default is {L_BYPASS_PIPES}.
+            Length of the pipe (m). The default is {}.
         k_insulation : float, optional
-            Thermal conductivity of insulation (W/(m·K)). The default is
-            {K_INSULATION}.
+            Thermal conductivity of insulation (W/(m·K)). The default is {}.
         roughness : float, optional
-            Roughness of the internal pipe surface (mm). The default is
-            {ROUGHNESS}.
+            Roughness of the internal pipe surface (mm). The default is {}.
         k_internal_pipe : float, optional
-            Thermal conductivity of the pipe (W/(m·K)). The default is
-            {K_INTERNAL_PIPE}.
+            Thermal conductivity of the pipe (W/(m·K)). The default is {}.
         internal_pipe_thickness : float, optional
-            Thickness of the pipe (m). The default is
-            {INTERNAL_PIPE_THICKNESS}.
+            Thickness of the pipe (m). The default is {}.
         k_casing : float, optional
-            Thermal conductivity of the casing (W/(m·K)). The default is
-            {K_CASING}.
+            Thermal conductivity of the casing (W/(m·K)). The default is {}.
         casing_thickness : float, optional
-           Thickness of the casing (m). The default is {CASING_THICKNESS}.
+           Thickness of the casing (m). The default is {}.
         discretization : flaot, optional
             Length of segments for discretizing the pipe (m). The default is
-            {DISCRETIZATION}.
+            {}.
         dz : float, optional
             Altitude difference between the endpoints (m). The default is 0.
         line : str, optional
             Either "supply" or "return". The default is None.
+        **kwargs : dict
+            Additional keyord arguments.
 
         Returns
         -------
