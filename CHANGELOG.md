@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.1.2
+
+Released on March 19, 2024
+
+### Added
+
+### Changed
+
+* Fixed a bug where the wrong vector function was called when using LagrangianPipe
+
+### Removed
+
 ## 0.1.1
 
 Released on January 19, 2024

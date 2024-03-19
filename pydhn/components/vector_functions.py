@@ -36,4 +36,4 @@ COMPONENT_FUNCTIONS_DICT["base_producer"] = {"temperatures": compute_prod_temp_n
 COMPONENT_FUNCTIONS_DICT["base_branch_valve"] = {"delta_p": compute_dp_valve_net}
 
 # Add Lagrangian pipe
-COMPONENT_FUNCTIONS_DICT["lagrangian_pipe"] = {"delta_p": compute_pipe_temp_net}
+COMPONENT_FUNCTIONS_DICT["lagrangian_pipe"] = {"delta_p": compute_dp_pipe_net}
