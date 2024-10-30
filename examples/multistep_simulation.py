@@ -38,9 +38,7 @@ net.set_edge_attribute(
 net.set_edge_attribute(value="mass_flow", name="control_type", mask=net.consumers_mask)
 
 # Set the thermal setpoint type of the heating station as "t_out"
-net.set_edge_attribute(
-    value="delta_t", name="setpoint_type_hx", mask=net.consumers_mask
-)
+net.set_edge_attribute(value="t_out", name="setpoint_type_hx", mask=net.producers_mask)
 
 # Prepare schedules: each schedule will modify one attribute over the time
 # steps by assigning the specified value

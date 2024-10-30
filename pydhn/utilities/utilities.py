@@ -10,6 +10,7 @@
 
 """General purpose utilities."""
 
+import re
 
 import numpy as np
 
@@ -73,10 +74,27 @@ def docstring_parameters(*args, **kwargs):
     """
     Decorator that allows the use of variables in docstrings.
     See: https://stackoverflow.com/questions/10307696/
+
+    This decorator modifies the docstring such that it ignores curly braces
+    outside the "Parameters" section.
     """
 
+    pattern = r"Parameters\s*-+\s*(.*?)\s*Returns\s*-+"
+    params_section_pattern = re.compile(pattern, re.DOTALL)
+
     def dec(obj):
-        obj.__doc__ = obj.__doc__.format(*args, **kwargs)
+        # Find the Parameters section if it exists
+        match = params_section_pattern.search(obj.__doc__)
+
+        if match:
+            # Extract Parameters section
+            params_sec = match.group(1)
+
+            # Format only the Parameters section
+            formatted_params_sec = params_sec.format(*args, **kwargs)
+
+            # Replace the original Parameters section with the formatted version
+            obj.__doc__ = obj.__doc__.replace(params_sec, formatted_params_sec)
         return obj
 
     return dec

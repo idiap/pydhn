@@ -11,6 +11,8 @@
 """Class for base abstract component"""
 
 
+from typing import Any
+
 import numpy as np
 
 from pydhn.default_values import DELTA_P
@@ -19,6 +21,7 @@ from pydhn.default_values import INLET_TEMPERATURE
 from pydhn.default_values import MASS_FLOW
 from pydhn.default_values import OUTLET_TEMPERATURE
 from pydhn.default_values import TEMPERATURE
+from pydhn.utilities import docstring_parameters
 
 
 class Component:
@@ -26,9 +29,38 @@ class Component:
     Base class for components
     """
 
+    @docstring_parameters(
+        TEMPERATURE=TEMPERATURE,
+        MASS_FLOW=MASS_FLOW,
+        DELTA_P=DELTA_P,
+    )
     def __init__(
-        self, temperature=TEMPERATURE, mass_flow=MASS_FLOW, delta_p=DELTA_P, **kwargs
-    ):
+        self,
+        temperature: float = TEMPERATURE,
+        mass_flow: float = MASS_FLOW,
+        delta_p: float = DELTA_P,
+        **kwargs
+    ) -> None:
+        """
+        Init Component
+
+        Parameters
+        ----------
+        temperature : float, optional
+            Initial temperature of the fluid (°C). The default is
+            {TEMPERATURE}.
+        mass_flow : float, optional
+            Initial mass flow (kg/s). The default is {MASS_FLOW}.
+        delta_p : float, optional
+            Initial pressure difference (Pa). The default is {DELTA_P}.
+        **kwargs
+            Arbitrary keyword arguments.
+
+        Returns
+        -------
+        None
+
+        """
         # Component class and type
         self._class = "branch_component"
         self._type = "base_component"
@@ -79,7 +111,22 @@ class Component:
                     self.set(key=k, value=v)
         self._initialized = True
 
-    def set(self, key, value):
+    def set(self, key: str, value: Any) -> None:
+        """
+        Sets the specified value for the attribute.
+
+        Parameters
+        ----------
+        key : str
+            Attribute name.
+        value : Any
+            Attribute value.
+
+        Returns
+        -------
+        None
+
+        """
         self._attrs.update({key: value})
 
     def _run_control_logic(self, key):

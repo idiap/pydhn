@@ -10,7 +10,8 @@
 
 """Generic functions needed for the hydraulic simulations."""
 
-import sys
+# Avoid circular import for type hints
+from typing import TYPE_CHECKING
 from warnings import warn
 
 import networkx as nx
@@ -18,6 +19,11 @@ import numpy as np
 
 from pydhn.classes import Results
 from pydhn.solving.pressure import compute_dp
+
+if TYPE_CHECKING:
+    from pydhn import Fluid
+    from pydhn import Network
+    from pydhn.controllers import Controller
 
 # Cache for warm starting the guess on cycles mass flow
 global CYC_SOL_CACHE
@@ -63,31 +69,81 @@ def _assign_node_pressure(net, source=None):
 
 
 def solve_hydraulics(
-    net,
-    fluid,
-    controller=None,
-    compute_hydrostatic=True,
-    compute_singular=False,
-    affine_fd=False,
-    warm_guess=False,
-    max_iters=100,
-    error_threshold=100,
-    damping_factor=1,
-    decreasing=False,
-    adaptive=True,
-    verbose=1,
-    ts_id=None,
+    net: "Network",
+    fluid: "Fluid",
+    controller: "Controller" = None,
+    compute_hydrostatic: bool = True,
+    compute_singular: bool = False,
+    affine_fd: bool = False,
+    warm_guess: bool = False,
+    max_iters: int = 100,
+    error_threshold: float = 100,
+    damping_factor: float = 1,
+    decreasing: bool = False,
+    adaptive: bool = True,
+    verbose: int = 1,
+    ts_id: int = None,
     **kwargs,
-):
-    """
+) -> dict:
+    r"""
     Runs a steady-state hydraulic simulation of the network. The procedure is
     based on a modified loop method, which solves for the equation:
 
-        B Ã¢â‚¬Â¢ \Delta p = 0
+    .. math::
+        \mathbf{B}\phi(\mathbf{B}^T\mathbf{\tilde{\dot m}}) = \mathbf{0}
 
     where:
-        - B is the cycle matrix of the network graph
-        - \Delta p is the vector of edge pressure differences
+
+        * :math:`\mathbf{B}` is the cycle matrix of the network graph
+        * :math:`\mathbf{\tilde{\dot m}}` is the vector of cycle mass flows
+        * :math:`\phi` is a function relating mass flow and pressure difference
+
+    Using the Newton-Raphson method.
+
+    The function returns a dictionary with the results of the simulation and
+    details on the convergence of each Newton step.
+    Mass flow, pressure differences and nodal pressures of the input Network
+    are also modified in place with the results of the simulation.
+
+    Parameters
+    ----------
+    net : Network
+        Network to be simulated.
+    fluid : Fluid
+        Working fluid to be used.
+    controller : Controller, optional
+        Controller object. The default is None.
+    compute_hydrostatic : bool, optional
+        Whether to consider hydrostatic pressure. The default is True.
+    compute_singular : bool, optional
+        Not implemented. The default is False.
+    affine_fd : bool, optional
+        Whether to use an affine function for pipe pressure losses in the
+        transitional flow regime.. The default is False.
+    warm_guess : bool, optional
+        Not implemented. The default is False.
+    max_iters : int, optional
+        Maximum number of iterations for the solver. The default is 100.
+    error_threshold : float, optional
+        Error threshold for the solver in Pa. The default is 100.
+    damping_factor : float, optional
+        Damping factor for the Newton iterations. The default is 1.
+    decreasing : bool, optional
+        Whether to reduce the damping factor at each Newton iteration. The
+        default is False.
+    adaptive : bool, optional
+        Whether to reduce the damping factor on plateau. The default is True.
+    verbose : int, optional
+        Controls the verbosity of the simulation. The default is 1.
+    ts_id : int, optional
+        Specifies the ID of the current time-step. The default is None.
+    **kwargs
+        Arbitrary keyword arguments.
+
+    Returns
+    -------
+    dict
+        Dictionary with the simulation results.
 
     """
     global CYC_SOL_CACHE

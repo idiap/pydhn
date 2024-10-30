@@ -7,6 +7,8 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-only
 
-from . import loading, conversion, graph_utilities
+from . import conversion
+from . import graph_utilities
+from . import loading
 from .caching import *
 from .utilities import *

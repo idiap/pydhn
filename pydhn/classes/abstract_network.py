@@ -13,6 +13,15 @@
 import copy
 import json
 from collections import defaultdict
+from typing import Any
+from typing import Callable
+from typing import Hashable
+from typing import Iterable
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import TypeVar
+from typing import Union
 from warnings import warn
 
 import networkx as nx
@@ -32,6 +41,8 @@ from pydhn.utilities.matrices import compute_adjacency_matrix
 from pydhn.utilities.matrices import compute_cycle_matrix
 from pydhn.utilities.matrices import compute_incidence_matrix
 
+T = TypeVar("T", bound="AbstractNetwork")
+
 
 class AbstractNetwork:
     """
@@ -43,10 +54,6 @@ class AbstractNetwork:
         # Network Graph
         self._graph = nx.DiGraph()
 
-        # Keep track of edge and node number
-        self._n_nodes = 0
-        self._n_edges = 0
-
         # Caches
         self._caching = caching
         self._node_cache = defaultdict(lambda: defaultdict(lambda: defaultdict(None)))
@@ -54,11 +61,25 @@ class AbstractNetwork:
         self._mask_cache = dict()  # TODO: implement
         self._matrix_cache = dict()
 
-    def __len__(self):
-        """Returns the number of edges."""
+    def __len__(self) -> int:
+        """
+        Returns the number of edges. If the main elements of the child class
+        are in nodes, the output should be changed to number of nodes.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_edge('edge 1', 0, 1)
+            >>> net.add_edge('edge 2', 1, 2)
+            >>> len(net)
+            2
+
+        """
         return self.n_edges
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: Hashable) -> Any:
         """
         Implements indexing of nodes.
 
@@ -81,26 +102,59 @@ class AbstractNetwork:
         else:
             return self._graph.nodes()[key]
 
-    def copy(self):
+    def copy(self: T) -> T:  # TODO: replace T with Self for Python 3.11+
         """
         Returns a deep copy of the class.
 
         Examples
         --------
 
-            >>> from pydhn import Network
-            >>> net = Network()
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
             >>> net_2 = net.copy()
 
         """
         return copy.deepcopy(self)
 
     @property
-    def caching(self):
+    def caching(self) -> bool:
+        """
+        Returns the status of self._caching. If True, the outputs of some
+        computations, such as for example the adjacency matric, will be cached,
+        allowing for faster simulations.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork(caching=True)
+            >>> net._caching
+            True
+
+        """
         return self._caching
 
     @caching.setter
-    def caching(self, iscaching):
+    def caching(self, iscaching: bool) -> None:
+        """
+        Setter method to change the status of self._caching. It also resets the
+        cache.
+
+        Parameters
+        ----------
+        iscaching : bool
+            Either True to turn on caching or False to turn it off.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork(caching=True)
+            >>> net.caching = False
+            >>> net.caching
+            False
+
+        """
         self._caching = iscaching
         self._node_cache = defaultdict(lambda: defaultdict(lambda: defaultdict(None)))
         self._edge_cache = None
@@ -108,48 +162,78 @@ class AbstractNetwork:
         self._matrix_cache = dict()
 
     @property
-    def n_nodes(self):
+    def n_nodes(self) -> int:
         """
         Returns the number of nodes in the network.
+
+        Returns
+        -------
+        int
+            Number of nodes in the network graph.
 
         Examples
         --------
 
-            >>> from pydhn import Network
-            >>> net = Network()
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
             >>> net.add_node("Node 0")
             >>> net.add_node("Node 1")
             >>> net.n_nodes
             2
 
         """
-        return self._n_nodes
+        return len(self._graph.nodes())
 
     @property
-    def n_edges(self):
+    def n_edges(self) -> int:
         """
-        Returns the number of edges in the network.
+        Returns the number of edges in the network. This property has no setter
+        method, so that it cannot be modified manually.
+
+        Returns
+        -------
+        int
+            Number of edges in the network graph.
 
         Examples
         --------
 
-            >>> from pydhn import Network
-            >>> net = Network()
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
             >>> net.add_node("Node 0")
             >>> net.add_node("Node 1")
-            >>> net.add_pipe("Pipe 0-1", "Node 0", "Node 1")
+            >>> net.add_edge("Pipe 0-1", "Node 0", "Node 1")
             >>> net.n_edges
             1
 
         """
-        return self._n_edges
+        return len(self._graph.edges())
 
     # Matrices ################################################################
     # Methods that returns useful network matrices as Numpy arrays.
     ###########################################################################
 
-    def _compute_matrix(self, matrix_name, matrix_function, **kwargs):
-        """Generic method for handling caching of matrices."""
+    def _compute_matrix(
+        self, matrix_name: str, matrix_function: Callable, **kwargs
+    ) -> np.array:
+        """
+        Generic method for handling caching of matrices.
+
+        Parameters
+        ----------
+        matrix_name : str
+            String used as key of the matrix in the cache dictionary.
+        matrix_function : Callable
+            Function used to compute the matrix if not available in the cache.
+        **kwargs
+            Additional arguments for matrix_function.
+
+        Returns
+        -------
+        ndarray
+            The desired matrix, commonly as Numpy array.
+
+        """
         if self.caching:
             try:
                 return self._matrix_cache[matrix_name]
@@ -160,22 +244,91 @@ class AbstractNetwork:
         return matrix
 
     @property
-    def adjacency_matrix(self):
-        """Returns the adjacency matrix of the network."""
+    def adjacency_matrix(self) -> np.array:
+        """
+        Returns the adjacency matrix of the network.
+
+        Returns
+        -------
+        ndarray
+            The adjacency matrix of the network graph as 2D Numpy array of
+            integers.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_edge("Pipe 0-1", "Node 0", "Node 1")
+            >>> net.adjacency_matrix
+            array([[0, 1],
+                   [0, 0]], dtype=int32)
+
+        """
         return self._compute_matrix(
             matrix_name="adjacency", matrix_function=compute_adjacency_matrix
         )
 
     @property
-    def incidence_matrix(self):
-        """Returns the incidence matrix of the network."""
+    def incidence_matrix(self) -> np.array:
+        """
+        Returns the incidence matrix of the network.
+
+        Returns
+        -------
+        ndarray
+            The incidence matrix of the network graph as 2D Numpy array of
+            integers.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_edge("Pipe 0-1", "Node 0", "Node 1")
+            >>> net.incidence_matrix
+            array([[-1.],
+                   [ 1.]])
+
+        """
         return self._compute_matrix(
             matrix_name="incidence", matrix_function=compute_incidence_matrix
         )
 
     @property
     def cycle_matrix(self):
-        """Returns the cycle basis matrix of the network."""
+        """
+        Returns the cycle matrix of the network graph computed using Networkx
+        and converted into a Numpy array. The cycle matrix only includes cycles
+        from a basis and it is computed from the undirected graph. Edges in a
+        cycle with opposite direction are given an entry of -1 in the matrix.
+
+        Returns
+        -------
+        ndarray
+            The cycle matrix of the network graph as 2D Numpy array of
+            integers.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_node("Node 2")
+            >>> net.add_edge("Pipe 0-1", "Node 0", "Node 1")
+            >>> net.add_edge("Pipe 1-2", "Node 1", "Node 2")
+            >>> net.add_edge("Pipe 2-0", "Node 2", "Node 0")
+            >>> net.cycle_matrix # doctest: +SKIP
+            array([[ -1., -1.,  1.]])
+
+        """
+
         return self._compute_matrix(
             matrix_name="cycle", matrix_function=compute_cycle_matrix, method="nx"
         )
@@ -184,10 +337,11 @@ class AbstractNetwork:
     # Pointers to specific subgraphs of the network.
     ###########################################################################
 
-    def _get_edge_pointer(self, mask):
+    def _get_edge_pointer(self, mask: Optional[np.array]) -> nx.DiGraph:
         """
         Returns a view of the network graph with only the edges specified by
-        the mask. The mask is based on the order of edges in the Networkx graph.
+        the mask. The mask is an array of indices based on the order of edges
+        in the Networkx graph.
         """
         if mask is None:
             return self._graph
@@ -199,23 +353,50 @@ class AbstractNetwork:
     # Methods to add nodes and edges to the graph, as well as their attributes.
     ###########################################################################
 
-    # TODO: node components?
     def add_node(
         self,
-        name,
-        x: float = None,
-        y: float = None,
-        z: float = 0,
-        node_type: str = None,
-        temperature=TEMPERATURE,
+        name: Hashable,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        z: Optional[float] = 0,
+        temperature: float = TEMPERATURE,
         **kwargs,
     ) -> None:
-        """Adds a single node to the directed graph of the network."""
+        """
+        Adds a single node to the directed graph of the network.
+
+        Parameters
+        ----------
+        name : Hashable
+            Unique name or ID of the node.
+        x : float, optional
+            X coordinate of the node for plotting. The default is None.
+        y : float, optional
+            Y coordinate of the node for plotting. The default is None.
+        z : float, optional
+            Z coordinate of the node, used to compute hydrostatic pressure. The
+            default is 0.
+        temperature : float, optional
+            Initial node temperature. The default is TEMPERATURE.
+        **kwargs :
+            Additional attributes of the node.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node(0)
+            >>> net.add_node(1)
+            >>> net.add_node(2)
+            >>> nodes, _ = net.nodes()
+            >>> nodes
+            array([0, 1, 2])
+
+        """
         # Node names should be unique
         if name in self._graph.nodes:
             warn("Node already in graph, information will be updated!")
-        else:
-            self._n_nodes += 1
 
         # Add the node to the graph
         self._graph.add_node(name, pos=(x, y), z=z, temperature=temperature, **kwargs)
@@ -225,10 +406,35 @@ class AbstractNetwork:
         self._matrix_cache.clear()
 
     def add_edge(
-        self, name: str, start_node: str, end_node: str, component=None, **kwargs
+        self, name: Hashable, start_node: Hashable, end_node: Hashable, **kwargs
     ) -> None:
-        """Adds a single edge to the directed graph of the network."""
+        """
+        Adds a single edge to the directed graph of the network.
 
+        Parameters
+        ----------
+        name : Hashable
+            Unique name or ID of the edge.
+        start_node : Hashable
+            Name of the start node.
+        end_node : Hashable
+            Name of the end node.
+        **kwargs
+            Additional attributes of the node.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node(0)
+            >>> net.add_node(1)
+            >>> net.add_edge((0, 1), 0, 1)
+            >>> edges = net.edges()
+            >>> edges
+            array([[0, 1]])
+
+        """
         # Edges should be unique
         if (start_node, end_node) in self._graph.edges():
             warn(
@@ -241,36 +447,129 @@ class AbstractNetwork:
                  The edge will be reversed and features upadated!"
             )
             start_node, end_node = end_node, start_node
-        else:
-            self._n_edges += 1
 
         # Add entry to networkx
-        self._graph.add_edge(
-            start_node, end_node, name=name, component=component, **kwargs
-        )
+        self._graph.add_edge(start_node, end_node, name=name, **kwargs)
 
         # Clear cache
         self._edge_cache = None
         self._matrix_cache.clear()
 
-    def set_node_attribute(self, value, name):
-        """Set the same value as the specified attribute for all nodes"""
+    def set_node_attribute(self, value: Any, name: str) -> None:
+        """
+        Set the same value as the specified attribute (name) for all nodes.
+
+        Parameters
+        ----------
+        value : Any
+            Value to be set for all nodes.
+        name : str
+            Name of the attribute for which value is set.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node(0)
+            >>> net.add_node(1)
+            >>> net.set_node_attribute("blue", "color")
+            >>> _, colors = net.nodes("color")
+            >>> colors
+            array(['blue', 'blue'], dtype='<U4')
+
+        """
+
         nx.set_node_attributes(self._graph, values=value, name=name)
         # self._node_cache.pop(name, None)
 
-    def set_edge_attribute(self, value, name, mask=None):
-        """Set the same value as the specified attribute for all edges"""
+    def set_edge_attribute(
+        self, value: Any, name: str, mask: Optional[np.array] = None
+    ) -> None:
+        """
+        Set the same value as the specified attribute (name) for all edges.
+
+        Parameters
+        ----------
+        value : Any
+            Value to be set for all edges.
+        name : str
+            Name of the attribute for which value is set.
+        mask : array, optional
+            Array of the indices of edges for which the attribute should be
+            set. The order is based on the order of edges in the class as
+            returned by the method .edges().
+
+        Examples
+        --------
+
+            >>> import numpy as np
+            >>> from pydhn.classes import Network
+            >>> net = Network()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_node("Node 2")
+            >>> net.add_pipe("Pipe 0-1", "Node 0", "Node 1")
+            >>> net.add_pipe("Pipe 1-2", "Node 1", "Node 2")
+            >>> net.add_pipe("Pipe 2-0", "Node 2", "Node 0")
+            >>> edges = net.edges()
+            >>> edges
+            array([['Node 0', 'Node 1'],
+                   ['Node 1', 'Node 2'],
+                   ['Node 2', 'Node 0']], dtype='<U6')
+            >>> net.set_edge_attribute("red", "color")
+            >>> _, colors = net.edges("color")
+            >>> colors
+            array(['red', 'red', 'red'], dtype='<U3')
+            >>> mask = np.array([0, 2])
+            >>> net.set_edge_attribute("blue", "color", mask)
+            >>> _, colors = net.edges("color")
+            >>> colors
+            array(['blue', 'red', 'blue'], dtype='<U4')
+
+        """
         for u, v in self._get_edge_pointer(mask).edges():
             self._graph[u][v]["component"].set(name, value)
         # self._edge_cache.pop(name, None)
 
-    def set_node_attributes(self, values, name):
+    def set_node_attributes(self, values: Union[dict, np.array], name: str) -> None:
         """
         Set the specified attribute in nodes. Values can be either a dict
         mapping nodes to values or an iterable which has the same length as the
         number of nodes in the graph. In this case, the order of values must
-        match the order of nodes obtained using self._graph.nodes()
+        match the order of nodes obtained using self.nodes()
+
+        Parameters
+        ----------
+        values : Union[dict, np.array]
+            Either a dict with node-value pairs or an iterable containing the
+            values ordered as the correspondig nodes.
+        name : str
+            Name of the attribute for which values are set.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node(0)
+            >>> net.add_node(1)
+            >>> nodes, _ = net.nodes()
+            >>> nodes
+            array([0, 1])
+            >>> values = ["green", "blue"]
+            >>> net.set_node_attributes(values, "color")
+            >>> _, colors = net.nodes("color")
+            >>> colors
+            array(['green', 'blue'], dtype='<U5')
+            >>> values = {0: "green", 1: "red"}
+            >>> net.set_node_attributes(values, "color")
+            >>> _, colors = net.nodes("color")
+            >>> colors
+            array(['green', 'red'], dtype='<U5')
+
         """
+
         if type(values) == dict:
             values_dict = values
         else:
@@ -278,12 +577,62 @@ class AbstractNetwork:
         nx.set_node_attributes(self._graph, values=values_dict, name=name)
         # self._node_cache.pop(name, None)
 
-    def set_edge_attributes(self, values, name, mask=None):
+    def set_edge_attributes(
+        self, values: Union[dict, np.array], name: str, mask: Optional[np.array] = None
+    ) -> None:
         """
         Set the specified attribute in edges. Values can be either a dict
         mapping edges to values or an iterable which has the same length as the
         number of edges in the graph. In this case, the order of values must
-        match the order of edges obtained using self._graph.edges()
+        match the order of edges obtained using self.edges()
+
+
+        Parameters
+        ----------
+        values : Union[dict, np.array]
+            Either a dict with edge-value pairs or an iterable containing the
+            values ordered as the correspondig edges. If a mask is used, the
+            order should be that of the elements in the mask instead.
+        name : str
+            Name of the attribute for which values are set.
+        mask : array, optional
+            Array of the indices of edges for which the attribute should be
+            set. The order is based on the order of edges in the class as
+            returned by the method .edges().
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import Network
+            >>> net = Network()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_node("Node 2")
+            >>> net.add_pipe("Pipe 0-1", "Node 0", "Node 1")
+            >>> net.add_pipe("Pipe 1-2", "Node 1", "Node 2")
+            >>> net.add_pipe("Pipe 2-0", "Node 2", "Node 0")
+            >>> edges = net.edges()
+            >>> edges
+            array([['Node 0', 'Node 1'],
+                   ['Node 1', 'Node 2'],
+                   ['Node 2', 'Node 0']], dtype='<U6')
+            >>> values = ["green", "blue", "red"]
+            >>> net.set_edge_attributes(values, "color")
+            >>> _, colors = net.edges("color")
+            >>> colors
+            array(['green', 'blue', 'red'], dtype='<U5')
+            >>> values = {("Node 0", "Node 1"): "purple"}
+            >>> net.set_edge_attributes(values, "color")
+            >>> _, colors = net.edges("color")
+            >>> colors
+            array(['purple', 'blue', 'red'], dtype='<U6')
+            >>> mask = np.array([0, 2])
+            >>> values = ["yellow", "orange"]
+            >>> net.set_edge_attributes(values, "color", mask)
+            >>> _, colors = net.edges("color")
+            >>> colors
+            array(['yellow', 'blue', 'orange'], dtype='<U6')
+
         """
         # Input should be a numpy array
         if type(values) != np.ndarray and type(values) != dict:
@@ -308,7 +657,42 @@ class AbstractNetwork:
     # Methods to get nodes and edges as well as their attributes.
     ###########################################################################
 
-    def get_nodes_attribute_array(self, attribute, fill_missing=0.0, dtype=None):
+    def get_nodes_attribute_array(
+        self, attribute: str, fill_missing: Any = 0.0, dtype: Optional[type] = None
+    ) -> np.array:
+        """
+        Returns an array containing the values of the specified attribute for
+        each node of the network graph. The values follow the order of nodes
+        in the class as returned by the method .nodes().
+
+        Parameters
+        ----------
+        attribute : str
+            Name of the attribute to get.
+        fill_missing : Any, optional
+            Value for replacing missing entries. The default is 0.0.
+        dtype : Type, optional
+            Data type to which the output array should be casted. The default
+            is None.
+
+        Returns
+        -------
+        arr : Array
+            Array containing the values of the requested attribute for each
+            node. The values follow the order of nodes in the class.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node(0, color="blue")
+            >>> net.add_node(1)
+            >>> colors = net.get_nodes_attribute_array("color", fill_missing="red")
+            >>> colors
+            array(['blue', 'red'], dtype='<U4')
+
+        """
         # if self.caching:
         #     try:
         #         return self._node_cache[attribute][fill_missing][dtype]
@@ -329,7 +713,44 @@ class AbstractNetwork:
             edges = np.array(self._graph.edges())
         return edges
 
-    def get_edges_attribute_array(self, attribute: str):
+    def get_edges_attribute_array(self, attribute: str) -> np.array:
+        """
+        Returns an array containing the values of the specified attribute for
+        each edge of the network graph. The values follow the order of edges
+        in the class as returned by the method .edges().
+
+        Parameters
+        ----------
+        attribute : str
+            Name of the attribute to get.
+
+        Returns
+        -------
+        arr : Array
+            Array containing the values of the requested attribute for each
+            edge. The values follow the order of edges in the class.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import Network
+            >>> net = Network()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_node("Node 2")
+            >>> net.add_pipe("Pipe 0-1", "Node 0", "Node 1", color="Blue")
+            >>> net.add_pipe("Pipe 1-2", "Node 1", "Node 2")
+            >>> net.add_pipe("Pipe 2-0", "Node 2", "Node 0", color="Red")
+            >>> edges = net.edges()
+            >>> edges
+            array([['Node 0', 'Node 1'],
+                   ['Node 1', 'Node 2'],
+                   ['Node 2', 'Node 0']], dtype='<U6')
+            >>> values = ["green", "blue", "red"]
+            >>> net.get_edges_attribute_array("color")
+            array(['Blue', 'nan', 'Red'], dtype='<U32')
+
+        """
         edges = self._get_cached_edges()
         ls = [np.nan] * self.n_edges
         for i, (u, v) in enumerate(edges):
@@ -337,19 +758,123 @@ class AbstractNetwork:
         arr = np.array(ls)
         return arr
 
-    def get_nodes_with_attribute(self, attribute: str, value) -> list:
-        """Returns the name of nodes with a certain attribute value"""
+    def get_nodes_with_attribute(self, attribute: str, value: Any) -> np.array:
+        """
+        Returns the name of nodes with the speficied attribute value.
+
+
+        Parameters
+        ----------
+        attribute : str
+            Name of the attribute to filter.
+        value : Any
+            Value of the attribute to be searched.
+
+        Returns
+        -------
+        Array
+            Array containing the name of nodes where the attribute has the
+            specified value.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node('u', color="blue")
+            >>> net.add_node('v', color="red")
+            >>> nodes = net.get_nodes_with_attribute("color","red")
+            >>> nodes
+            array(['v'], dtype='<U1')
+
+        """
+
         names = np.array(self._graph.nodes())
         attr = self.get_nodes_attribute_array(attribute)
         return names[np.where(attr == value)]
 
-    def get_edges_with_attribute(self, attribute: str, value) -> list:
-        """Returns the name of edges with a certain attribute value"""
+    def get_edges_with_attribute(self, attribute: str, value: Any) -> np.array:
+        """
+        Returns the name of edges with the speficied attribute value.
+
+
+        Parameters
+        ----------
+        attribute : str
+            Name of the attribute to filter.
+        value : Any
+            Value of the attribute to be searched.
+
+        Returns
+        -------
+        Array
+            Array containing the name of edges where the attribute has the
+            specified value.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import Network
+            >>> net = Network()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_node("Node 2")
+            >>> net.add_pipe("Pipe 0-1", "Node 0", "Node 1", color="Blue")
+            >>> net.add_pipe("Pipe 1-2", "Node 1", "Node 2")
+            >>> net.add_pipe("Pipe 2-0", "Node 2", "Node 0", color="Red")
+            >>> edges = net.get_edges_with_attribute("color", "Blue")
+            >>> edges
+            array(['Pipe 0-1'], dtype='<U8')
+
+        """
         names = self.get_edges_attribute_array("name")
         attr = self.get_edges_attribute_array(attribute)
         return names[np.where(attr == value)]
 
-    def nodes(self, data=np.nan, mask=None):
+    def nodes(
+        self, data: Optional[Iterable] = np.nan, mask: Optional[np.array] = None
+    ) -> List[np.array]:
+        """
+        Returns a list of arrays where the first one contains the node names
+        and the followings ones contain the requested node data. The values
+        in the arrays follow the order of nodes in the class. The order of data
+        arrays follows the order in which they appear in the iterable.
+
+        Parameters
+        ----------
+        data : Optional[Iterable], optional
+            Names of the attributes to return. If the iterable is a string, a
+            single attribute with the name matching the string is returned. The
+            default is np.nan.
+        mask : Optional[np.array], optional
+            Array of the indices of nodes that should be returned. The indices
+            follow the order of nodes in the network graph. The default is
+            None.
+
+        Yields
+        ------
+        Array
+            Arrays containing the node names and the values for the requested
+            attributes.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node('u', color="blue", size=10)
+            >>> net.add_node('v', color="red")
+            >>> nodes, _ = net.nodes()
+            >>> nodes
+            array(['u', 'v'], dtype='<U1')
+            >>> nodes, color = net.nodes('color')
+            >>> color
+            array(['blue', 'red'], dtype='<U4')
+            >>> nodes, color, size = net.nodes(['color', 'size'])
+            >>> size
+            array([10.,  0.])
+
+        """
         if mask is None:
             mask = np.arange(self.n_nodes)
         if data == np.nan:
@@ -362,7 +887,52 @@ class AbstractNetwork:
             else:
                 yield self.get_nodes_attribute_array(data)[mask]
 
-    def edges(self, data=None, mask=None):
+    def edges(
+        self, data: Optional[Iterable] = None, mask: Optional[np.array] = None
+    ) -> List[np.array]:
+        """
+        Returns a list of arrays where the first one contains the edge names
+        and the followings ones contain the requested edge data. The values
+        in the arrays follow the order of edges in the class. The order of data
+        arrays follows the order in which they appear in the iterable.
+
+        Parameters
+        ----------
+        data : Optional[Iterable], optional
+            Names of the attributes to return. If the iterable is a string, a
+            single attribute with the name matching the string is returned. The
+            default is None.
+        mask : Optional[np.array], optional
+            Array of the indices of edges that should be returned. The indices
+            follow the order of nodes in the network graph.. The default is
+            None.
+
+        Returns
+        -------
+        list
+            List containing the arrays with node names and those with the
+            values of the requested attributes.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import Network
+            >>> net = Network()
+            >>> net.add_node("Node 0")
+            >>> net.add_node("Node 1")
+            >>> net.add_node("Node 2")
+            >>> net.add_pipe("Pipe 0-1", "Node 0", "Node 1", color="Blue")
+            >>> net.add_pipe("Pipe 1-2", "Node 1", "Node 2")
+            >>> net.add_pipe("Pipe 2-0", "Node 2", "Node 0", color="Red")
+            >>> edges, colors = net.edges("color")
+            >>> edges
+            array([['Node 0', 'Node 1'],
+                   ['Node 1', 'Node 2'],
+                   ['Node 2', 'Node 0']], dtype='<U6')
+            >>> colors
+            array(['Blue', 'nan', 'Red'], dtype='<U32')
+
+        """
         single = False
         if mask is None:
             mask = np.arange(self.n_edges)
@@ -394,12 +964,39 @@ class AbstractNetwork:
 
     def plot_network(
         self,
-        figsize: tuple = (12, 8),
+        figsize: Tuple[float, float] = (12, 8),
         plot_edge_labels: bool = False,
         plot_node_labels: bool = False,
         **kwargs,
-    ):
-        """Plots the network"""
+    ) -> None:
+        """
+        Method implementing pydhn.plotting.plot_network. Coordinates x and y
+        must be given for nodes as attributes.
+
+        Parameters
+        ----------
+        figsize : Tuple[float, float], optional
+            Size of the figure. The default is (12, 8).
+        plot_edge_labels : bool, optional
+            Wether to plot edge names. The default is False.
+        plot_node_labels : bool, optional
+            Wether to plot node names. The default is False.
+        **kwargs :
+            Keyword arguments for nx.draw_networkx.
+
+        Examples
+        --------
+
+            >>> from pydhn.classes import AbstractNetwork
+            >>> net = AbstractNetwork()
+            >>> net.add_node(0, x=0, y=0)
+            >>> net.add_node(1, x=1, y=2)
+            >>> net.add_node(2, x=2, y=0)
+            >>> net.add_edge('edge 1', 0, 1)
+            >>> net.add_edge('edge 2', 1, 2)
+            >>> net.plot_network()
+
+        """
         plot_network(
             self,
             figsize=figsize,
@@ -408,11 +1005,11 @@ class AbstractNetwork:
             **kwargs,
         )
 
-    # Import and export Utilities ##############################################
+    # Import and export Utilities #############################################
     # Utilities for importing and exporting class data in different formats.
     ###########################################################################
 
-    def to_nx_graph(self):
+    def to_nx_graph(self) -> nx.DiGraph:
         G = self._graph.copy()
         for n1, n2, d in G.edges(data=True):
             new_d = {(n1, n2): d["component"]._attrs}
