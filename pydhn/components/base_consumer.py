@@ -28,6 +28,7 @@ from pydhn.default_values import SETPOINT_VALUE_HX_CONS
 from pydhn.default_values import SETPOINT_VALUE_HX_CONS_REV
 from pydhn.default_values import SETPOINT_VALUE_HYD_CONS
 from pydhn.default_values import T_OUT_MIN
+from pydhn.utilities import docstring_parameters
 from pydhn.utilities import safe_divide
 
 
@@ -37,23 +38,88 @@ class Consumer(Component):
     a mass flow setpoint is specified.
     """
 
+    @docstring_parameters(
+        CONTROL_TYPE_CONS=CONTROL_TYPE_CONS,
+        D_HX=D_HX,
+        MASS_FLOW_MIN_CONS=MASS_FLOW_MIN_CONS,
+        HEAT_DEMAND=HEAT_DEMAND,
+        DT_DESIGN=DT_DESIGN,
+        SETPOINT_TYPE_HX_CONS=SETPOINT_TYPE_HX_CONS,
+        SETPOINT_TYPE_HX_CONS_REV=SETPOINT_TYPE_HX_CONS_REV,
+        SETPOINT_VALUE_HX_CONS=SETPOINT_VALUE_HX_CONS,
+        SETPOINT_VALUE_HX_CONS_REV=SETPOINT_VALUE_HX_CONS_REV,
+        POWER_MAX_HX=POWER_MAX_HX,
+        T_OUT_MIN=T_OUT_MIN,
+        SETPOINT_TYPE_HYD_CONS=SETPOINT_TYPE_HYD_CONS,
+        SETPOINT_VALUE_HYD_CONS=SETPOINT_VALUE_HYD_CONS,
+    )
     def __init__(
         self,
-        control_type=CONTROL_TYPE_CONS,
-        diameter=D_HX,
-        mass_flow_min=MASS_FLOW_MIN_CONS,
-        heat_demand=HEAT_DEMAND,
-        design_delta_t=DT_DESIGN,
-        setpoint_type_hx=SETPOINT_TYPE_HX_CONS,
-        setpoint_type_hx_rev=SETPOINT_TYPE_HX_CONS_REV,
-        setpoint_value_hx=SETPOINT_VALUE_HX_CONS,
-        setpoint_value_hx_rev=SETPOINT_VALUE_HX_CONS_REV,
-        power_max_hx=POWER_MAX_HX,
-        t_out_min_hx=T_OUT_MIN,
-        setpoint_type_hyd=SETPOINT_TYPE_HYD_CONS,
-        setpoint_value_hyd=SETPOINT_VALUE_HYD_CONS,
+        control_type: str = CONTROL_TYPE_CONS,
+        diameter: float = D_HX,
+        mass_flow_min: float = MASS_FLOW_MIN_CONS,
+        heat_demand: float = HEAT_DEMAND,
+        design_delta_t: float = DT_DESIGN,
+        setpoint_type_hx: str = SETPOINT_TYPE_HX_CONS,
+        setpoint_type_hx_rev: str = SETPOINT_TYPE_HX_CONS_REV,
+        setpoint_value_hx: float = SETPOINT_VALUE_HX_CONS,
+        setpoint_value_hx_rev: float = SETPOINT_VALUE_HX_CONS_REV,
+        power_max_hx: float = POWER_MAX_HX,
+        t_out_min_hx: float = T_OUT_MIN,
+        setpoint_type_hyd: str = SETPOINT_TYPE_HYD_CONS,
+        setpoint_value_hyd: float = SETPOINT_VALUE_HYD_CONS,
         **kwargs
-    ):
+    ) -> None:
+        """
+        Init Consumer
+
+        Parameters
+        ----------
+        control_type : str, optional
+            Control type to define how mass flow is imposed. The default is
+            {CONTROL_TYPE_CONS}.
+        diameter : float, optional
+            Diameter (m). Unused. The default is {D_HX}.
+        mass_flow_min : float, optional
+            Minimum mass flow (kg/s) allowed. The default is
+            {MASS_FLOW_MIN_CONS}.
+        heat_demand : float, optional
+            Heat demand (Wh) used to compute the hydraulic setpoint in case the
+            'energy' control type is used. The default is {HEAT_DEMAND}.
+        design_delta_t : float, optional
+            Design temperature difference (K) of the heat exchanger used to
+            compute the hydraulic setpoint in case the 'energy' control type is
+            used. The default is {DT_DESIGN}.
+        setpoint_type_hx : str, optional
+            Type of thermal setpoint to use. The default is
+            {SETPOINT_TYPE_HX_CONS}.
+        setpoint_type_hx_rev : str, optional
+            Type of thermal setpoint to use in case of reverse flow. The
+            default is {SETPOINT_TYPE_HX_CONS_REV}.
+        setpoint_value_hx : float, optional
+            Value of the thermal setpoint. The default is
+            {SETPOINT_VALUE_HX_CONS}.
+        setpoint_value_hx_rev : float, optional
+            Value of the thermal setpoint in case of reverse flow. The default
+            is {SETPOINT_VALUE_HX_CONS_REV}.
+        power_max_hx : float, optional
+            Maximum energy (Wh) that the consumer can exchange. The default is
+            {POWER_MAX_HX}.
+        t_out_min_hx : float, optional
+            Minimum outlet temperature (°C) of the consumer. The default is
+            {T_OUT_MIN}.
+        setpoint_type_hyd : str, optional
+            Hydraulic setpoint type. The default is {SETPOINT_TYPE_HYD_CONS}.
+        setpoint_value_hyd : float, optional
+            Hydraulic setpoint value. The default is {SETPOINT_VALUE_HYD_CONS}.
+        **kwargs
+            Arbitrary keyword arguments.
+
+        Returns
+        -------
+        None
+
+        """
         super(Consumer, self).__init__()
 
         # Component class and type

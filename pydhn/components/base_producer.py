@@ -21,6 +21,7 @@ from pydhn.default_values import SETPOINT_VALUE_HX_PROD_REV
 from pydhn.default_values import SETPOINT_VALUE_HYD_PROD
 from pydhn.default_values import STATIC_PRESSURE
 from pydhn.default_values import T_OUT_MIN
+from pydhn.utilities import docstring_parameters
 
 
 class Producer(Component):
@@ -29,19 +30,68 @@ class Producer(Component):
     a mass flow or delta_p setpoint is specified.
     """
 
+    @docstring_parameters(
+        STATIC_PRESSURE=STATIC_PRESSURE,
+        SETPOINT_TYPE_HX_PROD=SETPOINT_TYPE_HX_PROD,
+        SETPOINT_TYPE_HX_PROD_REV=SETPOINT_TYPE_HX_PROD_REV,
+        SETPOINT_VALUE_HX_PROD=SETPOINT_VALUE_HX_PROD,
+        SETPOINT_VALUE_HX_PROD_REV=SETPOINT_VALUE_HX_PROD_REV,
+        POWER_MAX_HX=POWER_MAX_HX,
+        T_OUT_MIN=T_OUT_MIN,
+        SETPOINT_TYPE_HYD_PROD=SETPOINT_TYPE_HYD_PROD,
+        SETPOINT_VALUE_HYD_PROD=SETPOINT_VALUE_HYD_PROD,
+    )
     def __init__(
         self,
-        static_pressure=STATIC_PRESSURE,
-        setpoint_type_hx=SETPOINT_TYPE_HX_PROD,
-        setpoint_type_hx_rev=SETPOINT_TYPE_HX_PROD_REV,
-        setpoint_value_hx=SETPOINT_VALUE_HX_PROD,
-        setpoint_value_hx_rev=SETPOINT_VALUE_HX_PROD_REV,
-        power_max_hx=POWER_MAX_HX,
-        t_out_min_hx=T_OUT_MIN,
-        setpoint_type_hyd=SETPOINT_TYPE_HYD_PROD,
-        setpoint_value_hyd=SETPOINT_VALUE_HYD_PROD,
+        static_pressure: float = STATIC_PRESSURE,
+        setpoint_type_hx: str = SETPOINT_TYPE_HX_PROD,
+        setpoint_type_hx_rev: str = SETPOINT_TYPE_HX_PROD_REV,
+        setpoint_value_hx: float = SETPOINT_VALUE_HX_PROD,
+        setpoint_value_hx_rev: float = SETPOINT_VALUE_HX_PROD_REV,
+        power_max_hx: float = POWER_MAX_HX,
+        t_out_min_hx: float = T_OUT_MIN,
+        setpoint_type_hyd: str = SETPOINT_TYPE_HYD_PROD,
+        setpoint_value_hyd: float = SETPOINT_VALUE_HYD_PROD,
         **kwargs
-    ):
+    ) -> None:
+        """
+        Init Producer
+
+        Parameters
+        ----------
+        static_pressure : float, optional
+            Pressure (Pa) at the outlet node of the producer. The default is
+            {STATIC_PRESSURE}.
+        setpoint_type_hx : str, optional
+            Type of thermal setpoint to use. The default is
+            {SETPOINT_TYPE_HX_PROD}.
+        setpoint_type_hx_rev : str, optional
+            Type of thermal setpoint to use in case of reverse flow. The
+            default is {SETPOINT_TYPE_HX_PROD_REV}.
+        setpoint_value_hx : float, optional
+            Value of the thermal setpoint. The default is
+            {SETPOINT_VALUE_HX_PROD}.
+        setpoint_value_hx_rev : float, optional
+            Value of the thermal setpoint in case of reverse flow. The default
+            is {SETPOINT_VALUE_HX_PROD_REV}.
+        power_max_hx : float, optional
+            Maximum energy (Wh) that the producer can output. The default is
+            {POWER_MAX_HX}.
+        t_out_min_hx : float, optional
+            Minimum outlet temperature (°C) of the producer. The default is
+            {T_OUT_MIN}.
+        setpoint_type_hyd : str, optional
+            Hydraulic setpoint type. The default is {SETPOINT_TYPE_HYD_PROD}.
+        setpoint_value_hyd : float, optional
+            Hydraulic setpoint value. The default is {SETPOINT_VALUE_HYD_PROD}.
+        **kwargs
+            Additional keyord arguments.
+
+        Returns
+        -------
+        None
+
+        """
         super(Producer, self).__init__()
 
         # Component class and type

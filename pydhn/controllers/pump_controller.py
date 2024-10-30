@@ -18,28 +18,32 @@ from pydhn.utilities.graph_utilities import find_path_with_edge
 
 
 class PumpController(Controller):
-    """
+    r"""
     Class for PumpController. The goal of the PumpController is to adjust the
     lift of controlled pumps such that the given setpoints are met. For each
-    controlled pump, a pressure setpoint in a target node must be specified.
+    controlled pump, a pressure setpoint in a target node must be specified
+    and a path must exist that starts at the network pressure boundary node,
+    passes through the pump, and reaches the target node where the pressure
+    setpoint is enforced.
+
+    The controller then tries to minimize a function :math:`f(L)` such that:
+
+    .. math::
+        f(L) = p_s - (p_0 - \Delta p(L))
+
+    where:
+
+        * :math:`p_s` is the pressure setpoint (Pa)
+        * :math:`p_0` is the pressure (Pa) at the pressure boundary node
+        * :math:`L` is the pressure lift (Pa) of the pump
+        * :math:`\Delta p(L)` is the sum of edge pressure differences (Pa) in
+          the path
+
     """
 
     def __init__(self, net, edges, targets, setpoints, **kwargs):
         """
-        Inits PumpController and check the correctness of inputs. For each
-        pump, a path must exist that starts at the network pressure boundary
-        node, passes through the pump, and reaches the target node where the
-        pressure setpoint is enforced.
-
-        The controller then tries to minimize a function f(L) such that:
-
-            f(L) = p_s - (p_0 - \Delta p(L))
-
-        where:
-            p_s is the pressure setpoint
-            p_0 is the pressure at the pressure boundary node
-            L is the pressure lift of the pump
-            \Delta p(L) is the sum of edge pressure differences in the path
+        Inits PumpController and check the correctness of inputs.
 
         Parameters
         ----------
@@ -191,7 +195,7 @@ class PumpController(Controller):
         return der
 
     def compute_residuals(self, delta_p):
-        """
+        r"""
         Computes f(L) using the given values of \Delta p.
 
         Parameters

@@ -57,21 +57,21 @@ class Pipe(Component):
     )
     def __init__(
         self,
-        diameter=D_PIPES,
-        depth=DEPTH,
-        k_insulation=K_INSULATION,
-        insulation_thickness=INSULATION_THICKNESS,
-        length=L_PIPES,
-        roughness=ROUGHNESS,
-        k_internal_pipe=K_INTERNAL_PIPE,
-        internal_pipe_thickness=INTERNAL_PIPE_THICKNESS,
-        k_casing=K_CASING,
-        casing_thickness=CASING_THICKNESS,
-        discretization=DISCRETIZATION,
-        dz=0.0,
-        line=None,
+        diameter: float = D_PIPES,
+        depth: float = DEPTH,
+        k_insulation: float = K_INSULATION,
+        insulation_thickness: float = INSULATION_THICKNESS,
+        length: float = L_PIPES,
+        roughness: float = ROUGHNESS,
+        k_internal_pipe: float = K_INTERNAL_PIPE,
+        internal_pipe_thickness: float = INTERNAL_PIPE_THICKNESS,
+        k_casing: float = K_CASING,
+        casing_thickness: float = CASING_THICKNESS,
+        discretization: float = DISCRETIZATION,
+        dz: float = 0.0,
+        line: str = None,
         **kwargs
-    ):
+    ) -> None:
         """
         Inits Pipe.
 

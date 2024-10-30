@@ -8,8 +8,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 
-"""Steady-state thermal simulation of the network"""
+"""Generic functions needed for the thermal simulations."""
 
+# Avoid circular import for type hints
+from typing import TYPE_CHECKING
 from warnings import warn
 
 import networkx as nx
@@ -18,6 +20,11 @@ import numpy as np
 from pydhn.classes import Results
 from pydhn.solving.temperature import compute_edge_temperatures
 from pydhn.utilities import np_cache
+
+if TYPE_CHECKING:
+    from pydhn import Fluid
+    from pydhn import Network
+    from pydhn import Soil
 
 
 def _fill_zero_mass_flow(net, edges, nodes, mass_flow, mass_flow_min=1e-16):
@@ -101,22 +108,62 @@ def _prepare_arrays(E, mass_flow):
 
 
 def solve_thermal(
-    net,
-    fluid,
-    soil,
-    error_threshold=1e-6,
-    max_iters=100,
-    damping_factor=1,
-    decreasing=False,
-    adaptive=False,
-    verbose=1,
-    mass_flow_min=1e-16,
-    ts_id=None,
+    net: "Network",
+    fluid: "Fluid",
+    soil: "Soil",
+    error_threshold: float = 1e-6,
+    max_iters: int = 100,
+    damping_factor: float = 1,
+    decreasing: bool = False,
+    adaptive: bool = False,
+    verbose: int = 1,
+    mass_flow_min: float = 1e-16,
+    ts_id: int = None,
     **kwargs,
-):
+) -> dict:
     """
-    Computes the node temperatures and edge heat losses, temperature losses and
-    average temperatures for a Network object.
+    Runs a thermal simulation of the Network object. The method is based on
+    solving the heat balance at each node of the network using the
+    Newton-Raphson method.
+
+    The function returns a dictionary with the results of the simulation and
+    details on the convergence of each Newton step.
+    Temperatures and heat losses of the input Network are also modified in
+    place with the results of the simulation.
+
+    Parameters
+    ----------
+    net : Network
+        Network to be simulated.
+    fluid : Fluid
+        Working fluid to be used.
+    soil : Soil
+        Soil object to be used in the simulation.
+    error_threshold : float, optional
+        Error threshold for the solver in Wh. The default is 1e-6.
+    max_iters : int, optional
+        Maximum number of iterations for the solver. The default is 100.
+    damping_factor : float, optional
+        Damping factor for the Newton iterations. The default is 1.
+    decreasing : bool, optional
+        Whether to reduce the damping factor at each Newton iteration. The
+        default is False.
+    adaptive : bool, optional
+        Whether to reduce the damping factor on plateau. The default is True.
+    verbose : int, optional
+        Controls the verbosity of the simulation. The default is 1.
+    mass_flow_min : float, optional
+        Mass flow (kg/s) used to approximate 0. The default is 1e-16.
+    ts_id : int, optional
+        Specifies the ID of the current time-step. The default is None.
+    **kwargs
+        Arbitrary keyword arguments.
+
+    Returns
+    -------
+    dict
+        Dictionary with the simulation results.
+
     """
     # Get mass flow and temperatures
     edges, mass_flow = net.edges("mass_flow")

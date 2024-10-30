@@ -1,5 +1,24 @@
 # Change Log
 
+## 0.1.3
+
+Released on October 30, 2024
+
+### Added
+
+* Added documentation files in /docs
+* Added a GitHub action to deploy the documentation on Pages
+
+### Changed
+
+* Improved docstrings and type hints
+* docstring_parameters now ignores curly braces outside the Parameter section of a docstring
+* Modified .pre-commit-config.yaml so that isort ignores init files to avoid circular import issues 
+* Added dependencies needed for docs to pyproject.toml 
+
+### Removed
+
+
 ## 0.1.2
 
 Released on March 19, 2024
@@ -11,6 +30,7 @@ Released on March 19, 2024
 * Fixed a bug where the wrong vector function was called when using LagrangianPipe
 
 ### Removed
+
 
 ## 0.1.1
 

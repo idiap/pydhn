@@ -10,4 +10,5 @@
 from pydhn.classes import Network
 from pydhn.fluids.fluids import *
 from pydhn.soils import *
-from pydhn.solving import solve_hydraulics, solve_thermal
+from pydhn.solving import solve_hydraulics
+from pydhn.solving import solve_thermal

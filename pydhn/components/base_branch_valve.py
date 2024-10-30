@@ -14,14 +14,46 @@
 from pydhn.components import Component
 from pydhn.components.base_components_hydraulics import compute_dp_valve
 from pydhn.default_values import KV
+from pydhn.utilities import docstring_parameters
 
 
 class BranchValve(Component):
-    """
-    Class for base BranchValve component
+    r"""
+    Class for base BranchValve component. It implements a valve controlled by
+    the flow coefficient :math:`K_v`:
+
+    .. math::
+
+        \Delta p = \frac{1.296 \cdot 10^9}{\rho K_v^2} \| \dot m \| \dot m
+
+    The model assumes no temperature changes in the fluid across the valve.
+
     """
 
-    def __init__(self, kv=KV, dz=0.0, line=None, **kwargs):
+    @docstring_parameters(KV=KV)
+    def __init__(
+        self, kv: float = KV, dz: float = 0.0, line: str = None, **kwargs
+    ) -> None:
+        """
+        Init BranchValve
+
+        Parameters
+        ----------
+        kv : float, optional
+            Flow coefficient :math:`K_v`. The default is {KV}.
+        dz : float, optional
+            Altitude difference (m) between the two ends of the component. The
+            default is 0.0.
+        line : str, optional
+            Network line in which the component is placed. The default is None.
+        **kwargs
+            Arbitrary keyword arguments.
+
+        Returns
+        -------
+        None
+
+        """
         super(BranchValve, self).__init__()
 
         # Component class and type

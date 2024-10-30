@@ -18,11 +18,10 @@ from pydhn.default_values import RHO_FLUID
 from pydhn.fluids.dimensionless_numbers import compute_reynolds
 from pydhn.utilities import safe_divide
 
-"""
-Functions are divided by element type. For each element, the upper section
-contains generic functions that work with Numpy arrays. Functions that need a
-Network object and a Fluid object are instead in the second section.
-"""
+# Functions are divided by element type. For each element, the upper section
+# contains generic functions that work with Numpy arrays. Functions that need a
+# Network object and a Fluid object are instead in the second section.
+
 
 # --------                         Base pipe                         -------- #
 

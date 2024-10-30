@@ -10,6 +10,7 @@
 
 """Functions to compute pressure and its derivatives for citysim components"""
 
+from typing import Union
 from warnings import warn
 
 import numpy as np
@@ -22,7 +23,8 @@ from pydhn.default_values import KV
 from pydhn.default_values import RHO_FLUID
 from pydhn.default_values import RPM
 from pydhn.default_values import RPM_MAX
-from pydhn.solving.dimensionless_numbers import compute_reynolds
+from pydhn.fluids.dimensionless_numbers import compute_reynolds
+from pydhn.utilities import docstring_parameters
 from pydhn.utilities import isiter
 from pydhn.utilities import safe_divide
 
@@ -35,22 +37,64 @@ Network object and a Fluid object are instead in the second section.
 # --------                     Citysim consumer                      -------- #
 
 
-def compute_dp_valve_cs(mdot, kv=KV, rho_fluid=RHO_FLUID):
-    """Computes the differential pressure in valves."""
+@docstring_parameters(KV=KV, RHO_FLUID=RHO_FLUID)
+def compute_dp_valve_cs(
+    mdot: Union[float, np.ndarray],
+    kv: Union[float, np.ndarray] = KV,
+    rho_fluid: Union[float, np.ndarray] = RHO_FLUID,
+) -> Union[float, np.ndarray]:
+    r"""
+    Computes the differential pressure in valves according to the formula:
+
+    .. math::
+
+        \Delta p = \frac{1.296 \cdot 10^9}{\rho K_v^2} \| \dot m \| \dot m
+
+    Parameters
+    ----------
+    mdot : float | ndarray
+        Mass flow in kg/s.
+    kv : float | ndarray, optional
+        Flow coefficient :math:`K_v`. The default is {KV}.
+    rho_fluid : float | ndarray, optional
+        Density (kg/m^3) of the fluid. The default is {RHO_FLUID}.
+
+    Returns
+    -------
+    float | ndarray
+        Pressure difference (Pa).
+
+    """
     zeta = safe_divide(1.296e9, rho_fluid * kv**2)
     return zeta * np.abs(mdot) * mdot
 
 
-def compute_dp_valve_cs_der(mdot, kv=KV, rho_fluid=RHO_FLUID):
+@docstring_parameters(KV=KV, RHO_FLUID=RHO_FLUID)
+def compute_dp_valve_cs_der(
+    mdot: Union[float, np.ndarray],
+    kv: Union[float, np.ndarray] = KV,
+    rho_fluid: Union[float, np.ndarray] = RHO_FLUID,
+) -> Union[float, np.ndarray]:
     """
-    Returns the derivative of the function that computes the singular pressure
-    losses in valves.
+    Returns the derivative of
+    :func:`~pydhn.components.citysim_components_hydraulics.compute_dp_valve_cs`
+    .
+
 
     Parameters
     ----------
-    mdot : mass flow [kg/s]
-    kv :
-    rho_fluid :
+    mdot : float | ndarray
+        Mass flow in kg/s.
+    kv : float | ndarray, optional
+        Flow coefficient :math:`K_v`. The default is {KV}.
+    rho_fluid : float | ndarray, optional
+        Density (kg/m^3) of the fluid. The default is {RHO_FLUID}.
+
+    Returns
+    -------
+    float | ndarray
+        Value of the derivative.
+
     """
     zeta = safe_divide(1.296e9, rho_fluid * kv**2)
     return 2.0 * zeta * np.abs(mdot)
@@ -59,13 +103,49 @@ def compute_dp_valve_cs_der(mdot, kv=KV, rho_fluid=RHO_FLUID):
 # --------                     Citysim producer                      -------- #
 
 
-def compute_dp_pump_cs(mdot, rpm=RPM, rpm_max=RPM_MAX, a0=A0, a1=A1, a2=A2):
-    """
-    Computes the differential pressure in pumps using the following equations:
+@docstring_parameters(RPM=RPM, RPM_MAX=RPM_MAX, A0=A0, A1=A1, A2=A2)
+def compute_dp_pump_cs(
+    mdot: Union[float, np.ndarray],
+    rpm: Union[float, np.ndarray] = RPM,
+    rpm_max: Union[float, np.ndarray] = RPM_MAX,
+    a0: Union[float, np.ndarray] = A0,
+    a1: Union[float, np.ndarray] = A1,
+    a2: Union[float, np.ndarray] = A2,
+) -> Union[float, np.ndarray]:
+    r"""
+    Computes the differential pressure in pumps using the following equation:
 
-        k0 = a0*rpm**2/rpm_max**2
-        k1 = a1*rpm/rpm_max
-        k2 = a2
+    .. math::
+        \Delta p = -\left( a_0 \frac{n^2}{n_0^2} + a_1 \frac{n}{n_0} + a_2 \
+                          \right),  \; \text{if } \dot m \geq 0
+
+    .. math::
+        \Delta p = - a_0 \frac{n^2}{n_0^2}, \; \text{otherwise}
+
+
+
+    Parameters
+    ----------
+    mdot : float | ndarray
+        Mass flow (kg/s).
+    rpm : float | ndarray, optional
+        Speed in revolutions per minute :math:`n`: (1/min). The default is
+        {RPM}.
+    rpm_max : float | ndarray, optional
+        Maximum speed in revolutions per minute :math:`n_0`: (1/min). The
+        default is {RPM_MAX}.
+    a0 : float | ndarray, optional
+        First pump parameter. The default is {A0}.
+    a1 : float | ndarray, optional
+        Second pump parameter. The default is {A1}.
+    a2 : float | ndarray, optional
+        Third pump parameter. The default is {A2}.
+
+    Returns
+    -------
+    float | ndarray
+        Pressure difference (Pa).
+
     """
     k0, k1, k2 = compute_pump_ks_from_params(
         rpm=rpm, rpm_max=rpm_max, a0=a0, a1=a1, a2=a2
@@ -75,16 +155,43 @@ def compute_dp_pump_cs(mdot, rpm=RPM, rpm_max=RPM_MAX, a0=A0, a1=A1, a2=A2):
     return np.where(mdot < 0, -k0 + k2 * mdot**2 * 1e5, dp)
 
 
-def compute_dp_pump_cs_der(mdot, rpm=RPM, rpm_max=RPM_MAX, a0=A0, a1=A1, a2=A2):
+@docstring_parameters(RPM=RPM, RPM_MAX=RPM_MAX, A0=A0, A1=A1, A2=A2)
+def compute_dp_pump_cs_der(
+    mdot: Union[float, np.ndarray[float]],
+    rpm: Union[float, np.ndarray] = RPM,
+    rpm_max: Union[float, np.ndarray] = RPM_MAX,
+    a0: Union[float, np.ndarray] = A0,
+    a1: Union[float, np.ndarray] = A1,
+    a2: Union[float, np.ndarray] = A2,
+) -> Union[float, np.ndarray]:
     """
-    Returns the derivative of the function that computes the pressure lifts
-    in pumps.
+    Returns the derivative of
+    :func:`~pydhn.components.citysim_components_hydraulics.compute_dp_pump_cs`.
 
     Parameters
     ----------
-    mdot : mass flow [kg/s]
-    #TODO
+    mdot : float | ndarray
+        Mass flow (kg/s).
+    rpm : float | ndarray, optional
+        Speed in revolutions per minute :math:`n`: (1/min). The default is
+        {RPM}.
+    rpm_max : float | ndarray, optional
+        Maximum speed in revolutions per minute :math:`n_0`: (1/min). The
+        default is {RPM_MAX}.
+    a0 : float | ndarray, optional
+        First pump parameter. The default is {A0}.
+    a1 : float | ndarray, optional
+        Second pump parameter. The default is {A1}.
+    a2 : float | ndarray, optional
+        Third pump parameter. The default is {A2}.
+
+    Returns
+    -------
+    float | ndarray
+        Value of the derivative.
+
     """
+
     k0, k1, k2 = compute_pump_ks_from_params(
         rpm=rpm, rpm_max=rpm_max, a0=a0, a1=a1, a2=a2
     )

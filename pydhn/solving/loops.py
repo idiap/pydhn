@@ -8,9 +8,11 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 
-"""Classes for controllers"""
+"""Classes for loops, which control the simulation workflow"""
 
 
+# Avoid circular import for type hints
+from typing import TYPE_CHECKING
 from warnings import warn
 
 import numpy as np
@@ -18,6 +20,13 @@ import numpy as np
 from pydhn.classes import Results
 from pydhn.solving import solve_hydraulics
 from pydhn.solving import solve_thermal
+
+if TYPE_CHECKING:
+    from pydhn import Fluid
+    from pydhn import Network
+    from pydhn import Soil
+    from pydhn.classes import Results
+    from pydhn.controllers import Controller
 
 # Abstract class ##############################################################
 
@@ -42,7 +51,7 @@ class AbstractLoop:
         return self._current_phase
 
     @current_phase.setter
-    def current_phase(self, phase):
+    def current_phase(self, phase: str):
         raise AttributeError("Can't set attribute directly")
 
     # Phases
@@ -56,18 +65,18 @@ class AbstractLoop:
         self._set_current_phase("start")
 
     # Execution
-    def _set_current_phase(self, phase):
+    def _set_current_phase(self, phase: str):
         if phase not in self._phases.keys():
             raise AttributeError(f"""Phase "{phase}" does not exist""")
         self._current_phase = phase
 
-    def _execute_phase(self, phase, *args, **kwargs):
+    def _execute_phase(self, phase: str, *args, **kwargs):
         if phase not in self._phases.keys():
             raise AttributeError(f"""Phase "{phase}" does not exist""")
         foo = self._phases[phase]
         foo(*args, **kwargs)
 
-    def execute(self, *args, **kwargs):
+    def execute(self, *args, **kwargs) -> "Results":
         phase = "start"
         while phase != "end":
             phase = self.current_phase
@@ -84,8 +93,32 @@ class SimpleStep(AbstractLoop):
     """
 
     def __init__(
-        self, with_thermal=True, hydraulic_sim_kwargs={}, thermal_sim_kwargs={}
-    ):
+        self,
+        with_thermal: bool = True,
+        hydraulic_sim_kwargs: dict = {},
+        thermal_sim_kwargs: dict = {},
+    ) -> None:
+        """
+        Init the SimpleStep class
+
+        Parameters
+        ----------
+        with_thermal : bool, optional
+            Whether to carry out the thermal simulation. The default is True.
+        hydraulic_sim_kwargs : dict, optional
+            Keyword arguments for
+            :func:`~pydhn.solving.hydraulic_simulation.solve_hydraulics`. The
+            default is {}.
+        thermal_sim_kwargs : dict, optional
+            Keyword arguments for
+            :func:`~pydhn.solving.thermal_simulation.solve_thermal`. The
+            default is {}.
+
+        Returns
+        -------
+        None
+
+        """
         super(SimpleStep, self).__init__()
 
         self._with_thermal = with_thermal
@@ -142,8 +175,42 @@ class Scheduler(AbstractLoop):
     """
 
     def __init__(
-        self, base_loop=None, with_thermal=True, schedules={}, ts_start=0, steps=1
-    ):
+        self,
+        base_loop: AbstractLoop = None,
+        with_thermal: bool = True,
+        schedules: dict = {},
+        ts_start: int = 0,
+        steps: int = 1,
+    ) -> None:
+        """
+        Init the Scheduler class
+
+        Parameters
+        ----------
+        base_loop : AbstractLoop, optional
+            The base loop object to use during the simulation phase. If not
+            specified, a :class:`~pydhn.solving.loops.SimpleStep` object will
+            be instantiated. The default is None.
+        with_thermal : bool, optional
+            Whether to carry out the thermal simulation. This argument is
+            ignored if a base loop is given. The default is True.
+        schedules : dict, optional
+            A dictionary containing the schedules to be updated during the
+            multi-step simulation. The keys must be strings with the name of
+            the attribute to be changed. The values should be Pandas dataframes
+            where the index values are the time-step IDs and the column names
+            are the name of the edges containing the components for which the
+            attribute should be changed. The default is {}.
+        ts_start : int, optional
+            Starting time-step ID. The default is 0.
+        steps : int, optional
+            Maximum number of time-steps. The default is 1.
+
+        Returns
+        -------
+        None
+
+        """
         super(Scheduler, self).__init__()
 
         self.base_loop = base_loop
