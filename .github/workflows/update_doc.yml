@@ -3,7 +3,7 @@ name: update_doc
 # execute this workflow automatically on push to master
 on:
   push:
-    branches: [ documentation ]
+    branches: [ main ]
  
 jobs:
  

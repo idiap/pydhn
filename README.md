@@ -20,7 +20,7 @@ PyDHN is currently in a beta version, and as such, it may undergo frequent and s
 
 ## Documentation
 
-The documentation for this beta version is currently being written and is not yet available. In the meantime, the main features are explained in the provided examples (`examples/`).
+The documentation is available [here](https://idiap.github.io/pydhn/). In addition, the main features are explained in the provided examples (`examples/`).
 
 ## License
 
