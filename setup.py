@@ -16,7 +16,7 @@ from setuptools import setup
 
 setup(
     name="pydhn",
-    version="0.1.2",
+    version="0.1.3",
     description="A library for the simulation of district heating networks.",
     url="https://www.github.com/idiap/pydhn",
     author="Roberto Boghetti, Giuseppe Peronato",
