@@ -1,0 +1,13 @@
+{%- if show_headings %}
+{{- basename.split(".")[-1] | e | heading }}
+{% endif -%}
+
+{%- set parts = basename.split('.') %}
+{%- set library_name = parts[0] %}
+{%- set module_name = parts[1] if parts | length > 1 else '' %}
+{%- set submodules = parts[2:] %}
+
+.. automodule:: {{ qualname }}
+{%- for option in automodule_options %}
+   :{{ option }}:
+{%- endfor %}
