@@ -1,0 +1,8 @@
+base\_pipe
+==========
+
+
+.. automodule:: pydhn.components.base_pipe
+   :members:
+   :undoc-members:
+   :show-inheritance:

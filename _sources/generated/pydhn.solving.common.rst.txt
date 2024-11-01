@@ -1,0 +1,8 @@
+common
+======
+
+
+.. automodule:: pydhn.solving.common
+   :members:
+   :undoc-members:
+   :show-inheritance:

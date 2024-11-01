@@ -1,0 +1,25 @@
+components
+==========
+
+.. automodule:: pydhn.components
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+.. toctree::
+   :maxdepth: 4
+
+   pydhn.components.abstract_component
+   pydhn.components.base_branch_valve
+   pydhn.components.base_bypass_pipe
+   pydhn.components.base_components_hydraulics
+   pydhn.components.base_components_thermal
+   pydhn.components.base_consumer
+   pydhn.components.base_pipe
+   pydhn.components.base_producer
+   pydhn.components.branch_pump
+   pydhn.components.citysim_components_hydraulics
+   pydhn.components.lagrangian_pipe
+   pydhn.components.vector_functions

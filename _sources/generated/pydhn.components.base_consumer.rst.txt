@@ -1,0 +1,8 @@
+base\_consumer
+==============
+
+
+.. automodule:: pydhn.components.base_consumer
+   :members:
+   :undoc-members:
+   :show-inheritance:

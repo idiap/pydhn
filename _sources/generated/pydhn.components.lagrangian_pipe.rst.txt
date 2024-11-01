@@ -1,0 +1,8 @@
+lagrangian\_pipe
+================
+
+
+.. automodule:: pydhn.components.lagrangian_pipe
+   :members:
+   :undoc-members:
+   :show-inheritance:

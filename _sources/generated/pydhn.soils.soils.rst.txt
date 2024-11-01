@@ -1,0 +1,8 @@
+soils
+=====
+
+
+.. automodule:: pydhn.soils.soils
+   :members:
+   :undoc-members:
+   :show-inheritance:
