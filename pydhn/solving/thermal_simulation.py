@@ -97,14 +97,14 @@ def _prepare_arrays(E, mass_flow):
     edge_mask = np.where(np.abs(E).sum(axis=0) != 0)[0]
     E = E[np.ix_(node_mask, edge_mask)]
 
-    E_in = (E + np.abs(E)) / 2
+    E_out = (np.abs(E)-E) / 2
     rows = np.argmax(E, axis=0)
     columns = np.argmin(E, axis=0)
 
-    # Compute total inlet mass flow of each node
-    mass_flow_in = E_in @ np.abs(mass_flow[edge_mask])
+    # Compute total outlet mass flow of each node
+    mass_flow_out = E_out @ np.abs(mass_flow[edge_mask])
 
-    return E, E_in, edge_mask, node_mask, rows, columns, mass_flow_in
+    return E, E_out, edge_mask, node_mask, rows, columns, mass_flow_out
 
 
 def solve_thermal(
@@ -181,11 +181,11 @@ def solve_thermal(
 
     # Initialize matrices of the network graph oriented as the mass flow:
     #   - E -> Incidence matrix , without 0 mass flow elements
-    #   - E_in -> Incidence matrix of inlet edges only built from E
+    #   - E_out -> Incidence matrix of outlet edges only built from E
     E = net.incidence_matrix
 
     arrays = _prepare_arrays(E, mass_flow)
-    E, E_in, edge_mask, node_mask, rows, columns, mass_flow_in = arrays
+    E, E_out, edge_mask, node_mask, rows, columns, mass_flow_out = arrays
 
     dim = len(node_mask)
 
@@ -206,15 +206,15 @@ def solve_thermal(
 
         jac = np.zeros((dim, dim))
         for n, (i, j) in enumerate(zip(rows, columns)):
-            jac[i][j] = t_out_der[edge_mask][n] * np.abs(mass_flow)[edge_mask][n]
+            jac[i][j] = -t_out_der[edge_mask][n] * np.abs(mass_flow)[edge_mask][n]
 
-        jac -= np.diag(mass_flow_in)
+        jac += np.diag(mass_flow_out)
 
         errors = np.zeros((dim, dim))
         for n, (i, j) in enumerate(zip(rows, columns)):
-            errors[i][j] = t_out[edge_mask][n] * np.abs(mass_flow)[edge_mask][n]
+            errors[i][j] = -t_out[edge_mask][n] * np.abs(mass_flow)[edge_mask][n]
 
-        errors -= np.diag(mass_flow_in * t_nodes[node_mask])
+        errors += np.diag(mass_flow_out * t_nodes[node_mask])
         errors = errors.sum(axis=1)
 
         error = np.max(np.abs(errors))
