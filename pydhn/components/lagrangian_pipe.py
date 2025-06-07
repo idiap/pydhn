@@ -456,8 +456,8 @@ class LagrangianPipe(Pipe):
 
         # Compute losses
         delta_ts = init_temperatures - new_temps
-        q_dots = safe_divide(self._volumes * cp_fluid * delta_ts * rho_fluid, stepsize)
-        q_dot = np.sum(q_dots)
+        delta_qs = safe_divide(self._volumes * cp_fluid * delta_ts * rho_fluid, 3600.)
+        delta_q = np.sum(delta_qs)
 
         # Displace volumes
         if mdot != 0:
@@ -523,4 +523,4 @@ class LagrangianPipe(Pipe):
         self._temperatures = staying_temperatures
         self._wall_temperatures = new_wall_temps
 
-        return t_in, t_out, t_avg, 0.0, q_dot
+        return t_in, t_out, t_avg, 0.0, delta_q

@@ -31,7 +31,7 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 fluid = Water()
 soil = Soil(k=0)
 
-Plot = True
+Plot = False
 
 length = 60.33
 outer_diameter = 0.022
@@ -72,7 +72,7 @@ def run_pipe_test(verbose=False):
         msg += """Using local copy instead."""
         warn(msg)
         data_case_1 = pd.read_csv(
-            os.path.join(DIR, "SimulationInputs_Case1.csv"), index_col=None, skiprows=1
+            os.path.join(DIR, "SimulationInputs_Case1.csv"), index_col=0, skiprows=0
         )
 
     data_case_1.columns = [s.strip(" ") for s in data_case_1.columns]
@@ -98,7 +98,7 @@ def run_pipe_test(verbose=False):
         msg = """"Remote file "SimulationResults.xlsx" not reachable. """
         msg += """Using local copy instead."""
         warn(msg)
-        results = pd.read_csv(os.path.join(DIR, "Results_Case1.csv"), index_col=None)
+        results = pd.read_csv(os.path.join(DIR, "Results_Case1.csv"), index_col=0)
 
     results.columns = [s.strip(" ") for s in results.columns]
 

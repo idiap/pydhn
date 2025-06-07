@@ -52,6 +52,7 @@ class Producer(Component):
         t_out_min_hx: float = T_OUT_MIN,
         setpoint_type_hyd: str = SETPOINT_TYPE_HYD_PROD,
         setpoint_value_hyd: float = SETPOINT_VALUE_HYD_PROD,
+        stepsize: float = 3600.,
         **kwargs
     ) -> None:
         """
@@ -75,7 +76,7 @@ class Producer(Component):
             Value of the thermal setpoint in case of reverse flow. The default
             is {SETPOINT_VALUE_HX_PROD_REV}.
         power_max_hx : float, optional
-            Maximum energy (Wh) that the producer can output. The default is
+            Maximum power (W) that the producer can output. The default is
             {POWER_MAX_HX}.
         t_out_min_hx : float, optional
             Minimum outlet temperature (°C) of the producer. The default is
@@ -84,6 +85,9 @@ class Producer(Component):
             Hydraulic setpoint type. The default is {SETPOINT_TYPE_HYD_PROD}.
         setpoint_value_hyd : float, optional
             Hydraulic setpoint value. The default is {SETPOINT_VALUE_HYD_PROD}.
+        stepsize: float, optional
+            Size of the time step in seconds. For steady-state simulations, use
+            3600. The default is 3600.
         **kwargs
             Additional keyord arguments.
 
@@ -110,6 +114,7 @@ class Producer(Component):
             "t_out_min_hx": t_out_min_hx,
             "setpoint_type_hyd": setpoint_type_hyd,
             "setpoint_value_hyd": setpoint_value_hyd,
+            "stepsize": stepsize
         }
 
         self._attrs.update(input_dict)
@@ -140,6 +145,7 @@ class Producer(Component):
             setpoint_value_rev=self["setpoint_value_hx_rev"],
             power_max=self["power_max_hx"],
             t_out_min=self["t_out_min_hx"],
+            stepsize=self._attrs["stepsize"],
             cp_fluid=cp_fluid,
             ts_id=ts_id,
         )

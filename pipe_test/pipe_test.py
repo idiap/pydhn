@@ -66,8 +66,8 @@ def run_pipe_test(verbose=False):
             "https://github.com/GersHub/DistrictEnergyTools/blob/master/"
             "SimulationInputs.xlsx?raw=true"
         )
-        data_case_1 = pd.read_excel(
-            path, index_col=None, skiprows=1, nrows=1838, sheet_name="Case1 27_74_2000"
+        data_case_1 = pd.read_csv(
+            os.path.join(DIR, "SimulationInputs_Case1.csv"), index_col=0, skiprows=0
         )
         data_case_1.to_csv(os.path.join(DIR, "SimulationInputs_Case1.csv"))
     # If can't, use local copy
@@ -102,7 +102,7 @@ def run_pipe_test(verbose=False):
         msg = """"Remote file "SimulationResults.xlsx" not reachable. """
         msg += """Using local copy instead."""
         warn(msg)
-        results = pd.read_csv(os.path.join(DIR, "Results_Case1.csv"), index_col=None)
+        results = pd.read_csv(os.path.join(DIR, "Results_Case1.csv"), index_col=0)
 
     results.columns = [s.strip(" ") for s in results.columns]
 

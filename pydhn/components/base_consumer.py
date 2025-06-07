@@ -68,6 +68,7 @@ class Consumer(Component):
         t_out_min_hx: float = T_OUT_MIN,
         setpoint_type_hyd: str = SETPOINT_TYPE_HYD_CONS,
         setpoint_value_hyd: float = SETPOINT_VALUE_HYD_CONS,
+        stepsize: float = 3600.,
         **kwargs
     ) -> None:
         """
@@ -103,7 +104,7 @@ class Consumer(Component):
             Value of the thermal setpoint in case of reverse flow. The default
             is {SETPOINT_VALUE_HX_CONS_REV}.
         power_max_hx : float, optional
-            Maximum energy (Wh) that the consumer can exchange. The default is
+            Maximum power (W) that the consumer can exchange. The default is
             {POWER_MAX_HX}.
         t_out_min_hx : float, optional
             Minimum outlet temperature (°C) of the consumer. The default is
@@ -112,6 +113,9 @@ class Consumer(Component):
             Hydraulic setpoint type. The default is {SETPOINT_TYPE_HYD_CONS}.
         setpoint_value_hyd : float, optional
             Hydraulic setpoint value. The default is {SETPOINT_VALUE_HYD_CONS}.
+        stepsize: float, optional
+            Size of the time step in seconds. For steady-state simulations, use
+            3600. The default is 3600.
         **kwargs
             Arbitrary keyword arguments.
 
@@ -142,6 +146,7 @@ class Consumer(Component):
             "setpoint_value_hyd": setpoint_value_hyd,
             "power_max_hx": power_max_hx,
             "t_out_min_hx": t_out_min_hx,
+            "stepsize": stepsize
         }
 
         self._attrs.update(input_dict)
@@ -182,6 +187,7 @@ class Consumer(Component):
             setpoint_value_rev=self._attrs["setpoint_value_hx_rev"],
             power_max=self._attrs["power_max_hx"],
             t_out_min=self._attrs["t_out_min_hx"],
+            stepsize=self._attrs["stepsize"],
             cp_fluid=cp_fluid,
             ts_id=ts_id,
         )
