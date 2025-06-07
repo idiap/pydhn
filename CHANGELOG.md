@@ -1,18 +1,15 @@
 # Change Log
 
-## 0.1.3
+## Unreleased
 
 ### Added
-
-* Added documentation files in /docs
-* Added a GitHub action to deploy the documentation on Pages
 
 ### Changed
 
 * Fixed a bug in pipe_test when reading local data
-* docstring_parameters now ignores curly braces outside the Parameter section of a docstring
-* Modified .pre-commit-config.yaml so that isort ignores init files to avoid circular import issues 
-* Added dependencies needed for docs to pyproject.toml 
+* Heat exchanger model: harmonised the heat exchanger model's behavior (`compute_hx_temp` and related functions) to eliminate ambiguity in dynamic simulations. The `delta_q` parameter and return value are now consistently interpreted as **Watt-hours (Wh)**. A new `stepsize` parameter (in seconds) has been introduced, defaulting to `3600.0` seconds for backward compatibility, to correctly convert between energy and power units internally. If you're using `delta_q` in dynamic simulations with time steps other than one hour, you should now explicitly pass your simulation's `stepsize` to consumers and producers. (See #5 for details)
+* Updated documentation to reflect #5
+* Updated default stepsize to 3600.0
 
 ### Removed
 

@@ -486,10 +486,10 @@ Producer
       - .. autovalue:: pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV
       - :math:`°C` or :math:`K` or :math:`Wh`
     * - power_max_hx
-      - :math:`Q_{max}`
+      - :math:`\dot Q_{max}`
       - :const:`~pydhn.default_values.default_values.POWER_MAX_HX`
       - .. autovalue:: pydhn.default_values.default_values.POWER_MAX_HX
-      - :math:`Wh`
+      - :math:`W`
     * - t_out_min_hx
       - :math:`\theta_{min}`
       - :const:`~pydhn.default_values.default_values.T_OUT_MIN`
@@ -505,7 +505,11 @@ Producer
       - :const:`~pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD`
       - .. autovalue:: pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD
       - :math:`Pa` or :math:`kg/s`
-
+    * - stepsize
+      - :math:`\Delta s`
+      - :const:`-`
+      - ``3600.0``
+      - :math:`s`
 
 Commonly, one producer is used as the “main” component, enforcing a differential pressure to the network (using a ``'pressure'`` setpoint), while the other producers, if present, have an imposed mass flow.
 
@@ -545,7 +549,7 @@ The base producer can enforce three different types of setpoints for the thermal
 			\theta_{out} = min\left\{ \theta _{set}, \frac{ Q_{max}}{\dot m c_p} + \theta_{in}\right\}
 			\end{equation}
 
-    This behaviour will change in a future version.
+    This behaviour has changed in the current `main` branch and is only present in versions `<=0.1.3.`.
 
 
 
@@ -625,10 +629,10 @@ Consumer
       - .. autovalue:: pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV
       - :math:`°C` or :math:`K` or :math:`Wh`
     * - power_max_hx
-      - :math:`Q_{max}`
+      - :math:`\dot Q_{max}`
       - :const:`~pydhn.default_values.default_values.POWER_MAX_HX`
       - .. autovalue:: pydhn.default_values.default_values.POWER_MAX_HX
-      - :math:`Wh`
+      - :math:`W`
     * - t_out_min_hx
       - :math:`\theta_{min}`
       - :const:`~pydhn.default_values.default_values.T_OUT_MIN`
@@ -659,8 +663,11 @@ Consumer
       - :const:`~pydhn.default_values.default_values.HEAT_DEMAND`
       - .. autovalue:: pydhn.default_values.default_values.HEAT_DEMAND
       - :math:`Wh`
-
-
+    * - stepsize
+      - :math:`\Delta s`
+      - :const:`-`
+      - ``3600.0``
+      - :math:`s`
 
 Hydraulics
 """"""""""""
