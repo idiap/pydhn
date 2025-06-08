@@ -38,3 +38,7 @@ class ExampleTestCases(unittest.TestCase):
     def test_hydraulic_controllers(self):
         """Test if "hydraulic_controllers.py" runs without errors."""
         import hydraulic_controllers
+
+    def test_dynamic_simulation(self):
+        """Test if "dynamic_simulation.py" runs without errors."""
+        import hydraulic_controllers

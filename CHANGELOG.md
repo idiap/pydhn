@@ -6,6 +6,7 @@
 
 * Added a warning when a thermal simulation runs without a specified `ts_id`.
 * Added a new test (`tests/test_dynamic_thermal_balance.py`) to verify thermal energy balance in dynamic simulations.
+* Added a new example (`examples/dynamic_simulation.py`) for dynamic simulations with `LagrangainPipe`.
 
 ### Changed
 
