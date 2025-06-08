@@ -371,7 +371,8 @@ and average temperatures.
 
 
 def _compute_hx_outlet_temp(
-    t_in, mass_flow, power_max, t_out_min, setpoint_type, setpoint_value, cp_fluid
+    t_in, mass_flow, power_max, t_out_min, setpoint_type, setpoint_value, cp_fluid,
+    stepsize=3600.0
 ):
     # Mass flow must be positive, as the direction is assumed the same as the
     # HX reference frame
@@ -394,7 +395,9 @@ def _compute_hx_outlet_temp(
             # If delta_q is used
             np.where(
                 w3,
-                t_in + safe_divide(setpoint_value, mass_flow * cp_fluid),
+                t_in + safe_divide(
+                    setpoint_value * 3600., mass_flow * cp_fluid * stepsize
+                    ),
                 # If none of the above, just return the inlet temperature
                 t_in,
             ),
@@ -413,9 +416,9 @@ def _compute_hx_outlet_temp(
             # If delta_q is used
             np.where(
                 w3,
-                1,
+                1.0,
                 # If none of the above, just return the inlet temperature
-                0.0,
+                1.0,
             ),
         ),
     )
@@ -426,16 +429,20 @@ def _compute_hx_outlet_temp(
     t_out_der = np.where(t_out <= lower_limit, 0.0, t_out_der)
 
     # Compute delta_q
-    delta_q = mass_flow * cp_fluid * (t_out - t_in)
+    delta_q = mass_flow * cp_fluid * (t_out - t_in) * safe_divide(stepsize, 3600.)
 
     # Clip if above max power
-    limit = np.where(np.isnan(power_max), np.inf, power_max)
+    limit = np.where(
+        np.isnan(power_max), 
+        np.inf, 
+        power_max * safe_divide(stepsize, 3600.) 
+        )
     delta_q = np.clip(delta_q, -np.abs(limit), np.abs(limit))
 
     # Recompute t_out based on clipped values
-    t_out = safe_divide(delta_q, mass_flow * cp_fluid) + t_in
+    t_out = safe_divide(delta_q * 3600, mass_flow * cp_fluid * stepsize) + t_in
 
-    return t_out, t_out_der
+    return t_out, t_out_der, delta_q
 
 
 def compute_hx_temp(
@@ -448,6 +455,7 @@ def compute_hx_temp(
     power_max,
     t_out_min,
     cp_fluid,
+    stepsize=3600.,
     ts_id=None,
 ):
     # Get setpoint type and value
@@ -455,7 +463,7 @@ def compute_hx_temp(
     set_v = np.where(mass_flow >= 0, setpoint_value, setpoint_value_rev)
 
     # Compute outlet temperature
-    t_out, t_out_der = _compute_hx_outlet_temp(
+    t_out, t_out_der, delta_q = _compute_hx_outlet_temp(
         t_in=t_in,
         mass_flow=mass_flow,
         setpoint_type=set_t,
@@ -463,13 +471,11 @@ def compute_hx_temp(
         power_max=power_max,
         t_out_min=t_out_min,
         cp_fluid=cp_fluid,
+        stepsize=stepsize
     )
 
     # T_avg is just the average between t_0 and t_1
     t_avg = safe_divide(t_in + t_out, 2)
-
-    # Compute thermal losses
-    delta_q = mass_flow * cp_fluid * (t_out - t_in)
 
     # Return t_out, t_avg and t_out_der
     return t_out, t_avg, t_out_der, delta_q
@@ -490,6 +496,7 @@ def compute_hx_temp_net(net, fluid, soil, mask, ts_id=None):
         "setpoint_value_hx",
         "setpoint_type_hx_rev",
         "setpoint_value_hx_rev",
+        "stepsize"
     )
 
     (
@@ -501,6 +508,7 @@ def compute_hx_temp_net(net, fluid, soil, mask, ts_id=None):
         setpoint_value,
         setpoint_type_rev,
         setpoint_value_rev,
+        stepsize
     ) = net.edges(data=data, mask=mask)
 
     # Get temperature at startnode and endnode of HX
@@ -525,6 +533,7 @@ def compute_hx_temp_net(net, fluid, soil, mask, ts_id=None):
         power_max=power_max,
         t_out_min=t_out_min,
         cp_fluid=cp_fluid,
+        stepsize=stepsize
     )
 
     return t_in, t_out, t_avg, t_out_der, delta_q

@@ -776,6 +776,7 @@ class Network(AbstractNetwork):
         setpoint_type_hyd: str = SETPOINT_TYPE_HYD_CONS,
         setpoint_value_hyd: float = SETPOINT_VALUE_HYD_CONS,
         control_type: str = CONTROL_TYPE_CONS,
+        stepsize: float = 3600.,
         **kwargs,
     ) -> None:
         """
@@ -853,11 +854,9 @@ class Network(AbstractNetwork):
             Setpoint value of the chosen setpoint type for the thermal
             simulation in case of reverse flow. The default is {SVTR}.
         power_max_hx : float, optional
-            Maximum power of the heat exchanger, which currently correspond to
-            the maximum energy that can be exchanged during one simulation step
-            (Wh). If set, it limits the heat exchange enforced by the defined
-            setpoints, which are not anymore guaranteed to be reached. The
-            default is {PMAX}.
+            Maximum power of the heat exchanger (W). If set, it limits the heat 
+            exchange enforced by the defined setpoints, which are not anymore 
+            guaranteed to be reached. The default is {PMAX}.
         t_out_min_hx : float, optional
             Minimum outlet temperature (°C). If set, it limits the outlet
             temperature resulting from the simulation with the defined
@@ -875,6 +874,9 @@ class Network(AbstractNetwork):
             to impose the value of setpoint_value_hyd, or "energy", to compute
             the mass flow from the expected energy_demand and design_delta_t.
             The default is {CTH}.
+        stepsize: float, optional
+            Size of the time step in seconds. For steady-state simulations, use
+            3600. The default is 3600.
         **kwargs : dict
             Additional keyword arguments.
 
@@ -918,6 +920,7 @@ class Network(AbstractNetwork):
             setpoint_type_hyd=setpoint_type_hyd,
             setpoint_value_hyd=setpoint_value_hyd,
             control_type=control_type,
+            stepsize=stepsize,
             **kwargs,
         )
 
@@ -951,6 +954,7 @@ class Network(AbstractNetwork):
         t_out_min=T_OUT_MIN,
         setpoint_type_hyd=SETPOINT_TYPE_HYD_PROD,
         setpoint_value_hyd=SETPOINT_VALUE_HYD_PROD,
+        stepsize=3600.,
         **kwargs,
     ):
         """
@@ -1004,11 +1008,9 @@ class Network(AbstractNetwork):
             Setpoint value of the chosen setpoint type for the thermal
             simulation in case of reverse flow. The default is {SVTR}.
         power_max_hx : float, optional
-            Maximum power of the heat exchanger, which currently correspond to
-            the maximum energy that can be exchanged during one simulation step
-            (Wh). If set, it limits the heat exchange enforced by the defined
-            setpoints, which are not anymore guaranteed to be reached. The
-            default is {PMAX}.
+            Maximum power of the heat exchanger (W). If set, it limits the heat 
+            exchange enforced by the defined setpoints, which are not anymore 
+            guaranteed to be reached. The default is {PMAX}.
         t_out_min : float, optional
             Minimum outlet temperature (°C). If set, it limits the outlet
             temperature resulting from the simulation with the defined
@@ -1025,6 +1027,9 @@ class Network(AbstractNetwork):
         setpoint_value_hyd : float, optional
             Setpoint value of the chosen setpoint type for the hydraulic
             simulation. The default is {SVH}.
+        stepsize: float, optional
+            Size of the time step in seconds. For steady-state simulations, use
+            3600. The default is 3600.
         **kwargs : dict
             Additional keyword arguments.
 
@@ -1058,6 +1063,7 @@ class Network(AbstractNetwork):
             t_out_min=t_out_min,
             setpoint_type_hyd=setpoint_type_hyd,
             setpoint_value_hyd=setpoint_value_hyd,
+            stepsize=stepsize,
             **kwargs,
         )
 
