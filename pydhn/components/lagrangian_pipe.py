@@ -455,7 +455,7 @@ class LagrangianPipe(Pipe):
         )
 
         # Compute losses
-        delta_ts = init_temperatures - new_temps
+        delta_ts = new_temps - init_temperatures
         delta_qs = safe_divide(self._volumes * cp_fluid * delta_ts * rho_fluid, 3600.)
         delta_q = np.sum(delta_qs)
 

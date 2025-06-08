@@ -4,12 +4,16 @@
 
 ### Added
 
+* Added a warning when a thermal simulation runs without a specified `ts_id`.
+* Added a new test (`tests/test_dynamic_thermal_balance.py`) to verify thermal energy balance in dynamic simulations.
+
 ### Changed
 
-* Fixed a bug in pipe_test when reading local data
-* Heat exchanger model: harmonised the heat exchanger model's behavior (`compute_hx_temp` and related functions) to eliminate ambiguity in dynamic simulations. The `delta_q` parameter and return value are now consistently interpreted as **Watt-hours (Wh)**. A new `stepsize` parameter (in seconds) has been introduced, defaulting to `3600.0` seconds for backward compatibility, to correctly convert between energy and power units internally. If you're using `delta_q` in dynamic simulations with time steps other than one hour, you should now explicitly pass your simulation's `stepsize` to consumers and producers. (See #5 for details)
-* Updated documentation to reflect #5
-* Updated default stepsize to 3600.0
+* Fixed a bug in `pipe_test` related to local data reading.
+* **Heat exchanger model:** Refined the heat exchanger model's behavior (`compute_hx_temp` and related functions) for consistent energy interpretation in dynamic simulations. The `delta_q` parameter and return values are now uniformly treated as Watt-hours (Wh). A new `stepsize` parameter (in seconds), defaulting to `3600.0`s for backward compatibility, was added for internal energy-to-power conversions. Users with non-hourly `stepsize` in dynamic simulations should now explicitly pass their `stepsize` to consumers and producers. (See #5)
+* Changed the sign of `LagrangianPipe`'s `delta_q` to be negative when heat is lost.
+* Updated documentation reflecting changes from #5.
+* Updated default `stepsize` to `3600.0`.
 
 ### Removed
 
