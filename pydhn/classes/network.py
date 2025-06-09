@@ -28,7 +28,49 @@ from pydhn.components import Consumer
 from pydhn.components import LagrangianPipe
 from pydhn.components import Pipe
 from pydhn.components import Producer
-from pydhn.default_values import *
+from pydhn.default_values import BYPASS_CASING_THICKNESS
+from pydhn.default_values import BYPASS_INSULATION_THICKNESS
+from pydhn.default_values import CASING_THICKNESS
+from pydhn.default_values import CONTROL_TYPE_CONS
+from pydhn.default_values import CP_INTERNAL_PIPE
+from pydhn.default_values import D_BYPASS
+from pydhn.default_values import D_HX
+from pydhn.default_values import D_PIPES
+from pydhn.default_values import DELTA_P
+from pydhn.default_values import DEPTH
+from pydhn.default_values import DISCRETIZATION
+from pydhn.default_values import DT_DESIGN
+from pydhn.default_values import H_EXT
+from pydhn.default_values import HEAT_DEMAND
+from pydhn.default_values import INSULATION_THICKNESS
+from pydhn.default_values import INTERNAL_BYPASS_THICKNESS
+from pydhn.default_values import INTERNAL_PIPE_THICKNESS
+from pydhn.default_values import K_CASING
+from pydhn.default_values import K_INSULATION
+from pydhn.default_values import K_INTERNAL_PIPE
+from pydhn.default_values import KV
+from pydhn.default_values import L_BYPASS_PIPES
+from pydhn.default_values import L_PIPES
+from pydhn.default_values import MASS_FLOW_MIN_CONS
+from pydhn.default_values import POWER_MAX_HX
+from pydhn.default_values import RHO_INTERNAL_PIPE
+from pydhn.default_values import ROUGHNESS
+from pydhn.default_values import SETPOINT_TYPE_HX_CONS
+from pydhn.default_values import SETPOINT_TYPE_HX_CONS_REV
+from pydhn.default_values import SETPOINT_TYPE_HX_PROD
+from pydhn.default_values import SETPOINT_TYPE_HX_PROD_REV
+from pydhn.default_values import SETPOINT_TYPE_HYD_CONS
+from pydhn.default_values import SETPOINT_TYPE_HYD_PROD
+from pydhn.default_values import SETPOINT_VALUE_HX_CONS
+from pydhn.default_values import SETPOINT_VALUE_HX_CONS_REV
+from pydhn.default_values import SETPOINT_VALUE_HX_PROD
+from pydhn.default_values import SETPOINT_VALUE_HX_PROD_REV
+from pydhn.default_values import SETPOINT_VALUE_HYD_CONS
+from pydhn.default_values import SETPOINT_VALUE_HYD_PROD
+from pydhn.default_values import STATIC_PRESSURE
+from pydhn.default_values import STEPSIZE
+from pydhn.default_values import T_OUT_MIN
+from pydhn.default_values import T_SECONDARY
 from pydhn.utilities import docstring_parameters
 from pydhn.utilities.graph_utilities import assign_line
 from pydhn.utilities.graph_utilities import run_sanity_checks
@@ -36,7 +78,7 @@ from pydhn.utilities.matrices import compute_consumers_cycle_matrix
 from pydhn.utilities.matrices import compute_cycle_matrix
 from pydhn.utilities.matrices import compute_imposed_mdot_matrix
 
-### WARNING: ONLY USE PYTHON 3.7+ FOR PRESERVING ORDERING
+# -- WARNING: ONLY USE PYTHON 3.7+ FOR PRESERVING ORDERING
 
 # TODO: Add multiple nodes/edges at a time
 # TODO: Node and edge ids?
@@ -83,9 +125,10 @@ class Network(AbstractNetwork):
     def __init__(self):
         super(Network, self).__init__()
 
-    # Matrices ################################################################
+    # Matrices
+    # -------------------------------------------------------------------------
     # Methods that return useful matrices as Numpy arrays.
-    ###########################################################################
+    # -------------------------------------------------------------------------
 
     @property
     def cycle_matrix(self) -> np.array:
@@ -149,14 +192,15 @@ class Network(AbstractNetwork):
             matrix_function=compute_consumers_cycle_matrix,
         )
 
-    # Masks ###################################################################
+    # Masks
+    # -------------------------------------------------------------------------
     # GET methods of the class return numpy array with values in a fixed order.
     # These masks are used with these arrays.
     #
     # Example usage:
     #   mdot = net.get_edges_attribute_array('mass_flow')
     #   mdot_pipes = mdot[net.pipes_mask]
-    ###########################################################################
+    # -------------------------------------------------------------------------
 
     def mask(self, attr, value, condition="equality") -> np.array:
         """
@@ -296,11 +340,12 @@ class Network(AbstractNetwork):
     def real_components_mask(self) -> np.array:
         """Returns an array with the indices of all the real components."""
         is_ideal = self.get_edges_attribute_array("is_ideal")
-        return np.where(is_ideal == False)[0]
+        return np.where(~is_ideal)[0]
 
-    # Pointers ################################################################
+    # Pointers
+    # -------------------------------------------------------------------------
     # Pointers to specific subgraphs of the network.
-    ###########################################################################
+    # -------------------------------------------------------------------------
 
     @property
     def branch_components_pointer(self) -> nx.DiGraph:
@@ -390,9 +435,10 @@ class Network(AbstractNetwork):
                 assign_line(self)
         return self._get_edge_pointer(self.return_line_mask)
 
-    # Item counters ###########################################################
+    # Item counters
+    # -------------------------------------------------------------------------
     # Simple network information such as the number of pipes.
-    ###########################################################################
+    # -------------------------------------------------------------------------
 
     @property
     def n_pipes(self) -> int:
@@ -409,10 +455,11 @@ class Network(AbstractNetwork):
         """Returns the number of producers in the network."""
         return len(self.producers_mask)
 
-    # Edge setters ############################################################
+    # Edge setters
+    # -------------------------------------------------------------------------
     # Methods to add elements such as pipes, consumers and producers to the
     # network.
-    ###########################################################################
+    # -------------------------------------------------------------------------
 
     def add_component(
         self,
@@ -568,7 +615,7 @@ class Network(AbstractNetwork):
             start_z = nx.get_node_attributes(self._graph, "z")[start_node]
             end_z = nx.get_node_attributes(self._graph, "z")[end_node]
             delta_z = end_z - start_z
-        except:
+        except Exception:
             delta_z = 0.0
             warn("Can't compute delta z, height of nodes unknown.")
 
@@ -710,7 +757,7 @@ class Network(AbstractNetwork):
             start_z = nx.get_node_attributes(self._graph, "z")[start_node]
             end_z = nx.get_node_attributes(self._graph, "z")[end_node]
             delta_z = end_z - start_z
-        except:
+        except Exception:
             delta_z = 0.0
             warn("Can't compute delta z, height of nodes unknown.")
 
@@ -776,7 +823,7 @@ class Network(AbstractNetwork):
         setpoint_type_hyd: str = SETPOINT_TYPE_HYD_CONS,
         setpoint_value_hyd: float = SETPOINT_VALUE_HYD_CONS,
         control_type: str = CONTROL_TYPE_CONS,
-        stepsize: float = 3600.,
+        stepsize: float = 3600.0,
         **kwargs,
     ) -> None:
         """
@@ -854,8 +901,8 @@ class Network(AbstractNetwork):
             Setpoint value of the chosen setpoint type for the thermal
             simulation in case of reverse flow. The default is {SVTR}.
         power_max_hx : float, optional
-            Maximum power of the heat exchanger (W). If set, it limits the heat 
-            exchange enforced by the defined setpoints, which are not anymore 
+            Maximum power of the heat exchanger (W). If set, it limits the heat
+            exchange enforced by the defined setpoints, which are not anymore
             guaranteed to be reached. The default is {PMAX}.
         t_out_min_hx : float, optional
             Minimum outlet temperature (°C). If set, it limits the outlet
@@ -954,7 +1001,7 @@ class Network(AbstractNetwork):
         t_out_min=T_OUT_MIN,
         setpoint_type_hyd=SETPOINT_TYPE_HYD_PROD,
         setpoint_value_hyd=SETPOINT_VALUE_HYD_PROD,
-        stepsize=3600.,
+        stepsize=3600.0,
         **kwargs,
     ):
         """
@@ -1008,8 +1055,8 @@ class Network(AbstractNetwork):
             Setpoint value of the chosen setpoint type for the thermal
             simulation in case of reverse flow. The default is {SVTR}.
         power_max_hx : float, optional
-            Maximum power of the heat exchanger (W). If set, it limits the heat 
-            exchange enforced by the defined setpoints, which are not anymore 
+            Maximum power of the heat exchanger (W). If set, it limits the heat
+            exchange enforced by the defined setpoints, which are not anymore
             guaranteed to be reached. The default is {PMAX}.
         t_out_min : float, optional
             Minimum outlet temperature (°C). If set, it limits the outlet
@@ -1148,7 +1195,7 @@ class Network(AbstractNetwork):
             start_z = nx.get_node_attributes(self._graph, "z")[start_node]
             end_z = nx.get_node_attributes(self._graph, "z")[end_node]
             delta_z = end_z - start_z
-        except:
+        except Exception:
             delta_z = 0.0
             warn("Can't compute delta z, height of nodes unknown.")
 
@@ -1176,9 +1223,10 @@ class Network(AbstractNetwork):
             name=name, component=component, start_node=start_node, end_node=end_node
         )
 
-    # Utilities ###############################################################
+    # Utilities
+    # -------------------------------------------------------------------------
     # General utilities for the class.
-    ###########################################################################
+    # -------------------------------------------------------------------------
 
     def run_sanity_checks(self, verbose=1, check_isomorphism=True):
         """

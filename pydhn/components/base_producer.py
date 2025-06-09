@@ -52,7 +52,7 @@ class Producer(Component):
         t_out_min_hx: float = T_OUT_MIN,
         setpoint_type_hyd: str = SETPOINT_TYPE_HYD_PROD,
         setpoint_value_hyd: float = SETPOINT_VALUE_HYD_PROD,
-        stepsize: float = 3600.,
+        stepsize: float = 3600.0,
         **kwargs
     ) -> None:
         """
@@ -114,7 +114,7 @@ class Producer(Component):
             "t_out_min_hx": t_out_min_hx,
             "setpoint_type_hyd": setpoint_type_hyd,
             "setpoint_value_hyd": setpoint_value_hyd,
-            "stepsize": stepsize
+            "stepsize": stepsize,
         }
 
         self._attrs.update(input_dict)

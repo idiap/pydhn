@@ -33,8 +33,8 @@ Released on October 30, 2024
 
 * Improved docstrings and type hints
 * docstring_parameters now ignores curly braces outside the Parameter section of a docstring
-* Modified .pre-commit-config.yaml so that isort ignores init files to avoid circular import issues 
-* Added dependencies needed for docs to pyproject.toml 
+* Modified .pre-commit-config.yaml so that isort ignores init files to avoid circular import issues
+* Added dependencies needed for docs to pyproject.toml
 
 ### Removed
 

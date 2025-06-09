@@ -13,6 +13,7 @@
 
 # Avoid circular import for type hints
 from typing import TYPE_CHECKING
+from typing import Optional
 from warnings import warn
 
 import numpy as np
@@ -25,10 +26,10 @@ if TYPE_CHECKING:
     from pydhn import Fluid
     from pydhn import Network
     from pydhn import Soil
-    from pydhn.classes import Results
     from pydhn.controllers import Controller
 
-# Abstract class ##############################################################
+# Abstract class
+# -----------------------------------------------------------------------------
 
 
 class AbstractLoop:
@@ -84,7 +85,8 @@ class AbstractLoop:
         return self._results
 
 
-# Single simulation step loops ################################################
+# Single simulation step loops
+# -----------------------------------------------------------------------------
 
 
 class SimpleStep(AbstractLoop):
@@ -135,11 +137,16 @@ class SimpleStep(AbstractLoop):
         self.thermal_sim_kwargs = thermal_sim_kwargs
 
     # Phases
-    def _preprocessing(self, net, fluid, soil, **kwargs):
+    def _preprocessing(self, net: "Network", fluid: "Fluid", soil: "Soil", **kwargs):
         self._set_current_phase("hydraulic_simulation")
 
     def _hydraulic_simulation(
-        self, net, fluid, soil, hydraulic_controller=None, **kwargs
+        self,
+        net: "Network",
+        fluid: "Fluid",
+        soil: "Soil",
+        hydraulic_controller: Optional["Controller"] = None,
+        **kwargs,
     ):
         hyd_res = solve_hydraulics(
             net=net,
@@ -154,20 +161,27 @@ class SimpleStep(AbstractLoop):
         else:
             self._set_current_phase("postprocessing")
 
-    def _thermal_simulation(self, net, fluid, soil, **kwargs):
-        if 'ts_id' not in kwargs.keys():
-            warn("Running a thermal simulation without a ts_id specified. This can lead to unexpected behaviours in dynamic components. To suppress this warning, pass a ts_id value when calling .execute()")
+    def _thermal_simulation(
+        self, net: "Network", fluid: "Fluid", soil: "Soil", **kwargs
+    ):
+        if "ts_id" not in kwargs.keys():
+            warn(
+                "Running a thermal simulation without a ts_id specified. "
+                "This can lead to unexpected behaviours in dynamic components. "
+                "To suppress this warning, pass a ts_id value when calling .execute()"
+            )
         therm_res = solve_thermal(
             net=net, fluid=fluid, soil=soil, **self.thermal_sim_kwargs, **kwargs
         )
         self._results.update(therm_res)
         self._set_current_phase("postprocessing")
 
-    def _postprocessing(self, net, fluid, soil, **kwargs):
+    def _postprocessing(self, net: "Network", fluid: "Fluid", soil: "Soil", **kwargs):
         self._set_current_phase("end")
 
 
-# Multistep simulation loops #################################################
+# Multistep simulation loops
+# -----------------------------------------------------------------------------
 
 
 class Scheduler(AbstractLoop):
@@ -216,7 +230,7 @@ class Scheduler(AbstractLoop):
         super(Scheduler, self).__init__()
 
         self.base_loop = base_loop
-        if self.base_loop == None:
+        if self.base_loop is None:
             self.base_loop = SimpleStep(with_thermal=with_thermal)
 
         self._with_thermal = with_thermal
@@ -241,7 +255,7 @@ class Scheduler(AbstractLoop):
         self._results = Results()
         self._set_current_phase(self._initial_phase)
 
-    def _preprocessing(self, net, fluid, soil, **kwargs):
+    def _preprocessing(self, net: "Network", fluid: "Fluid", soil: "Soil", **kwargs):
         # Update data based on schedules
         names = net.get_edges_attribute_array("name")
         for attr, df in self._schedules.items():
@@ -253,7 +267,14 @@ class Scheduler(AbstractLoop):
 
         self._set_current_phase("simulation")
 
-    def _simulation(self, net, fluid, soil, hydraulic_controller=None, **kwargs):
+    def _simulation(
+        self,
+        net: "Network",
+        fluid: "Fluid",
+        soil: "Soil",
+        hydraulic_controller: Optional["Controller"] = None,
+        **kwargs,
+    ):
         print(f"Step {self._ts}:")
         soil._ts = self._ts
         res = self.base_loop.execute(
@@ -267,7 +288,7 @@ class Scheduler(AbstractLoop):
         self._results.append(res)
         self._set_current_phase("postprocessing")
 
-    def _postprocessing(self, net, fluid, soil, **kwargs):
+    def _postprocessing(self, net: "Network", fluid: "Fluid", soil: "Soil", **kwargs):
         # Update ts
         self._ts += 1
         if self._ts == self._ts_start + self._steps:

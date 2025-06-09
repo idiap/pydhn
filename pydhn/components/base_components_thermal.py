@@ -11,7 +11,6 @@
 """Functions to compute average and outlet temperature for base components"""
 
 from copy import deepcopy
-from warnings import warn
 
 import numpy as np
 
@@ -30,11 +29,9 @@ from pydhn.utilities import isiter
 from pydhn.utilities import np_cache
 from pydhn.utilities import safe_divide
 
-"""
-Functions are divided by element type. For each element, the upper section
-contains generic functions that work with Numpy arrays. Functions that need a
-Network object and a Fluid object are instead in the second section.
-"""
+# Functions are divided by element type. For each element, the upper section
+# contains generic functions that work with Numpy arrays. Functions that need a
+# Network object and a Fluid object are instead in the second section.
 
 
 # --------                         Base pipe                         -------- #
@@ -364,15 +361,19 @@ def compute_pipe_temp_net(net, fluid, soil, ts_id=None):
 # --------                Base Consumer and Producer                 -------- #
 
 
-"""
-Base Consumers and Producers share the same function for computing the outlet
-and average temperatures.
-"""
+# Base Consumers and Producers share the same function for computing the outlet
+# and average temperatures.
 
 
 def _compute_hx_outlet_temp(
-    t_in, mass_flow, power_max, t_out_min, setpoint_type, setpoint_value, cp_fluid,
-    stepsize=3600.0
+    t_in,
+    mass_flow,
+    power_max,
+    t_out_min,
+    setpoint_type,
+    setpoint_value,
+    cp_fluid,
+    stepsize=3600.0,
 ):
     # Mass flow must be positive, as the direction is assumed the same as the
     # HX reference frame
@@ -395,9 +396,8 @@ def _compute_hx_outlet_temp(
             # If delta_q is used
             np.where(
                 w3,
-                t_in + safe_divide(
-                    setpoint_value * 3600., mass_flow * cp_fluid * stepsize
-                    ),
+                t_in
+                + safe_divide(setpoint_value * 3600.0, mass_flow * cp_fluid * stepsize),
                 # If none of the above, just return the inlet temperature
                 t_in,
             ),
@@ -429,14 +429,12 @@ def _compute_hx_outlet_temp(
     t_out_der = np.where(t_out <= lower_limit, 0.0, t_out_der)
 
     # Compute delta_q
-    delta_q = mass_flow * cp_fluid * (t_out - t_in) * safe_divide(stepsize, 3600.)
+    delta_q = mass_flow * cp_fluid * (t_out - t_in) * safe_divide(stepsize, 3600.0)
 
     # Clip if above max power
     limit = np.where(
-        np.isnan(power_max), 
-        np.inf, 
-        power_max * safe_divide(stepsize, 3600.) 
-        )
+        np.isnan(power_max), np.inf, power_max * safe_divide(stepsize, 3600.0)
+    )
     delta_q = np.clip(delta_q, -np.abs(limit), np.abs(limit))
 
     # Recompute t_out based on clipped values
@@ -455,7 +453,7 @@ def compute_hx_temp(
     power_max,
     t_out_min,
     cp_fluid,
-    stepsize=3600.,
+    stepsize=3600.0,
     ts_id=None,
 ):
     # Get setpoint type and value
@@ -471,7 +469,7 @@ def compute_hx_temp(
         power_max=power_max,
         t_out_min=t_out_min,
         cp_fluid=cp_fluid,
-        stepsize=stepsize
+        stepsize=stepsize,
     )
 
     # T_avg is just the average between t_0 and t_1
@@ -496,7 +494,7 @@ def compute_hx_temp_net(net, fluid, soil, mask, ts_id=None):
         "setpoint_value_hx",
         "setpoint_type_hx_rev",
         "setpoint_value_hx_rev",
-        "stepsize"
+        "stepsize",
     )
 
     (
@@ -508,7 +506,7 @@ def compute_hx_temp_net(net, fluid, soil, mask, ts_id=None):
         setpoint_value,
         setpoint_type_rev,
         setpoint_value_rev,
-        stepsize
+        stepsize,
     ) = net.edges(data=data, mask=mask)
 
     # Get temperature at startnode and endnode of HX
@@ -533,7 +531,7 @@ def compute_hx_temp_net(net, fluid, soil, mask, ts_id=None):
         power_max=power_max,
         t_out_min=t_out_min,
         cp_fluid=cp_fluid,
-        stepsize=stepsize
+        stepsize=stepsize,
     )
 
     return t_in, t_out, t_avg, t_out_der, delta_q

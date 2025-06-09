@@ -21,24 +21,24 @@ sys.path.append(path)
 class ExampleTestCases(unittest.TestCase):
     def test_simple_network_example(self):
         """Test if "create_simple_network.py" runs without errors."""
-        import create_simple_network
+        import create_simple_network  # noqa: F401
 
     def test_loop_method_solution_example(self):
         """Test if "loop_method_solution.py" runs without errors."""
-        import loop_method_solution
+        import loop_method_solution  # noqa: F401
 
     def test_custom_component_example(self):
         """Test if "create_custom_component.py" runs without errors."""
-        import create_custom_component
+        import create_custom_component  # noqa: F401
 
     def test_multistep_simulation(self):
         """Test if "multistep_simulation.py" runs without errors."""
-        import multistep_simulation
+        import multistep_simulation  # noqa: F401
 
     def test_hydraulic_controllers(self):
         """Test if "hydraulic_controllers.py" runs without errors."""
-        import hydraulic_controllers
+        import hydraulic_controllers  # noqa: F401
 
     def test_dynamic_simulation(self):
         """Test if "dynamic_simulation.py" runs without errors."""
-        import hydraulic_controllers
+        import dynamic_simulation  # noqa: F401
