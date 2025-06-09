@@ -1,0 +1,771 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.utilities.graph_utilities &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.utilities.graph_utilities</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.utilities.graph_utilities</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;List of utilities for the Network class&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Generic graph utilities, can be used for any Networkx graph #################</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_nodes_attribute_array</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">fill_missing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an array containing the value of the specified attribute in each</span>
+<span class="sd">    node of a graph. From Python 3.7 the order of attributes follows the</span>
+<span class="sd">    insertion order of nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : instance of Networkx graph</span>
+<span class="sd">    attribute : the name of the desired attribute</span>
+<span class="sd">    fill_missing : default value when the node does not have the desired</span>
+<span class="sd">        attribute. (optional)</span>
+<span class="sd">    dtype : specific dtype of the array items. (optional)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a list of all the attributes. Missing attributes can either be</span>
+    <span class="c1"># replaced with None or with a desired value.</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">fill_missing</span><span class="p">)]</span>
+    <span class="c1"># Return a Numpy array. If required, force dtype to the desired one.</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_edges_attribute_array</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">fill_missing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an array containing the value of the specified attribute in each</span>
+<span class="sd">    edge of a graph. From Python 3.7 the order of attributes follows the</span>
+<span class="sd">    insertion order of edges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : instance of Networkx graph</span>
+<span class="sd">    attribute : the name of the desired attribute</span>
+<span class="sd">    fill_missing : default value when the node does not have the desired</span>
+<span class="sd">        attribute. (optional)</span>
+<span class="sd">    dtype : specific dtype of the array items. (optional)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a list of all the attributes. Missing attributes can either be</span>
+    <span class="c1"># replaced with None or with a desired value.</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">fill_missing</span><span class="p">)]</span>
+    <span class="c1"># Return a Numpy array. If required, force dtype to the desired one.</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="find_path_with_edge">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.find_path_with_edge">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_path_with_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">node_path</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find a path between two nodes that contains a certain edge in a directed</span>
+<span class="sd">    graph. If such a path does not exist, return None.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : DiGraph</span>
+<span class="sd">        Directed graph of the network.</span>
+<span class="sd">    source : str</span>
+<span class="sd">        Source node.</span>
+<span class="sd">    target : str</span>
+<span class="sd">        Target node.</span>
+<span class="sd">    edge : tuple</span>
+<span class="sd">        Edge to be included in the path.</span>
+<span class="sd">    node_path : bool</span>
+<span class="sd">        If true, returns a list of nodes. If false, returns a list of edges.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : list</span>
+<span class="sd">        List of nodes (or edges) forming the path.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_path_to_edges</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">len_path</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len_path</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+        <span class="n">new_target</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">source</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_target</span> <span class="o">=</span> <span class="n">target</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">all_simple_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">new_target</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="n">target</span><span class="p">:</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">node_path</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">path</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_path_to_edges</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="compute_linegraph">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.compute_linegraph">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_linegraph</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a linegraph of the input graph G preserving coordinates and labels.</span>
+<span class="sd">    Node and edge features are carried over. New node positions are computed as</span>
+<span class="sd">    the centroid of the corresponding edge in the original graph.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : DiGraph</span>
+<span class="sd">        Directed graph of the network.</span>
+<span class="sd">    edge_label : str, optional</span>
+<span class="sd">        If specified, nodes are relabeled with the specified label.</span>
+<span class="sd">        The default is None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    linegraph : DiGraph</span>
+<span class="sd">        Linegraph of G.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a linegraph</span>
+    <span class="n">linegraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">line_graph</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+    <span class="c1"># Add edge data back</span>
+    <span class="n">edge_data</span> <span class="o">=</span> <span class="p">{(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">linegraph</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">)</span>
+
+    <span class="c1"># Add node data back</span>
+    <span class="n">node_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)}</span>
+    <span class="n">new_edge_data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">linegraph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="c1"># It holds that u[1] == v[0]</span>
+        <span class="n">new_edge_data</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span> <span class="o">=</span> <span class="n">node_data</span><span class="p">[</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">linegraph</span><span class="p">,</span> <span class="n">new_edge_data</span><span class="p">)</span>
+
+    <span class="c1"># Change labels</span>
+    <span class="k">if</span> <span class="n">edge_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label_mapping</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_edge_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge_label</span><span class="p">)</span>
+        <span class="n">linegraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="n">linegraph</span><span class="p">,</span> <span class="n">label_mapping</span><span class="p">)</span>
+
+    <span class="c1"># Compute edge centroids if node position is available</span>
+    <span class="n">node_pos</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;pos&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">linegraph</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">linegraph</span>
+        <span class="n">node_pos</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">node_pos</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="n">node_pos</span><span class="p">[</span><span class="n">y</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">edge_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">label_mapping</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)]:</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()}</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">linegraph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="s2">&quot;pos&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">linegraph</span></div>
+
+
+
+<span class="c1"># Utilities specific to the Network class #####################################</span>
+
+
+<div class="viewcode-block" id="get_nodes_attribute_array">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.get_nodes_attribute_array">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_nodes_attribute_array</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">fill_missing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an array containing the value of the specified attribute in each</span>
+<span class="sd">    node of the network graph. From Python 3.7 the order of attributes follows</span>
+<span class="sd">    the insertion order of nodes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : instance of Network class</span>
+<span class="sd">    attribute : the name of the desired attribute</span>
+<span class="sd">    fill_missing : default value when the node does not have the desired</span>
+<span class="sd">        attribute. (optional)</span>
+<span class="sd">    dtype : specific dtype of the array items. (optional)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_get_nodes_attribute_array</span><span class="p">(</span>
+        <span class="n">G</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">fill_missing</span><span class="o">=</span><span class="n">fill_missing</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_edges_attribute_array">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.get_edges_attribute_array">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_edges_attribute_array</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">fill_missing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an array containing the value of the specified attribute in each</span>
+<span class="sd">    edge of the network graph. From Python 3.7 the order of attributes follows</span>
+<span class="sd">    the insertion order of edges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : instance of Network class</span>
+<span class="sd">    attribute : the name of the desired attribute</span>
+<span class="sd">    fill_missing : default value when the node does not have the desired</span>
+<span class="sd">        attribute. (optional)</span>
+<span class="sd">    dtype : specific dtype of the array items. (optional)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_get_edges_attribute_array</span><span class="p">(</span>
+        <span class="n">G</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">fill_missing</span><span class="o">=</span><span class="n">fill_missing</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_linegraph_net">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.compute_linegraph_net">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_linegraph_net</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">edge_label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a linegraph of the input graph G preserving coordinates and labels.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : instance of Network class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">compute_linegraph</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">edge_label</span><span class="o">=</span><span class="n">edge_label</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="connect_pairs">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.connect_pairs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">connect_pairs</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For each node and edge in the supply line identifies the correspective</span>
+<span class="sd">    twin in the return line and vice-versa. Twin elements are stored as</span>
+<span class="sd">    attributes called &quot;adjacent_node&quot; and &quot;adjacent_edge&quot; respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : instance of Network class</span>
+<span class="sd">    verbose : if True prints a</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">branch_components_pointer</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">()</span>
+    <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
+    <span class="n">G1</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+    <span class="n">U1</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+    <span class="n">U2</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+    <span class="n">GM</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">GraphMatcher</span><span class="p">(</span><span class="n">U1</span><span class="p">,</span> <span class="n">U2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">GM</span><span class="o">.</span><span class="n">is_isomorphic</span><span class="p">():</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Supply and return lines are not isomorphic and cannot be paired&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">GM</span><span class="o">.</span><span class="n">mapping</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+    <span class="n">visited_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">visited_edges</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited_nodes</span><span class="p">:</span>
+            <span class="n">net</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="s2">&quot;adjacent_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+            <span class="n">net</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">u</span><span class="p">]][</span><span class="s2">&quot;adjacent_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span>
+            <span class="n">visited_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+            <span class="n">visited_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">u</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="si">}</span><span class="s2"> paired!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited_nodes</span><span class="p">:</span>
+            <span class="n">net</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;adjacent_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="n">net</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">]][</span><span class="s2">&quot;adjacent_node&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="n">visited_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">visited_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nodes </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="si">}</span><span class="s2"> paired!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited_edges</span><span class="p">:</span>
+            <span class="n">u_prime</span><span class="p">,</span> <span class="n">v_prime</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">u</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u_prime</span><span class="p">,</span> <span class="n">v_prime</span><span class="p">):</span>
+                <span class="n">u_prime</span><span class="p">,</span> <span class="n">v_prime</span> <span class="o">=</span> <span class="n">v_prime</span><span class="p">,</span> <span class="n">u_prime</span>
+            <span class="n">net</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;adjacent_edge&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">u_prime</span><span class="p">,</span> <span class="n">v_prime</span><span class="p">))</span>
+            <span class="n">net</span><span class="p">[(</span><span class="n">u_prime</span><span class="p">,</span> <span class="n">v_prime</span><span class="p">)]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;adjacent_edge&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+            <span class="n">visited_edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+            <span class="n">visited_edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u_prime</span><span class="p">,</span> <span class="n">v_prime</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edges </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="p">(</span><span class="n">u_prime</span><span class="p">,</span><span class="w"> </span><span class="n">v_prime</span><span class="p">)</span><span class="si">}</span><span class="s2"> paired!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pairing completed!&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="assign_line">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.assign_line">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">assign_line</span><span class="p">(</span><span class="n">net</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Assign a line - either supply or return - to pipes. It assumes that the</span>
+<span class="sd">    endpoint of the first Producer is in the supply line.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : Network</span>
+<span class="sd">        Instance of Network class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Find the pipes subgraph where the source node is</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">branch_components_pointer</span>
+    <span class="c1"># Get branch subgraphs:</span>
+    <span class="n">graphs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="n">P</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">())))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">)</span><span class="si">}</span><span class="s2"> separated subgraphs of branch components found&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; in the network. Only networks with 2 subgraphs are supported.&quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot; Lines assignment failed.&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="c1"># Check if an edge has known line, else assign &quot;supply&quot; to the first edge</span>
+    <span class="c1"># found</span>
+    <span class="n">edges</span><span class="p">,</span> <span class="n">lines</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;line&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">branch_components_mask</span><span class="p">)</span>
+    <span class="n">line_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;supply&quot;</span><span class="p">,</span> <span class="s2">&quot;return&quot;</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">start_idx</span> <span class="o">=</span> <span class="n">line_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">start_edge</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">start_idx</span><span class="p">]</span>
+        <span class="n">start_line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">start_idx</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start_edge</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">net</span><span class="o">.</span><span class="n">main_edge_mask</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">start_line</span> <span class="o">=</span> <span class="s2">&quot;supply&quot;</span>
+    <span class="k">if</span> <span class="n">start_line</span> <span class="o">==</span> <span class="s2">&quot;supply&quot;</span><span class="p">:</span>
+        <span class="n">second_line</span> <span class="o">=</span> <span class="s2">&quot;return&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">second_line</span> <span class="o">=</span> <span class="s2">&quot;supply&quot;</span>
+    <span class="c1"># Check where the reference edge is and assign the corresponding line to</span>
+    <span class="c1"># the whole subgraph</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">graphs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">graphs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+    <span class="n">u_start</span><span class="p">,</span> <span class="n">v_start</span> <span class="o">=</span> <span class="n">start_edge</span>
+    <span class="k">if</span> <span class="n">graphs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u_start</span><span class="p">,</span> <span class="n">v_start</span><span class="p">):</span>
+        <span class="n">new_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">second_line</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="n">new_lines</span> <span class="o">+=</span> <span class="p">[</span><span class="n">start_line</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="n">graphs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u_start</span><span class="p">,</span> <span class="n">v_start</span><span class="p">):</span>
+        <span class="n">new_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_line</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="n">new_lines</span> <span class="o">+=</span> <span class="p">[</span><span class="n">second_line</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graphs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;edge </span><span class="si">{</span><span class="n">u_start</span><span class="p">,</span><span class="w"> </span><span class="n">v_start</span><span class="si">}</span><span class="s2"> not found!&quot;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">new_lines</span><span class="p">))</span>
+    <span class="c1"># Use class method or cache will break</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;line&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="run_sanity_checks">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.run_sanity_checks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_sanity_checks</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">check_isomorphism</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs sanity checks on the Network class against common mistakes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : Network</span>
+<span class="sd">        Instance of Network class.</span>
+<span class="sd">    verbose : Bool, optional</span>
+<span class="sd">        Defines the level of verbosity. The default is 1.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    errors : Dict</span>
+<span class="sd">        Dictionary with the results of the sanity check. A True value means</span>
+<span class="sd">        that an error was found during that test.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">()</span>
+
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Check if the graoh is connected</span>
+    <span class="n">isconnected</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">())</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;is_disconnected&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">isconnected</span>
+    <span class="k">if</span> <span class="n">isconnected</span><span class="p">:</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;disconnected_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;disconnected_edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">graphs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">U</span><span class="p">)],</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+        <span class="n">U</span> <span class="o">=</span> <span class="n">graphs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">()</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">U</span><span class="p">)</span>
+        <span class="n">GG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose_all</span><span class="p">(</span><span class="n">graphs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;disconnected_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">GG</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;disconnected_edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">GG</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The network is not completely connected!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The network is not completely connected! The following &quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;nodes: </span><span class="se">\n\n</span><span class="si">{</span><span class="n">errors</span><span class="p">[</span><span class="s1">&#39;disconnected_nodes&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;and edges: </span><span class="se">\n\n</span><span class="si">{</span><span class="n">errors</span><span class="p">[</span><span class="s1">&#39;disconnected_edges&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;are disconnected from the main graph!&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Check that nodes have between 2 and 3 edges of which at least 1 is</span>
+    <span class="c1"># incoming and 1 is outgoing</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;over_degree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;under_degree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;converging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;diverging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;over_degree_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;under_degree_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;converging_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;diverging_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+        <span class="n">deg</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="n">in_deg</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">in_degree</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+        <span class="n">out_deg</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">out_degree</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">deg</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;over_degree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;over_degree_nodes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> is connected to too many edges (</span><span class="si">{</span><span class="n">deg</span><span class="si">}</span><span class="s2">)!&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">deg</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;under_degree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;under_degree_nodes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> is not connected to enough edges (</span><span class="si">{</span><span class="n">deg</span><span class="si">}</span><span class="s2">)!&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_deg</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">deg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;diverging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;diverging_nodes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> has only outgoing edges!&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">out_deg</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">deg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;converging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;converging_nodes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> has only incoming edges!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;over_degree&quot;</span><span class="p">]:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some nodes are connected to too many edges!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;under_degree&quot;</span><span class="p">]:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some nodes are not connected to enough edges!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;converging&quot;</span><span class="p">]:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some nodes have only incoming edges!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;diverging&quot;</span><span class="p">]:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some nodes have only outgoing edges!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check direction of consumers and producers</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;setpoint_type_hyd&quot;</span><span class="p">,</span> <span class="s2">&quot;component_type&quot;</span><span class="p">,</span> <span class="s2">&quot;component_class&quot;</span><span class="p">]</span>
+    <span class="n">edges</span><span class="p">,</span> <span class="n">setpoint</span><span class="p">,</span> <span class="n">ctype</span><span class="p">,</span> <span class="n">cclass</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;base_producer&quot;</span> <span class="ow">in</span> <span class="n">ctype</span><span class="p">:</span>
+        <span class="n">prod</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ctype</span> <span class="o">==</span> <span class="s2">&quot;base_producer&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">branch_components</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cclass</span> <span class="o">==</span> <span class="s2">&quot;branch_component&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">branch_components</span> <span class="o">=</span> <span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">branch_components</span><span class="p">]</span>
+        <span class="n">branch_graph</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">branch_components</span><span class="p">)</span>
+        <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">branch_graph</span><span class="p">))</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">ctype</span> <span class="o">==</span> <span class="s2">&quot;base_producer&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">setpoint</span> <span class="o">==</span> <span class="s2">&quot;pressure&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">main_v</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">main_v</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">:</span>
+            <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span> <span class="o">=</span> <span class="n">G2</span><span class="p">,</span> <span class="n">G1</span>
+
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_producers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_producers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_producers_edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_producers_edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">prod</span><span class="p">:</span>
+            <span class="n">check_start</span> <span class="o">=</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G2</span>  <span class="c1"># u should be in the return line</span>
+            <span class="n">check_end</span> <span class="o">=</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G1</span>  <span class="c1"># v should be in the supply line</span>
+            <span class="k">if</span> <span class="n">check_start</span> <span class="o">==</span> <span class="n">check_end</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_producers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_producers_edges&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Producer </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> is reversed!&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">check_start</span> <span class="o">!=</span> <span class="n">check_end</span><span class="p">:</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_producers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_producers_edges&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Producer </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> has both ends on the same line!&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_producers&quot;</span><span class="p">]:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some producers are reversed!&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_producers&quot;</span><span class="p">]:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some producers have both ends on the same line!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;base_consumer&quot;</span> <span class="ow">in</span> <span class="n">ctype</span><span class="p">:</span>
+        <span class="n">cons</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ctype</span> <span class="o">==</span> <span class="s2">&quot;base_consumer&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_consumers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_consumers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_consumers_edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_consumers_edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cons</span><span class="p">:</span>
+            <span class="n">check_start</span> <span class="o">=</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G1</span>  <span class="c1"># u should be in the supply line</span>
+            <span class="n">check_end</span> <span class="o">=</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G2</span>  <span class="c1"># v should be in the return line</span>
+            <span class="k">if</span> <span class="n">check_start</span> <span class="o">==</span> <span class="n">check_end</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_consumers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_consumers_edges&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Consumer </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> is reversed!&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">check_start</span> <span class="o">!=</span> <span class="n">check_end</span><span class="p">:</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_consumers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_consumers_edges&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Consumer </span><span class="si">{</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> has both ends on the same line!&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;reversed_consumers&quot;</span><span class="p">]:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some consumers are reversed!&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">errors</span><span class="p">[</span><span class="s2">&quot;same_line_consumers&quot;</span><span class="p">]:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Some consumers have both ends on the same line!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">errors</span></div>
+
+
+
+<div class="viewcode-block" id="get_pipes_to_consumers_dict">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.get_pipes_to_consumers_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_pipes_to_consumers_dict</span><span class="p">(</span><span class="n">net</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list with the indices of all the pipes entering in a consumer</span>
+<span class="sd">    edge.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+    <span class="n">edges_endpoints</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">]</span>
+
+    <span class="n">inlet_nodes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">u</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;edge_type&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="s2">&quot;consumer&quot;</span>
+    <span class="p">]</span>
+    <span class="n">inlet_nodes_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">edges_endpoints</span><span class="o">.</span><span class="n">index</span><span class="p">((</span><span class="n">u</span><span class="p">))</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">inlet_nodes</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span><span class="p">,</span> <span class="n">inlet_nodes_idx</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="get_longest_paths">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.get_longest_paths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_longest_paths</span><span class="p">(</span><span class="n">net</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a list of directed graphs from each producer to furthest consumer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">supply</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">supply_line_pointer</span>
+
+    <span class="n">producer_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;component_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;base_producer&quot;</span><span class="p">:</span>
+            <span class="n">producer_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">supply</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="n">supply</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">supply</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]</span>
+
+    <span class="n">longest_paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">producer</span> <span class="ow">in</span> <span class="n">producer_nodes</span><span class="p">:</span>
+        <span class="n">directed</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dfs_tree</span><span class="p">(</span><span class="n">supply</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">(),</span> <span class="n">source</span><span class="o">=</span><span class="n">producer</span><span class="p">)</span>
+        <span class="n">longest</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dag_longest_path</span><span class="p">(</span><span class="n">directed</span><span class="p">)</span>
+        <span class="n">longest_G</span> <span class="o">=</span> <span class="n">supply</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">longest</span><span class="p">)</span>
+        <span class="n">longest_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">longest_G</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">longest_paths</span></div>
+
+
+
+<div class="viewcode-block" id="get_furthest_consumers">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.get_furthest_consumers">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_furthest_consumers</span><span class="p">(</span><span class="n">net</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a dict of {producer: furthest consumer}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">producers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">consumers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;component_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;base_producer&quot;</span><span class="p">:</span>
+            <span class="n">producers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">longest_path</span> <span class="ow">in</span> <span class="n">get_longest_paths</span><span class="p">(</span><span class="n">net</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">longest_path</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+                <span class="n">attrs</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">neighbor</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_attrs</span>
+                <span class="k">if</span> <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;component_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;base_consumer&quot;</span><span class="p">:</span>
+                    <span class="n">consumers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;component_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;base_producer&quot;</span><span class="p">:</span>
+                    <span class="n">producers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">producers</span><span class="p">,</span> <span class="n">consumers</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="add_time_to_pipes">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.add_time_to_pipes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_time_to_pipes</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add time attribute to edges.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.conversion</span><span class="w"> </span><span class="kn">import</span> <span class="n">mass_flow_rate_to_velocity</span>
+
+    <span class="n">mass_flow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">))</span>
+    <span class="n">inner_diameter</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;diameter&quot;</span><span class="p">)</span>
+    <span class="n">t_in</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;inlet_temperature&quot;</span><span class="p">)</span>
+    <span class="n">t_out</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;outlet_temperature&quot;</span><span class="p">)</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;length&quot;</span><span class="p">)</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="n">mass_flow_rate_to_velocity</span><span class="p">(</span>
+        <span class="n">mass_flow</span><span class="p">,</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_rho</span><span class="p">(</span><span class="n">t_in</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">inner_diameter</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="p">)</span>
+    <span class="n">has_high_losses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">t_in</span> <span class="o">-</span> <span class="n">t_out</span><span class="p">)</span> <span class="o">/</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mf">0.01</span>
+    <span class="k">if</span> <span class="n">has_high_losses</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> supply edges have losses greater than 1°C/100 m...</span><span class="se">\</span>
+<span class="s2">             not considering them </span><span class="se">\</span>
+<span class="s2">             in time calculations.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">has_high_losses</span><span class="p">[</span><span class="n">net</span><span class="o">.</span><span class="n">supply_line_mask</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">velocity</span><span class="p">[</span><span class="n">has_high_losses</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="n">length</span> <span class="o">/</span> <span class="n">velocity</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">net</span></div>
+
+
+
+<div class="viewcode-block" id="get_supply_time">
+<a class="viewcode-back" href="../../../generated/pydhn.utilities.graph_utilities.html#pydhn.utilities.graph_utilities.get_supply_time">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_supply_time</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return timedelta to reach the furthest consumer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fluid</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Water</span>
+
+        <span class="n">fluid</span> <span class="o">=</span> <span class="n">Water</span><span class="p">()</span>
+
+    <span class="n">net</span> <span class="o">=</span> <span class="n">add_time_to_pipes</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">)</span>
+
+    <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Loop on longest paths from each producer</span>
+    <span class="k">for</span> <span class="n">longest_G</span> <span class="ow">in</span> <span class="n">get_longest_paths</span><span class="p">(</span><span class="n">net</span><span class="p">):</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">longest_G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">longest_G</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span>
+        <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>  <span class="c1"># (producers,pipes_to_furthest_consumer)</span>
+
+    <span class="k">return</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">times</span><span class="p">))</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

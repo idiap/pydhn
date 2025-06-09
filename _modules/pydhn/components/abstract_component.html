@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.components.abstract_component &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.components.abstract_component</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.components.abstract_component</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;Class for base abstract component&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DELTA_P</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DELTA_P_FRICTION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">INLET_TEMPERATURE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">MASS_FLOW</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">OUTLET_TEMPERATURE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">TEMPERATURE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">docstring_parameters</span>
+
+
+<div class="viewcode-block" id="Component">
+<a class="viewcode-back" href="../../../generated/pydhn.components.abstract_component.html#pydhn.components.abstract_component.Component">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Component</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for components</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Component.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.components.abstract_component.html#pydhn.components.abstract_component.Component.__init__">[docs]</a>
+    <span class="nd">@docstring_parameters</span><span class="p">(</span>
+        <span class="n">TEMPERATURE</span><span class="o">=</span><span class="n">TEMPERATURE</span><span class="p">,</span>
+        <span class="n">MASS_FLOW</span><span class="o">=</span><span class="n">MASS_FLOW</span><span class="p">,</span>
+        <span class="n">DELTA_P</span><span class="o">=</span><span class="n">DELTA_P</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">TEMPERATURE</span><span class="p">,</span>
+        <span class="n">mass_flow</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">MASS_FLOW</span><span class="p">,</span>
+        <span class="n">delta_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DELTA_P</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Init Component</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temperature : float, optional</span>
+<span class="sd">            Initial temperature of the fluid (°C). The default is</span>
+<span class="sd">            {TEMPERATURE}.</span>
+<span class="sd">        mass_flow : float, optional</span>
+<span class="sd">            Initial mass flow (kg/s). The default is {MASS_FLOW}.</span>
+<span class="sd">        delta_p : float, optional</span>
+<span class="sd">            Initial pressure difference (Pa). The default is {DELTA_P}.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Arbitrary keyword arguments.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Component class and type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_class</span> <span class="o">=</span> <span class="s2">&quot;branch_component&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;base_component&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_ideal</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Initialize the component</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reinitialize</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;component_type&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_type</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;component_class&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_class</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;is_ideal&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_is_ideal</span><span class="p">()</span>
+        <span class="n">att</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_control_logic</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">att</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">att</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reinitialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;delta_p&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;delta_p_friction&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;inlet_temperature&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;outlet_temperature&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">MASS_FLOW</span><span class="p">,</span>
+            <span class="n">DELTA_P</span><span class="p">,</span>
+            <span class="n">DELTA_P_FRICTION</span><span class="p">,</span>
+            <span class="n">TEMPERATURE</span><span class="p">,</span>
+            <span class="n">INLET_TEMPERATURE</span><span class="p">,</span>
+            <span class="n">OUTLET_TEMPERATURE</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Component.set">
+<a class="viewcode-back" href="../../../generated/pydhn.components.abstract_component.html#pydhn.components.abstract_component.Component.set">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the specified value for the attribute.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        key : str</span>
+<span class="sd">            Attribute name.</span>
+<span class="sd">        value : Any</span>
+<span class="sd">            Attribute value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_control_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_is_ideal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ideal</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_delta_p</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">ts_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_temperatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="p">,</span> <span class="n">t_in</span><span class="p">,</span> <span class="n">ts_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Return t_in, t_out, t_avg, t_out_der, delta_q</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+            <span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

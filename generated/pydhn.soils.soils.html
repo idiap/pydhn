@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>soils &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="solving" href="pydhn.solving.html" />
+    <link rel="prev" title="soils" href="pydhn.soils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pydhn.html">pydhn</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pydhn.citysim.html">citysim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.html">classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.controllers.html">controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.html">default_values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.fluids.html">fluids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.networks.html">networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.plotting.html">plotting</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pydhn.soils.html">soils</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">soils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.soils.soils.KusudaSoil"><code class="docutils literal notranslate"><span class="pre">KusudaSoil</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.soils.soils.Soil"><code class="docutils literal notranslate"><span class="pre">Soil</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.solving.html">solving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pydhn.html">pydhn</a></li>
+          <li class="breadcrumb-item"><a href="pydhn.soils.html">soils</a></li>
+      <li class="breadcrumb-item active">soils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pydhn.soils.soils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pydhn.soils.soils">
+<span id="soils"></span><h1>soils<a class="headerlink" href="#module-pydhn.soils.soils" title="Link to this heading"></a></h1>
+<p>Classes for soils</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pydhn.soils.soils.KusudaSoil">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KusudaSoil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KusudaSoil'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isconstant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.015168539325842695</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps_in_a_day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">24</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/soils/soils.html#KusudaSoil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.soils.soils.KusudaSoil" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydhn.soils.soils.Soil" title="pydhn.soils.soils.Soil"><code class="xref py py-class docutils literal notranslate"><span class="pre">Soil</span></code></a></p>
+<p>Class for soil with variable temperature in depth and time according to
+the Kusuda model.</p>
+<dl class="simple">
+<dt>Equation from:</dt><dd><p>Robinson, Darren. “Climate as a pre-design tool.”
+BS2003: Eighth International IBPSA (2003).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.soils.soils.KusudaSoil.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_air</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'KusudaSoil'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isconstant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.015168539325842695</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps_in_a_day</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">24</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/soils/soils.html#KusudaSoil.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.soils.soils.KusudaSoil.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.soils.soils.KusudaSoil.get_temp">
+<span class="sig-name descname"><span class="pre">get_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/soils/soils.html#KusudaSoil.get_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.soils.soils.KusudaSoil.get_temp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pydhn.soils.soils.Soil">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Soil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Soil'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isconstant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/soils/soils.html#Soil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.soils.soils.Soil" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for soils</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.soils.soils.Soil.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Soil'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isconstant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/soils/soils.html#Soil.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.soils.soils.Soil.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.soils.soils.Soil.get_k">
+<span class="sig-name descname"><span class="pre">get_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/soils/soils.html#Soil.get_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.soils.soils.Soil.get_k" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.soils.soils.Soil.get_temp">
+<span class="sig-name descname"><span class="pre">get_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/soils/soils.html#Soil.get_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.soils.soils.Soil.get_temp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pydhn.soils.html" class="btn btn-neutral float-left" title="soils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pydhn.solving.html" class="btn btn-neutral float-right" title="solving" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

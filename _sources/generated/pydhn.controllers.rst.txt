@@ -1,0 +1,15 @@
+controllers
+===========
+
+.. automodule:: pydhn.controllers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+.. toctree::
+   :maxdepth: 4
+
+   pydhn.controllers.controller
+   pydhn.controllers.pump_controller

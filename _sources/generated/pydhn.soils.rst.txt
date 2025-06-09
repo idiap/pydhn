@@ -1,0 +1,14 @@
+soils
+=====
+
+.. automodule:: pydhn.soils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+.. toctree::
+   :maxdepth: 4
+
+   pydhn.soils.soils

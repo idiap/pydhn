@@ -1,0 +1,14 @@
+default\_values
+===============
+
+.. automodule:: pydhn.default_values
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+.. toctree::
+   :maxdepth: 4
+
+   pydhn.default_values.default_values

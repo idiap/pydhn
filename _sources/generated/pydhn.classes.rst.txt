@@ -1,0 +1,16 @@
+classes
+=======
+
+.. automodule:: pydhn.classes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+.. toctree::
+   :maxdepth: 4
+
+   pydhn.classes.abstract_network
+   pydhn.classes.network
+   pydhn.classes.results

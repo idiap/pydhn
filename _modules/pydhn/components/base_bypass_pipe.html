@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.components.base_bypass_pipe &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.components.base_bypass_pipe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.components.base_bypass_pipe</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;Class for base bypass pipe&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">BYPASS_CASING_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">BYPASS_INSULATION_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">D_BYPASS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEPTH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DISCRETIZATION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">INTERNAL_BYPASS_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_CASING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_INSULATION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_INTERNAL_PIPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">L_BYPASS_PIPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROUGHNESS</span>
+
+
+<div class="viewcode-block" id="BypassPipe">
+<a class="viewcode-back" href="../../../generated/pydhn.components.base_bypass_pipe.html#pydhn.components.base_bypass_pipe.BypassPipe">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BypassPipe</span><span class="p">(</span><span class="n">Pipe</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for base BypassPipe component. By default, a pipe of DN32 and length</span>
+<span class="sd">    1m is used. BypassPipes are leaf components and assume steady-state</span>
+<span class="sd">    conditions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BypassPipe.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.components.base_bypass_pipe.html#pydhn.components.base_bypass_pipe.BypassPipe.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="o">=</span><span class="n">D_BYPASS</span><span class="p">,</span>
+        <span class="n">depth</span><span class="o">=</span><span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">insulation_thickness</span><span class="o">=</span><span class="n">BYPASS_INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">length</span><span class="o">=</span><span class="n">L_BYPASS_PIPES</span><span class="p">,</span>
+        <span class="n">k_insulation</span><span class="o">=</span><span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">roughness</span><span class="o">=</span><span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">k_internal_pipe</span><span class="o">=</span><span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">internal_pipe_thickness</span><span class="o">=</span><span class="n">INTERNAL_BYPASS_THICKNESS</span><span class="p">,</span>
+        <span class="n">k_casing</span><span class="o">=</span><span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">casing_thickness</span><span class="o">=</span><span class="n">BYPASS_CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">discretization</span><span class="o">=</span><span class="n">DISCRETIZATION</span><span class="p">,</span>
+        <span class="n">dz</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Inits BypassPipe.</span>
+
+<span class="s2">        Parameters</span>
+<span class="s2">        ----------</span>
+<span class="s2">        diameter : float, optional</span>
+<span class="s2">            Internal diameter of the pipe (m). The default is </span><span class="si">{D_BYPASS}</span><span class="s2">.</span>
+<span class="s2">        depth : float, optional</span>
+<span class="s2">            Bury depth of the pipe (m). The default is </span><span class="si">{DEPTH}</span><span class="s2">.</span>
+<span class="s2">        insulation_thickness : float, optional</span>
+<span class="s2">            Thickness of the insulation layer (m). The default is</span>
+<span class="s2">            </span><span class="si">{BYPASS_INSULATION_THICKNESS}</span><span class="s2">.</span>
+<span class="s2">        length : float, optional</span>
+<span class="s2">            Length of the pipe (m). The default is </span><span class="si">{L_BYPASS_PIPES}</span><span class="s2">.</span>
+<span class="s2">        k_insulation : float, optional</span>
+<span class="s2">            Thermal conductivity of insulation (W/(m·K)). The default is</span>
+<span class="s2">            </span><span class="si">{K_INSULATION}</span><span class="s2">.</span>
+<span class="s2">        roughness : float, optional</span>
+<span class="s2">            Roughness of the internal pipe surface (mm). The default is</span>
+<span class="s2">            </span><span class="si">{ROUGHNESS}</span><span class="s2">.</span>
+<span class="s2">        k_internal_pipe : float, optional</span>
+<span class="s2">            Thermal conductivity of the pipe (W/(m·K)). The default is</span>
+<span class="s2">            </span><span class="si">{K_INTERNAL_PIPE}</span><span class="s2">.</span>
+<span class="s2">        internal_pipe_thickness : float, optional</span>
+<span class="s2">            Thickness of the pipe (m). The default is</span>
+<span class="s2">            </span><span class="si">{INTERNAL_BYPASS_THICKNESS}</span><span class="s2">.</span>
+<span class="s2">        k_casing : float, optional</span>
+<span class="s2">            Thermal conductivity of the casing (W/(m·K)). The default is</span>
+<span class="s2">            </span><span class="si">{K_CASING}</span><span class="s2">.</span>
+<span class="s2">        casing_thickness : float, optional</span>
+<span class="s2">           Thickness of the casing (m). The default is</span>
+<span class="s2">           </span><span class="si">{BYPASS_CASING_THICKNESS}</span><span class="s2">.</span>
+<span class="s2">        discretization : flaot, optional</span>
+<span class="s2">            Length of segments for discretizing the pipe (m). The default is</span>
+<span class="s2">            </span><span class="si">{DISCRETIZATION}</span><span class="s2">.</span>
+<span class="s2">        dz : float, optional</span>
+<span class="s2">            Altitude difference between the endpoints (m). The default is 0.</span>
+
+<span class="s2">        Returns</span>
+<span class="s2">        -------</span>
+<span class="s2">        None.</span>
+
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BypassPipe</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Component class and type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_class</span> <span class="o">=</span> <span class="s2">&quot;leaf_component&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;base_bypass_pipe&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_ideal</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Add new inputs</span>
+        <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;diameter&quot;</span><span class="p">:</span> <span class="n">diameter</span><span class="p">,</span>
+            <span class="s2">&quot;depth&quot;</span><span class="p">:</span> <span class="n">depth</span><span class="p">,</span>
+            <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="n">length</span><span class="p">,</span>
+            <span class="s2">&quot;k_insulation&quot;</span><span class="p">:</span> <span class="n">k_insulation</span><span class="p">,</span>
+            <span class="s2">&quot;insulation_thickness&quot;</span><span class="p">:</span> <span class="n">insulation_thickness</span><span class="p">,</span>
+            <span class="s2">&quot;roughness&quot;</span><span class="p">:</span> <span class="n">roughness</span><span class="p">,</span>
+            <span class="s2">&quot;k_internal_pipe&quot;</span><span class="p">:</span> <span class="n">k_internal_pipe</span><span class="p">,</span>
+            <span class="s2">&quot;internal_pipe_thickness&quot;</span><span class="p">:</span> <span class="n">internal_pipe_thickness</span><span class="p">,</span>
+            <span class="s2">&quot;k_casing&quot;</span><span class="p">:</span> <span class="n">k_casing</span><span class="p">,</span>
+            <span class="s2">&quot;casing_thickness&quot;</span><span class="p">:</span> <span class="n">casing_thickness</span><span class="p">,</span>
+            <span class="s2">&quot;discretization&quot;</span><span class="p">:</span> <span class="n">discretization</span><span class="p">,</span>
+            <span class="s2">&quot;dz&quot;</span><span class="p">:</span> <span class="n">dz</span><span class="p">,</span>
+            <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

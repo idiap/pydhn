@@ -1,0 +1,456 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulation &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Loops" href="loops.html" />
+    <link rel="prev" title="Components" href="components.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Simulation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hydraulic-simulation">Hydraulic simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#thermal-simulation">Thermal simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Simulation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/get_started/simulation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="simulation">
+<h1>Simulation<a class="headerlink" href="#simulation" title="Link to this heading"></a></h1>
+<p>PyDHN currently implements only a decoupled approach for the network simulation, where the hydraulic state is solved first and the thermal transfer is computed afterwards. Coupling the results could be achieved by iterating over the two simulation phases until the results do not change much between iterations.</p>
+<section id="hydraulic-simulation">
+<h2>Hydraulic simulation<a class="headerlink" href="#hydraulic-simulation" title="Link to this heading"></a></h2>
+<p>While it is relatively easy to create a custom function for the hydraulic simulation, at present the only model implemented is the simplified loop method described in <a class="reference internal" href="../about/references.html#pydhn23" id="id1"><span>[PYDHN23]</span></a>. To reduce the simulation time, some limitations are imposed on the network topology and boundary conditions as described in <a class="reference internal" href="network.html#netprinciples"><span class="std std-ref">the Network class page</span></a>.</p>
+<p>The loop method is based on solving the following system of equations using the Newton-Raphson method:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{B}\phi(\mathbf{B}^T\mathbf{\tilde{\dot m}}) = \mathbf{0}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{B}\)</span> is a fundamental cycle matrix of the network graph</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{\tilde{\dot m}}\)</span> is the vector of fundamental cycle mass flows</p></li>
+<li><p><span class="math notranslate nohighlight">\(\phi\)</span> is a vector-valued function that maps each component’s mass flow to the corresponding pressure difference</p></li>
+</ul>
+</dd>
+</dl>
+<p>The simplified model takes advantage of the constraints in the network topology to find a specific set of fundamental cycles that allows for easily imposing the known setpoints and as such solving some of the equations in the system beforehand.</p>
+<p>The model is implemented in the function <a class="reference internal" href="../generated/pydhn.solving.hydraulic_simulation.html#pydhn.solving.hydraulic_simulation.solve_hydraulics" title="pydhn.solving.hydraulic_simulation.solve_hydraulics"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_hydraulics()</span></code></a>. The following table gives an overview of its main arguments:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">net</span></code></p></td>
+<td><p>Network object.</p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.classes.network.html#pydhn.classes.network.Network" title="pydhn.classes.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">fluid</span></code></p></td>
+<td><p>Fluid object.</p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid" title="pydhn.fluids.fluids.Fluid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fluid</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">controller</span></code></p></td>
+<td><p>Controller object.</p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.controllers.controller.html#pydhn.controllers.controller.Controller" title="pydhn.controllers.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controller</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">compute_hydrostatic</span></code></p></td>
+<td><p>Whether to consider hydrostatic pressure.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">compute_singular</span></code></p></td>
+<td><p>Not implemented.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">affine_fd</span></code></p></td>
+<td><div class="line-block">
+<div class="line">Whether to use an affine function for pipe</div>
+<div class="line">pressure losses in the transitional flow regime.</div>
+</div>
+</td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_iters</span></code></p></td>
+<td><p>Maximum number of iterations for the solver.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">error_threshold</span></code></p></td>
+<td><p>Error threshold for the solver in Pa.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">damping_factor</span></code></p></td>
+<td><p>Damping factor for the Newton iterations.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">decreasing</span></code></p></td>
+<td><div class="line-block">
+<div class="line">Whether to reduce the damping factor at each</div>
+<div class="line">Newton iteration.</div>
+</div>
+</td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">adaptive</span></code></p></td>
+<td><p>Whether to reduce the damping factor on plateau.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+<td><p>Controls the verbosity of the simulation.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">ts_id</span></code></p></td>
+<td><p>Specifies the ID of the current time-step.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The following snippet shows the usage of <a class="reference internal" href="../generated/pydhn.solving.hydraulic_simulation.html#pydhn.solving.hydraulic_simulation.solve_hydraulics" title="pydhn.solving.hydraulic_simulation.solve_hydraulics"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_hydraulics()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_hydraulics</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantWater</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">star_network</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">star_network</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluid</span> <span class="o">=</span> <span class="n">ConstantWater</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Assign mass flow setpoints to consumers</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;control_type&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span>    <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_type_hyd&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">setpoints</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">values</span><span class="o">=</span><span class="n">setpoints</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_value_hyd&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Assign pressure lift and starting pressure to the producer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_type_hyd&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">producers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">50000</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_value_hyd&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">producers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">100000</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;static_pressure&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">producers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check mass flow, differential pressure and nodal pressure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">mass_flow_init</span><span class="p">,</span> <span class="n">delta_p_init</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">([</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_p&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mass_flow_init</span><span class="p">)</span>
+<span class="go">[1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05</span>
+<span class="go"> 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05 1.e-05]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">delta_p_init</span><span class="p">)</span>
+<span class="go">[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">pressure_init</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="s2">&quot;pressure&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pressure_init</span><span class="p">)</span>
+<span class="go">[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">solve_hydraulics</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check convergence</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;history&#39;</span><span class="p">])</span> 
+<span class="go">{&#39;hydraulics converged&#39;: True, &#39;hydraulics iterations&#39;: 2,</span>
+<span class="go">&#39;hydraulics errors&#39;: [3075.485197359615, 385.627545640828, 38.28381758111959]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check mass flow, differential pressure and nodal pressure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">mass_flow</span><span class="p">,</span> <span class="n">delta_p</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">([</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_p&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mass_flow</span><span class="p">)</span> 
+<span class="go">[0.24        0.14018399  0.09981601 -0.05981601  0.2         0.06981601</span>
+<span class="go">0.03        0.01        0.01        0.03        0.2         0.24</span>
+<span class="go">0.24        0.14018248  0.09981752 -0.05981752  0.06981752  0.01</span>
+<span class="go">0.03        0.2       ]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">delta_p</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span> <span class="c1"># Pa </span>
+<span class="go">[ 40607   1480    791   -313   2877    413     92     10 -33570 -32984</span>
+<span class="go">-39931 -50000  40607   1480    791   -313    413     10     92   2877]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">pressure</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="s2">&quot;pressure&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pressure</span><span class="p">)</span> <span class="c1"># Pa </span>
+<span class="go">[100000.          59392.25343201  57911.79761464  58638.85286523</span>
+<span class="go">58225.20256416  58253.11545484  58545.9487053   55072.6298674</span>
+<span class="go">50038.20169509  90645.94826308  92126.37435409  91437.57252758</span>
+<span class="go">91812.95519263  91823.24399703  91530.47668751  95003.74379642]</span>
+</pre></div>
+</div>
+</section>
+<section id="thermal-simulation">
+<h2>Thermal simulation<a class="headerlink" href="#thermal-simulation" title="Link to this heading"></a></h2>
+<p>The thermal simulation is carried out, assuming the mass flow has been computed, using the method described in <a class="reference internal" href="../about/references.html#pydhn23" id="id2"><span>[PYDHN23]</span></a>. Considering a modified network graph <span class="math notranslate nohighlight">\(\mathcal G' = (\mathcal V, \mathcal E')\)</span>, where edges with negative mass flow are reversed in order to have only positive mass flows, the method is based on solving the heat balance at each node <span class="math notranslate nohighlight">\(i \in \mathcal{V}\)</span> given by:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{A^+} \cdot (|\mathbf{\dot{m}}| \odot \mathbf{c_p} \odot \mathbf{\psi}(\boldsymbol{\theta}_{\text{in}})) = \mathbf{A^-} \cdot (|\mathbf{\dot{m}}| \odot \mathbf{c_p} \odot \boldsymbol{\theta}_{\text{in}})\]</div>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{\theta}_{\text{in}} = (\mathbf{A^-})^\top \boldsymbol{\theta}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{\dot{m}}\)</span> is the vector of mass flows along each edge,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{c_p}\)</span> is the vector of specific heat capacities for each edge,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\boldsymbol{\theta}_{\text{in}}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\theta}_{\text{out}}\)</span> are vectors of inlet and outlet temperatures, respectively,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\boldsymbol{\theta}\)</span> is the vector of nodal temperatures,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\odot\)</span> denotes element-wise multiplication,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{\psi}\)</span> is a vector-valued function that maps each inlet temperature <span class="math notranslate nohighlight">\(\theta_{\text{in}, i}\)</span> to its corresponding outlet temperature <span class="math notranslate nohighlight">\(\theta_{\text{out}, i}\)</span> based on component-specific behavior,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{A^+} \in \{0, 1\}^{|\mathcal V| \times |\mathcal E'|}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{A^-} \in \{0, 1\}^{|\mathcal V| \times |\mathcal E'|}\)</span> are respectively the positive and negative part of the incidence matrix of <span class="math notranslate nohighlight">\(\mathcal G'\)</span>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The system is solved using the Newton-Raphson method.</p>
+<p>The model is implemented in the function <a class="reference internal" href="../generated/pydhn.solving.thermal_simulation.html#pydhn.solving.thermal_simulation.solve_thermal" title="pydhn.solving.thermal_simulation.solve_thermal"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_thermal()</span></code></a>. The following table gives an overview of its main arguments:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 70.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">net</span></code></p></td>
+<td><p>Network object.</p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.classes.network.html#pydhn.classes.network.Network" title="pydhn.classes.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">fluid</span></code></p></td>
+<td><p>Fluid object.</p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid" title="pydhn.fluids.fluids.Fluid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fluid</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">soil</span></code></p></td>
+<td><p>Soil object.</p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.soils.soils.html#pydhn.soils.soils.Soil" title="pydhn.soils.soils.Soil"><code class="xref py py-class docutils literal notranslate"><span class="pre">Soil</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_iters</span></code></p></td>
+<td><p>Maximum number of iterations for the solver.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">error_threshold</span></code></p></td>
+<td><p>Error threshold for the solver in Wh.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-6</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">mass_flow_min</span></code></p></td>
+<td><p>Mass flow (kg/s) used to approximate 0.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1e-16</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">damping_factor</span></code></p></td>
+<td><p>Damping factor for the Newton iterations.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">decreasing</span></code></p></td>
+<td><div class="line-block">
+<div class="line">Whether to reduce the damping factor at each</div>
+<div class="line">Newton iteration.</div>
+</div>
+</td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">adaptive</span></code></p></td>
+<td><p>Whether to reduce the damping factor on plateau.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+<td><p>Controls the verbosity of the simulation.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">ts_id</span></code></p></td>
+<td><p>Specifies the ID of the current time-step.</p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The following snippet shows the usage of <a class="reference internal" href="../generated/pydhn.solving.thermal_simulation.html#pydhn.solving.thermal_simulation.solve_thermal" title="pydhn.solving.thermal_simulation.solve_thermal"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_thermal()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_hydraulics</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_thermal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantWater</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Soil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">star_network</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">star_network</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluid</span> <span class="o">=</span> <span class="n">ConstantWater</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soil</span> <span class="o">=</span> <span class="n">Soil</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve hydraulics</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">setpoints</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">values</span><span class="o">=</span><span class="n">setpoints</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_value_hyd&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">solve_hydraulics</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check init values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">init_temp</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">init_temp</span><span class="p">)</span>
+<span class="go">[50. 50. 50. 50. 50. 50. 50. 50. 50. 50. 50. 50. 50. 50. 50. 50.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">init_delta_q</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="s2">&quot;delta_q&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">init_delta_q</span><span class="p">)</span>
+<span class="go">[nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan nan</span>
+<span class="go"> nan nan]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set thermal setpoints</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;delta_q&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_type_hx&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">setpoints</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4000.</span><span class="p">,</span> <span class="mf">8000.</span><span class="p">,</span> <span class="mf">3500.</span><span class="p">]</span> <span class="c1"># Wh</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;t_out&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_type_hx&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">producers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">values</span><span class="o">=</span><span class="n">setpoints</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_value_hx&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">value</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_value_hx&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">producers_mask</span> <span class="c1"># °C</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Solve thermal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">solve_thermal</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check convergence</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;history&#39;</span><span class="p">])</span> 
+<span class="go">{&#39;thermal converged&#39;: True, &#39;thermal iterations&#39;: 1,</span>
+<span class="go">&#39;thermal errors&#39;: [3.586800573888093, 1.7763568394002505e-15]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check new values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span> <span class="c1"># °C </span>
+<span class="go">[80.         77.39387785 76.90555315 76.85854098 75.38150756 74.63815243</span>
+<span class="go">76.09889036 76.14538386 42.36033088 43.64937803 35.68422391 52.92974914</span>
+<span class="go">50.16778038 50.63815243 55.09889036 28.14538386]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">delta_q</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="s2">&quot;delta_q&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">delta_q</span><span class="p">)</span> <span class="c1"># Wh </span>
+<span class="go">[-1303.06107746  -127.69486047  -127.68008654  -126.48168132</span>
+<span class="go">-126.69488196  -124.14867849  -126.6084377   -123.89252241</span>
+<span class="go">-4000.         -3500.         -8000.         18819.83456219</span>
+<span class="go">-644.5235786    -50.93011554   -82.66195626   -77.40107693</span>
+<span class="go">-76.02622531   -78.3953416    -86.59758414   -37.03645745]</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="components.html" class="btn btn-neutral float-left" title="Components" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="loops.html" class="btn btn-neutral float-right" title="Loops" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

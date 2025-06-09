@@ -1,0 +1,409 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.components.base_components_hydraulics &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.components.base_components_hydraulics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.components.base_components_hydraulics</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;Functions to compute pressure and its derivatives for base components&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">RHO_FLUID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.fluids.dimensionless_numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_reynolds</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_divide</span>
+
+<span class="c1"># Functions are divided by element type. For each element, the upper section</span>
+<span class="c1"># contains generic functions that work with Numpy arrays. Functions that need a</span>
+<span class="c1"># Network object and a Fluid object are instead in the second section.</span>
+
+
+<span class="c1"># --------                         Base pipe                         -------- #</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_turbolent_friction_factor</span><span class="p">(</span><span class="n">reynolds</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">roughness</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the Darcy friction factor for turbolent flows.&quot;&quot;&quot;</span>
+    <span class="c1"># Check that the diameter is given in the correct unit</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">diameter</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Warning: diameters should be given in meters&quot;</span><span class="p">)</span>
+    <span class="c1"># Compute the relative roughness, diameter and roughness are brought to the</span>
+    <span class="c1"># same unit (mm)</span>
+    <span class="n">rel_roughness</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">roughness</span><span class="p">,</span> <span class="n">diameter</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="c1"># Silence warnings when the argument of log is 0. Infinite values will</span>
+    <span class="c1"># then become 0s when raised to -2</span>
+    <span class="n">div</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">6.9</span><span class="p">,</span> <span class="n">reynolds</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">((</span><span class="n">rel_roughness</span> <span class="o">/</span> <span class="mf">3.7</span><span class="p">)</span> <span class="o">**</span> <span class="mf">1.11</span> <span class="o">+</span> <span class="p">(</span><span class="n">div</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mf">1.8</span> <span class="o">*</span> <span class="n">log</span><span class="p">)</span> <span class="o">**</span> <span class="o">-</span><span class="mi">2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_transition_friction_factor</span><span class="p">(</span><span class="n">reynolds</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">roughness</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Darcy friction factor for flows in the transitional regimen.</span>
+<span class="sd">    For simpler solutions, an affine function between the laminar and turbulent</span>
+<span class="sd">    flows can be used instead of the full equation.</span>
+
+<span class="sd">    Non-affine formula taken from:</span>
+<span class="sd">        [1] Hafsi, Zahreddine. &quot;Accurate explicit analytical solution for</span>
+<span class="sd">        Colebrook-White equation.&quot; Mechanics Research Communications 111</span>
+<span class="sd">        (2021): 103646.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check units</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">diameter</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Warning: diameters should be given in meters&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">affine</span><span class="p">:</span>
+        <span class="c1"># Computes the affine formula. Writing the equation is faster than using</span>
+        <span class="c1"># utilities.affine_by_parts, which has no advantages when the number</span>
+        <span class="c1"># of fixed points is known.</span>
+        <span class="n">fd2320</span> <span class="o">=</span> <span class="mi">64</span> <span class="o">/</span> <span class="mi">2320</span>
+        <span class="n">fd4000</span> <span class="o">=</span> <span class="n">_turbolent_friction_factor</span><span class="p">(</span>
+            <span class="n">reynolds</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="n">roughness</span>
+        <span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">fd2320</span> <span class="o">+</span> <span class="p">(</span><span class="n">fd4000</span> <span class="o">-</span> <span class="n">fd2320</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">reynolds</span> <span class="o">-</span> <span class="mi">2320</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4000</span> <span class="o">-</span> <span class="mi">2320</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Implementing the equation from [1]</span>
+        <span class="c1"># 1. Inputs</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">roughness</span><span class="p">,</span> <span class="n">diameter</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="c1"># 2. Evaluate coefficients of Colebrook-White equation</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">K</span> <span class="o">/</span> <span class="mf">3.7</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">2.51</span><span class="p">,</span> <span class="n">reynolds</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="c1"># 3. Determine X0 = bx0 using Haaland equation</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+            <span class="n">X0</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="o">-</span><span class="mf">1.8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mf">1.11</span> <span class="o">+</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mf">6.9</span><span class="p">,</span> <span class="n">reynolds</span><span class="p">)))</span>
+        <span class="c1"># 4. Evaluate the coefficients of the 3rd order polynomial expansion</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">X0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="o">-</span><span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">X0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">X0</span>
+        <span class="n">c3</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">X0</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">X0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">X0</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">X0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">c4</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">X0</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">X0</span><span class="p">)</span> <span class="o">*</span> <span class="n">X0</span>
+            <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">X0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">X0</span><span class="o">**</span><span class="mi">2</span>
+            <span class="o">+</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">X0</span><span class="o">**</span><span class="mi">3</span>
+        <span class="p">)</span>
+        <span class="c1"># Evaluate the quantities sigma and phi</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">c3</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">c1</span><span class="p">)</span> <span class="o">-</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">c2</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">c1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">safe_divide</span><span class="p">(</span><span class="n">c4</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">c1</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">c2</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">c1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span>
+            <span class="o">-</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">c2</span> <span class="o">*</span> <span class="n">c3</span><span class="p">,</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">c1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># Compute Darcy factor</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">b</span><span class="o">**</span><span class="mi">2</span>
+                <span class="o">*</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">phi</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="n">phi</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">phi</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">phi</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="p">)</span>
+                <span class="o">**</span> <span class="o">-</span><span class="mi">2</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span>
+
+
+<div class="viewcode-block" id="compute_friction_factor">
+<a class="viewcode-back" href="../../../generated/pydhn.components.base_components_hydraulics.html#pydhn.components.base_components_hydraulics.compute_friction_factor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_friction_factor</span><span class="p">(</span><span class="n">reynolds</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">roughness</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Darcy friction factor for all flows.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">friction_factors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="c1"># If laminar:</span>
+        <span class="n">reynolds</span> <span class="o">&lt;=</span> <span class="mi">2320</span><span class="p">,</span>
+        <span class="n">safe_divide</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">reynolds</span><span class="p">),</span>
+        <span class="c1"># Else:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="c1"># If turbolent:</span>
+            <span class="n">reynolds</span> <span class="o">&gt;=</span> <span class="mi">4000</span><span class="p">,</span>
+            <span class="n">_turbolent_friction_factor</span><span class="p">(</span>
+                <span class="n">reynolds</span><span class="o">=</span><span class="n">reynolds</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="n">roughness</span>
+            <span class="p">),</span>
+            <span class="c1"># Else:</span>
+            <span class="n">_transition_friction_factor</span><span class="p">(</span>
+                <span class="n">reynolds</span><span class="o">=</span><span class="n">reynolds</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span> <span class="n">roughness</span><span class="o">=</span><span class="n">roughness</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span>
+            <span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">friction_factors</span></div>
+
+
+
+<div class="viewcode-block" id="compute_dp_pipe">
+<a class="viewcode-back" href="../../../generated/pydhn.components.base_components_hydraulics.html#pydhn.components.base_components_hydraulics.compute_dp_pipe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_dp_pipe</span><span class="p">(</span>
+    <span class="n">mdot</span><span class="p">,</span>
+    <span class="n">fd</span><span class="p">,</span>
+    <span class="n">diameter</span><span class="p">,</span>
+    <span class="n">length</span><span class="p">,</span>
+    <span class="n">rho_fluid</span><span class="o">=</span><span class="n">RHO_FLUID</span><span class="p">,</span>
+    <span class="n">dz</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">compute_der</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">ts_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the differential pressure in pipes. The hydrostatic pressure can</span>
+<span class="sd">    be ignored by setting compute_hydrostatic=False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">diameter</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">length</span> <span class="o">*</span> <span class="n">fd</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mdot</span><span class="p">)</span> <span class="o">*</span> <span class="n">mdot</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rho_fluid</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">**</span> <span class="mi">5</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">compute_hydrostatic</span><span class="p">:</span>
+        <span class="n">dp</span> <span class="o">+=</span> <span class="p">(</span><span class="n">rho_fluid</span> <span class="o">*</span> <span class="mf">9.81</span> <span class="o">*</span> <span class="n">dz</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="n">compute_der</span><span class="p">:</span>
+        <span class="n">num_der</span> <span class="o">=</span> <span class="n">length</span> <span class="o">*</span> <span class="n">fd</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mdot</span><span class="p">)</span>
+        <span class="n">denom_der</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rho_fluid</span> <span class="o">*</span> <span class="p">(</span><span class="n">diameter</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">5</span>
+        <span class="n">dp_der</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">num_der</span><span class="p">,</span> <span class="n">denom_der</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dp_der</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">,</span> <span class="n">dp_der</span></div>
+
+
+
+<div class="viewcode-block" id="compute_dp_pipe_net">
+<a class="viewcode-back" href="../../../generated/pydhn.components.base_components_hydraulics.html#pydhn.components.base_components_hydraulics.compute_dp_pipe_net">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_dp_pipe_net</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ts_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the differential pressure in pipes. The hydrostatic pressure can</span>
+<span class="sd">    be ignored by setting compute_hydrostatic=False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># For backward compatibility and to ensure a mask is always used</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The &#39;mask&#39; parameter for compute_dp_pipe_net is highly recommended &quot;</span>
+            <span class="s2">&quot;and will be required in future versions. Automatically generating &quot;</span>
+            <span class="s2">&quot;a mask for Pipe and LagrangianPipe components.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">lp_mask</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">,</span> <span class="s2">&quot;lagrangian_pipe&quot;</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;equality&quot;</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">pipes_mask</span><span class="p">,</span> <span class="n">lp_mask</span><span class="p">)</span>
+
+    <span class="c1"># Get attributes</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="s2">&quot;diameter&quot;</span><span class="p">,</span> <span class="s2">&quot;length&quot;</span><span class="p">,</span> <span class="s2">&quot;dz&quot;</span><span class="p">,</span> <span class="s2">&quot;roughness&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">mass_flow</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">roughness</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Get fluid properties</span>
+    <span class="n">rho_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_rho</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+    <span class="n">mu_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_mu</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+    <span class="c1"># Compute Reynolds</span>
+    <span class="n">reynolds</span> <span class="o">=</span> <span class="n">compute_reynolds</span><span class="p">(</span><span class="n">mdot</span><span class="o">=</span><span class="n">mass_flow</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span> <span class="n">mu_fluid</span><span class="o">=</span><span class="n">mu_fluid</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">reynolds</span><span class="p">,</span> <span class="s2">&quot;reynolds&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+
+    <span class="c1"># Compute friction factor</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">compute_friction_factor</span><span class="p">(</span><span class="n">reynolds</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">roughness</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s2">&quot;friction_factor&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+
+    <span class="c1"># Compute dp</span>
+    <span class="n">dp</span><span class="p">,</span> <span class="n">dp_der</span> <span class="o">=</span> <span class="n">compute_dp_pipe</span><span class="p">(</span>
+        <span class="n">mdot</span><span class="o">=</span><span class="n">mass_flow</span><span class="p">,</span>
+        <span class="n">fd</span><span class="o">=</span><span class="n">fd</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+        <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
+        <span class="n">dz</span><span class="o">=</span><span class="n">dz</span><span class="p">,</span>
+        <span class="n">rho_fluid</span><span class="o">=</span><span class="n">rho_fluid</span><span class="p">,</span>
+        <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="n">compute_hydrostatic</span><span class="p">,</span>
+        <span class="n">compute_der</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">ts_id</span><span class="o">=</span><span class="n">ts_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">,</span> <span class="n">dp_der</span></div>
+
+
+
+<div class="viewcode-block" id="compute_dp_valve">
+<a class="viewcode-back" href="../../../generated/pydhn.components.base_components_hydraulics.html#pydhn.components.base_components_hydraulics.compute_dp_valve">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_dp_valve</span><span class="p">(</span>
+    <span class="n">mdot</span><span class="p">,</span>
+    <span class="n">kv</span><span class="p">,</span>
+    <span class="n">dz</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">rho_fluid</span><span class="o">=</span><span class="n">RHO_FLUID</span><span class="p">,</span>
+    <span class="n">compute_der</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ts_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the differential pressure in valves. A value for Kv [m3/h] must be</span>
+<span class="sd">    specified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="mf">1e5</span> <span class="o">*</span> <span class="n">mdot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mdot</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3600</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mf">1e3</span> <span class="o">*</span> <span class="n">rho_fluid</span> <span class="o">*</span> <span class="n">kv</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">compute_hydrostatic</span><span class="p">:</span>
+        <span class="n">dp</span> <span class="o">+=</span> <span class="n">rho_fluid</span> <span class="o">*</span> <span class="mf">9.81</span> <span class="o">*</span> <span class="n">dz</span>
+    <span class="k">if</span> <span class="n">compute_der</span><span class="p">:</span>
+        <span class="n">num_der</span> <span class="o">=</span> <span class="mf">1e5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mdot</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3600</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">dp_der</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">num_der</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dp_der</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">,</span> <span class="n">dp_der</span></div>
+
+
+
+<div class="viewcode-block" id="compute_dp_valve_net">
+<a class="viewcode-back" href="../../../generated/pydhn.components.base_components_hydraulics.html#pydhn.components.base_components_hydraulics.compute_dp_valve_net">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_dp_valve_net</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ts_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the differential pressure in valves. The hydrostatic pressure can</span>
+<span class="sd">    be ignored by setting compute_hydrostatic=False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># For backward compatibility and to ensure a mask is always used</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;The &#39;mask&#39; parameter for compute_dp_valve_net is highly recommended &quot;</span>
+            <span class="s2">&quot;and will be required in future versions. Automatically generating &quot;</span>
+            <span class="s2">&quot;a mask for BranchValve components.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">,</span> <span class="s2">&quot;base_branch_valve&quot;</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;equality&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get attributes</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="s2">&quot;kv&quot;</span><span class="p">,</span> <span class="s2">&quot;dz&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">mass_flow</span><span class="p">,</span> <span class="n">kv</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+
+    <span class="c1"># Get fluid properties</span>
+    <span class="n">rho_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_rho</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+    <span class="c1"># Compute dp</span>
+    <span class="n">dp</span><span class="p">,</span> <span class="n">dp_der</span> <span class="o">=</span> <span class="n">compute_dp_valve</span><span class="p">(</span>
+        <span class="n">mdot</span><span class="o">=</span><span class="n">mass_flow</span><span class="p">,</span>
+        <span class="n">kv</span><span class="o">=</span><span class="n">kv</span><span class="p">,</span>
+        <span class="n">dz</span><span class="o">=</span><span class="n">dz</span><span class="p">,</span>
+        <span class="n">rho_fluid</span><span class="o">=</span><span class="n">rho_fluid</span><span class="p">,</span>
+        <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="n">compute_hydrostatic</span><span class="p">,</span>
+        <span class="n">compute_der</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">ts_id</span><span class="o">=</span><span class="n">ts_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">,</span> <span class="n">dp_der</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

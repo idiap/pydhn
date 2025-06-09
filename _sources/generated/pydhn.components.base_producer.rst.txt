@@ -1,0 +1,8 @@
+base\_producer
+==============
+
+
+.. automodule:: pydhn.components.base_producer
+   :members:
+   :undoc-members:
+   :show-inheritance:

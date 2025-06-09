@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>default_values &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="default_values" href="pydhn.default_values.default_values.html" />
+    <link rel="prev" title="pump_controller" href="pydhn.controllers.pump_controller.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pydhn.html">pydhn</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pydhn.citysim.html">citysim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.html">classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.controllers.html">controllers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">default_values</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.default_values.default_values.html">default_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.fluids.html">fluids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.networks.html">networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.plotting.html">plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.soils.html">soils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.solving.html">solving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pydhn.html">pydhn</a></li>
+      <li class="breadcrumb-item active">default_values</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pydhn.default_values.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pydhn.default_values">
+<span id="default-values"></span><h1>default_values<a class="headerlink" href="#module-pydhn.default_values" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pydhn.default_values.default_values.html">default_values</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.A0"><code class="docutils literal notranslate"><span class="pre">A0</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.A1"><code class="docutils literal notranslate"><span class="pre">A1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.A2"><code class="docutils literal notranslate"><span class="pre">A2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.BYPASS_CASING_THICKNESS"><code class="docutils literal notranslate"><span class="pre">BYPASS_CASING_THICKNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.BYPASS_INSULATION_THICKNESS"><code class="docutils literal notranslate"><span class="pre">BYPASS_INSULATION_THICKNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.CASING_THICKNESS"><code class="docutils literal notranslate"><span class="pre">CASING_THICKNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.CONTROL_TYPE_CONS"><code class="docutils literal notranslate"><span class="pre">CONTROL_TYPE_CONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.CP_FLUID"><code class="docutils literal notranslate"><span class="pre">CP_FLUID</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.CP_INTERNAL_PIPE"><code class="docutils literal notranslate"><span class="pre">CP_INTERNAL_PIPE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.CP_WATER"><code class="docutils literal notranslate"><span class="pre">CP_WATER</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.DELTA_P"><code class="docutils literal notranslate"><span class="pre">DELTA_P</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.DELTA_P_FRICTION"><code class="docutils literal notranslate"><span class="pre">DELTA_P_FRICTION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.DELTA_Z"><code class="docutils literal notranslate"><span class="pre">DELTA_Z</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.DEPTH"><code class="docutils literal notranslate"><span class="pre">DEPTH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.DISCRETIZATION"><code class="docutils literal notranslate"><span class="pre">DISCRETIZATION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.DT_DESIGN"><code class="docutils literal notranslate"><span class="pre">DT_DESIGN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.D_BYPASS"><code class="docutils literal notranslate"><span class="pre">D_BYPASS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.D_HX"><code class="docutils literal notranslate"><span class="pre">D_HX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.D_PIPES"><code class="docutils literal notranslate"><span class="pre">D_PIPES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.HEAT_DEMAND"><code class="docutils literal notranslate"><span class="pre">HEAT_DEMAND</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.H_EXT"><code class="docutils literal notranslate"><span class="pre">H_EXT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.INLET_TEMPERATURE"><code class="docutils literal notranslate"><span class="pre">INLET_TEMPERATURE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.INSULATION_THICKNESS"><code class="docutils literal notranslate"><span class="pre">INSULATION_THICKNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.INTERNAL_BYPASS_THICKNESS"><code class="docutils literal notranslate"><span class="pre">INTERNAL_BYPASS_THICKNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS"><code class="docutils literal notranslate"><span class="pre">INTERNAL_PIPE_THICKNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.K2"><code class="docutils literal notranslate"><span class="pre">K2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.KV"><code class="docutils literal notranslate"><span class="pre">KV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.KV_MIN"><code class="docutils literal notranslate"><span class="pre">KV_MIN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_CASING"><code class="docutils literal notranslate"><span class="pre">K_CASING</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_FLUID"><code class="docutils literal notranslate"><span class="pre">K_FLUID</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INSULATION"><code class="docutils literal notranslate"><span class="pre">K_INSULATION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INTERNAL_PIPE"><code class="docutils literal notranslate"><span class="pre">K_INTERNAL_PIPE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_SOIL"><code class="docutils literal notranslate"><span class="pre">K_SOIL</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_WATER"><code class="docutils literal notranslate"><span class="pre">K_WATER</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.L_BYPASS_PIPES"><code class="docutils literal notranslate"><span class="pre">L_BYPASS_PIPES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.L_PIPES"><code class="docutils literal notranslate"><span class="pre">L_PIPES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.MASS_FLOW"><code class="docutils literal notranslate"><span class="pre">MASS_FLOW</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.MASS_FLOW_MIN_CONS"><code class="docutils literal notranslate"><span class="pre">MASS_FLOW_MIN_CONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.MU_FLUID"><code class="docutils literal notranslate"><span class="pre">MU_FLUID</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.MU_WATER"><code class="docutils literal notranslate"><span class="pre">MU_WATER</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.OUTLET_TEMPERATURE"><code class="docutils literal notranslate"><span class="pre">OUTLET_TEMPERATURE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.POWER_MAX_HX"><code class="docutils literal notranslate"><span class="pre">POWER_MAX_HX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.RHO_FLUID"><code class="docutils literal notranslate"><span class="pre">RHO_FLUID</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.RHO_INTERNAL_PIPE"><code class="docutils literal notranslate"><span class="pre">RHO_INTERNAL_PIPE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.RHO_WATER"><code class="docutils literal notranslate"><span class="pre">RHO_WATER</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.ROUGHNESS"><code class="docutils literal notranslate"><span class="pre">ROUGHNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.RPM"><code class="docutils literal notranslate"><span class="pre">RPM</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.RPM_MAX"><code class="docutils literal notranslate"><span class="pre">RPM_MAX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_CONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_CONS_REV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD_REV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_REV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HYD_CONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HYD_PROD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_CONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_CONS_REV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD_REV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_REV</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HYD_CONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HYD_PROD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.STATIC_PRESSURE"><code class="docutils literal notranslate"><span class="pre">STATIC_PRESSURE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.STEPSIZE"><code class="docutils literal notranslate"><span class="pre">STEPSIZE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.TEMPERATURE"><code class="docutils literal notranslate"><span class="pre">TEMPERATURE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.T_OUT_MIN"><code class="docutils literal notranslate"><span class="pre">T_OUT_MIN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.T_SECONDARY"><code class="docutils literal notranslate"><span class="pre">T_SECONDARY</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.default_values.html#pydhn.default_values.default_values.T_SOIL"><code class="docutils literal notranslate"><span class="pre">T_SOIL</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pydhn.controllers.pump_controller.html" class="btn btn-neutral float-left" title="pump_controller" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pydhn.default_values.default_values.html" class="btn btn-neutral float-right" title="default_values" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.fluids.fluids &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.fluids.fluids</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.fluids.fluids</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;Classes for fluids&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">CP_WATER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_WATER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">MU_WATER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">RHO_WATER</span>
+
+<span class="c1"># Base class###################################################################</span>
+
+
+<div class="viewcode-block" id="Fluid">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Fluid</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for fluids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Fluid.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">isconstant</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isconstant</span> <span class="o">=</span> <span class="n">isconstant</span>
+
+        <span class="c1"># Default fluid properties defined by the user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span>  <span class="c1"># Density [kg/m³]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span>  <span class="c1"># Dynamic viscosity [Pa·s]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cp</span> <span class="o">=</span> <span class="n">cp</span>  <span class="c1"># Specific heat [J/kg·K]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>  <span class="c1"># Thermal conductivity [W/m·K]</span></div>
+
+
+<div class="viewcode-block" id="Fluid.get_cp">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid.get_cp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp</span></div>
+
+
+<div class="viewcode-block" id="Fluid.get_mu">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid.get_mu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_mu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">t</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span></div>
+
+
+<div class="viewcode-block" id="Fluid.get_rho">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid.get_rho">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">t</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span></div>
+
+
+<div class="viewcode-block" id="Fluid.get_k">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid.get_k">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">t</span> <span class="o">*</span> <span class="mf">0.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isconstant</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with constant properties&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with variable properties&quot;</span></div>
+
+
+
+<span class="c1"># Water #######################################################################</span>
+
+
+<div class="viewcode-block" id="ConstantWater">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.ConstantWater">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantWater</span><span class="p">(</span><span class="n">Fluid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for water with constant properties</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ConstantWater.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.ConstantWater.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Water&quot;</span><span class="p">,</span> <span class="n">cp</span><span class="o">=</span><span class="n">CP_WATER</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">MU_WATER</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="n">RHO_WATER</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">K_WATER</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ConstantWater</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cp</span><span class="o">=</span><span class="n">cp</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="n">rho</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Water">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Water">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Water</span><span class="p">(</span><span class="n">Fluid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for water with variable properties.</span>
+
+<span class="sd">    References:</span>
+<span class="sd">        [1] Popiel, C. O., and J. Wojtkowiak.</span>
+<span class="sd">            &quot;Simple formulas for thermophysical properties of liquid water for</span>
+<span class="sd">            heat transfer calculations (from 0 C to 150 C).&quot;</span>
+<span class="sd">            Heat transfer engineering 19.3 (1998): 87-101.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Water.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Water.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Water&quot;</span><span class="p">,</span> <span class="n">isconstant</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Water</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Water.get_cp">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Water.get_cp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the specific heat of water depending on the temperature according</span>
+<span class="sd">        to the formula in [1].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only values of t in the range 0-150°C are supported: if the input</span>
+        <span class="c1"># value is outside this range, warn and clip</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Only values of t from 0 to 150°C are supported. The supplied </span><span class="se">\</span>
+<span class="s2">                  value will be clipped within this range.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mf">4.2174356</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.0056181625</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mf">0.0012992528</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.00011535353</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="mf">4.14964e-6</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mf">2.5</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span></div>
+
+
+<div class="viewcode-block" id="Water.get_mu">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Water.get_mu">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_mu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the dynamic viscosity of water depending on the temperature</span>
+<span class="sd">        according to the formula in [1].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only values of t in the range 0-150°C are supported: if the input</span>
+        <span class="c1"># value is outside this range, warn and clip</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Only values of t from 0 to 150°C are supported. The supplied </span><span class="se">\</span>
+<span class="s2">                  value will be clipped within this range.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mf">557.82468</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">19.408782</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mf">0.1360459</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.1160832e-4</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Water.get_rho">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Water.get_rho">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_rho</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the density of water depending on the temperature according to</span>
+<span class="sd">        the formula in [1].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only values of t in the range 0-150°C are supported: if the input</span>
+        <span class="c1"># value is outside this range, warn and clip</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Only values of t from 0 to 150°C are supported. The supplied </span><span class="se">\</span>
+<span class="s2">                  value will be clipped within this range.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mf">999.79684</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">0.068317355</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.010740248</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="mf">0.00082140905</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.3030988e-5</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mf">2.5</span> <span class="o">+</span> <span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">3</span></div>
+
+
+<div class="viewcode-block" id="Water.get_k">
+<a class="viewcode-back" href="../../../generated/pydhn.fluids.fluids.html#pydhn.fluids.fluids.Water.get_k">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the thermal conductivity of water depending on the temperature</span>
+<span class="sd">        according to the formula in [1].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only values of t in the range 0-150°C are supported: if the input</span>
+        <span class="c1"># value is outside this range, warn and clip</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="mi">150</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Only values of t from 0 to 150°C are supported. The supplied </span><span class="se">\</span>
+<span class="s2">                  value will be clipped within this range.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">150.0</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mf">0.5650285</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="mf">0.0026363895</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.00012516934</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.5154918</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.0009412945</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mf">1.5</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">e</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mf">0.5</span></div>
+</div>
+
+
+
+<span class="c1">###############################################################################</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

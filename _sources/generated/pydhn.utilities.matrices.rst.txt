@@ -1,0 +1,8 @@
+matrices
+========
+
+
+.. automodule:: pydhn.utilities.matrices
+   :members:
+   :undoc-members:
+   :show-inheritance:

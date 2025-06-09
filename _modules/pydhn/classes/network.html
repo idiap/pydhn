@@ -1,0 +1,1423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.classes.network &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.classes.network</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.classes.network</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;Base class for networks&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hashable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>  <span class="c1"># Version: &#39;2.5.1&#39;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.citysim.citysim</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_citysim_xml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">BranchPump</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">BranchValve</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">BypassPipe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Consumer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">LagrangianPipe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Producer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">BYPASS_CASING_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">BYPASS_INSULATION_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">CASING_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">CONTROL_TYPE_CONS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">CP_INTERNAL_PIPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">D_BYPASS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">D_HX</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">D_PIPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DELTA_P</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEPTH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DISCRETIZATION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DT_DESIGN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">H_EXT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">HEAT_DEMAND</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">INSULATION_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">INTERNAL_BYPASS_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">INTERNAL_PIPE_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_CASING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_INSULATION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_INTERNAL_PIPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">KV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">L_BYPASS_PIPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">L_PIPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">MASS_FLOW_MIN_CONS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">POWER_MAX_HX</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">RHO_INTERNAL_PIPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROUGHNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_TYPE_HX_CONS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_TYPE_HX_CONS_REV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_TYPE_HX_PROD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_TYPE_HX_PROD_REV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_TYPE_HYD_CONS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_TYPE_HYD_PROD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_VALUE_HX_CONS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_VALUE_HX_CONS_REV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_VALUE_HX_PROD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_VALUE_HX_PROD_REV</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_VALUE_HYD_CONS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">SETPOINT_VALUE_HYD_PROD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">STATIC_PRESSURE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">STEPSIZE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">T_OUT_MIN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">T_SECONDARY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">docstring_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.graph_utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">assign_line</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.graph_utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_sanity_checks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.matrices</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_consumers_cycle_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.matrices</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_cycle_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.matrices</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_imposed_mdot_matrix</span>
+
+<span class="c1"># -- WARNING: ONLY USE PYTHON 3.7+ FOR PRESERVING ORDERING</span>
+
+<span class="c1"># TODO: Add multiple nodes/edges at a time</span>
+<span class="c1"># TODO: Node and edge ids?</span>
+
+
+<div class="viewcode-block" id="Network">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">(</span><span class="n">AbstractNetwork</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main class for district heating networks. The underlying structure of the</span>
+<span class="sd">    network is a Networkx graph of which edges are different network elements,</span>
+<span class="sd">    such as pipes, consumers and producers. The graph is directed and the</span>
+<span class="sd">    directions of edges set the reference frame: for example, a negative mass</span>
+<span class="sd">    flow indicates that the fluid is flowing in the opposite direction with</span>
+<span class="sd">    respect to the edge. Multigraphs are not supported.</span>
+
+<span class="sd">    The elements in the edges are represented by objects called components,</span>
+<span class="sd">    which contain the attributes of the edge and the element-specific functions</span>
+<span class="sd">    used in simulations.</span>
+
+<span class="sd">    The graph underlying a Network object must be connected and have nodes of</span>
+<span class="sd">    total degree 2 or 3. Nodes with higher total degree might still work, but</span>
+<span class="sd">    not enough testing has been done on this front. The graph is also expected</span>
+<span class="sd">    to have a &quot;sandwich&quot; structure, with a supply and a return line containing</span>
+<span class="sd">    only branch components and connected only by leaf components. As of now,</span>
+<span class="sd">    one of these leaf components has to be the &quot;main&quot; component, where a</span>
+<span class="sd">    setpoint pressure difference is enforced. A simple example would look like</span>
+<span class="sd">    this:</span>
+
+<span class="sd">    .. code-block:: none</span>
+
+<span class="sd">        1----&gt;2----&gt;3----&gt;4</span>
+<span class="sd">        ^     |     |     |</span>
+<span class="sd">        |     |     |     |</span>
+<span class="sd">        M    S1    S2    S3</span>
+<span class="sd">        |     |     |     |</span>
+<span class="sd">        |     v     v     v</span>
+<span class="sd">        8&lt;----7&lt;----6&lt;----5</span>
+
+<span class="sd">    Here, nodes 1-4 are in the supply line, while nodes 5-8 are in the return</span>
+<span class="sd">    line. The horizontal edges are branch components, and the vertical edges</span>
+<span class="sd">    are leaf components. Among these, M is the main node, for example a heat</span>
+<span class="sd">    plant where an array of pumps enforces a pre-defined pressure lift.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Network.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Network</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Matrices</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Methods that return useful matrices as Numpy arrays.</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cycle_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the cycle matrix of the network graph computed using a custom</span>
+<span class="sd">        cycle basis. The matrix is computed from the undirected network graph</span>
+<span class="sd">        and each entry is 1 if the jth edge is in the ith cycle and their</span>
+<span class="sd">        directions match, -1 if their directions oppose, and 0 otherwise.</span>
+
+<span class="sd">        edges cin a cycle</span>
+<span class="sd">        with opposite direction are given an entry of -1 in the matrix.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            The cycle matrix of the network graph as 2D Numpy array of</span>
+<span class="sd">            integers.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 3&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_producer(&quot;Prod 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 1-2&quot;, &quot;Node 1&quot;, &quot;Node 2&quot;, line=&quot;supply&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_consumer(&quot;Cons 2-3&quot;, &quot;Node 2&quot;, &quot;Node 3&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 3-0&quot;, &quot;Node 3&quot;, &quot;Node 0&quot;, line=&quot;return&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.cycle_matrix</span>
+<span class="sd">            array([[1., 1., 1., 1.]])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_matrix</span><span class="p">(</span>
+            <span class="n">matrix_name</span><span class="o">=</span><span class="s2">&quot;cycle&quot;</span><span class="p">,</span>
+            <span class="n">matrix_function</span><span class="o">=</span><span class="n">compute_cycle_matrix</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;net_spanning_tree&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">imposed_mdot_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the edge-loop incidence matrix, or cycle matrix, of the network</span>
+<span class="sd">        containing only loops from the edges with a mass flow setpoint to the</span>
+<span class="sd">        main producer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_matrix</span><span class="p">(</span>
+            <span class="n">matrix_name</span><span class="o">=</span><span class="s2">&quot;imposed_mass_flow&quot;</span><span class="p">,</span> <span class="n">matrix_function</span><span class="o">=</span><span class="n">compute_imposed_mdot_matrix</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consumers_cycle_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the edge-loop incidence matrix, or cycle matrix, of the network</span>
+<span class="sd">        containing loops from the producer to each consumer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_matrix</span><span class="p">(</span>
+            <span class="n">matrix_name</span><span class="o">=</span><span class="s2">&quot;cycle_consumers&quot;</span><span class="p">,</span>
+            <span class="n">matrix_function</span><span class="o">=</span><span class="n">compute_consumers_cycle_matrix</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Masks</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># GET methods of the class return numpy array with values in a fixed order.</span>
+    <span class="c1"># These masks are used with these arrays.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Example usage:</span>
+    <span class="c1">#   mdot = net.get_edges_attribute_array(&#39;mass_flow&#39;)</span>
+    <span class="c1">#   mdot_pipes = mdot[net.pipes_mask]</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Network.mask">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.mask">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;equality&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array with the indices of all the edges for which attr is</span>
+<span class="sd">        equal to value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;equality&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">all_values</span> <span class="o">==</span> <span class="n">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;membership&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">all_values</span><span class="p">,</span> <span class="n">value</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Condition </span><span class="si">{</span><span class="n">condition</span><span class="si">}</span><span class="s2"> not implemented&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">branch_components_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array with the indices of all the edges that are eiter in</span>
+<span class="sd">        the supply or return line (branch components).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_class&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">classes</span> <span class="o">==</span> <span class="s2">&quot;branch_component&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">leaf_components_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array with the indices of all the edges that are between</span>
+<span class="sd">        the supply and return line (leaf components).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_class&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">classes</span> <span class="o">==</span> <span class="s2">&quot;leaf_component&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pipes_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the base pipes.&quot;&quot;&quot;</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">types</span> <span class="o">==</span> <span class="s2">&quot;base_pipe&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consumers_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the base consumers.&quot;&quot;&quot;</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">types</span> <span class="o">==</span> <span class="s2">&quot;base_consumer&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">producers_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the base producers.&quot;&quot;&quot;</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">types</span> <span class="o">==</span> <span class="s2">&quot;base_producer&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pressure_setpoints_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the ideal components with a</span>
+<span class="sd">        pressure setpoint.&quot;&quot;&quot;</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;setpoint_type_hyd&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">types</span> <span class="o">==</span> <span class="s2">&quot;pressure&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mass_flow_setpoints_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the ideal components with a</span>
+<span class="sd">        mass flow setpoint.&quot;&quot;&quot;</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;setpoint_type_hyd&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">types</span> <span class="o">==</span> <span class="s2">&quot;mass_flow&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">valves_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the consumers.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: valves for now are just consumers</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">types</span> <span class="o">==</span> <span class="s2">&quot;consumer&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pumps_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the producers.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: pumps for now are just producers</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">types</span> <span class="o">==</span> <span class="s2">&quot;producer&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supply_line_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array with the indices of all the edges in the supply line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;line&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_components_mask</span><span class="p">]:</span>
+            <span class="n">assign_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lines</span> <span class="o">==</span> <span class="s2">&quot;supply&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">return_line_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array with the indices of all the edges in the return line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;line&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_components_mask</span><span class="p">]:</span>
+            <span class="n">assign_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lines</span> <span class="o">==</span> <span class="s2">&quot;return&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">imposed_valves_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array with the indices of all the valves with imposed kv.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kv_imposed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;kv_imposed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">kv_imposed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">imposed_pumps_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array with the indices of all the pumps with imposed rpm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rpm_imposed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;rpm_imposed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">rpm_imposed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">main_edge_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the index of the main edge.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: the main edge should not necessarily be a producer</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">producers_mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_setpoints_mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mask</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">secondary_producers_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the secondary producers.&quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">producers_mask</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressure_setpoints_mask</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>  <span class="c1"># TODO: improve</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">producers_mask</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ideal_components_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the ideal components.&quot;&quot;&quot;</span>
+        <span class="n">is_ideal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;is_ideal&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">is_ideal</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">real_components_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an array with the indices of all the real components.&quot;&quot;&quot;</span>
+        <span class="n">is_ideal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;is_ideal&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">is_ideal</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Pointers</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Pointers to specific subgraphs of the network.</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">branch_components_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the branch components.</span>
+<span class="sd">        The mask is based on the order of edges in the Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_components_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">leaf_components_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the leaf compoents. The</span>
+<span class="sd">        mask is based on the order of edges in the Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">leaf_components_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pipes_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the pipes. The mask is</span>
+<span class="sd">        based on the order of edges in the Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pipes_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consumers_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the consumers. The mask is</span>
+<span class="sd">        based on the order of edges in the Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consumers_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">producers_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the producers. The mask is</span>
+<span class="sd">        based on the order of edges in the Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">producers_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pressure_setpoints_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the ideal components with</span>
+<span class="sd">        a pressure setpoint. The mask is based on the order of edges in the</span>
+<span class="sd">        Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pressure_setpoints_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mass_flow_setpoints_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the ideal components with</span>
+<span class="sd">        a mass flow setpoint. The mask is based on the order of edges in the</span>
+<span class="sd">        Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass_flow_setpoints_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supply_line_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recompute_if_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the components in the</span>
+<span class="sd">        supply line. The mask is based on the order of edges in the Networkx</span>
+<span class="sd">        graph. If the line attribute is missing from at least one branch</span>
+<span class="sd">        component, the lines are recomputed and assigned automatically.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">recompute_if_missing</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;line&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_components_mask</span><span class="p">]:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Line attributes are being recomputed!&quot;</span><span class="p">)</span>
+                <span class="n">assign_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">supply_line_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">return_line_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recompute_if_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        eturns a view of the network graph with only the components in the</span>
+<span class="sd">        return line. The mask is based on the order of edges in the Networkx</span>
+<span class="sd">        graph. If the line attribute is missing from at least one branch</span>
+<span class="sd">        component, the lines are recomputed and assigned automatically.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">recompute_if_missing</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;line&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_components_mask</span><span class="p">]:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Line attributes are being recomputed!&quot;</span><span class="p">)</span>
+                <span class="n">assign_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">return_line_mask</span><span class="p">)</span>
+
+    <span class="c1"># Item counters</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Simple network information such as the number of pipes.</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_pipes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of pipes in the network.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pipes_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_consumers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of consumers in the network.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">consumers_mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_producers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of producers in the network.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">producers_mask</span><span class="p">)</span>
+
+    <span class="c1"># Edge setters</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Methods to add elements such as pipes, consumers and producers to the</span>
+    <span class="c1"># network.</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Network.add_component">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_component">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_component</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">start_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">end_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a deepcopy of the input component to the network as an edge</span>
+<span class="sd">        between start_node and end_node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            The label for the edge.</span>
+<span class="sd">        start_node : Hashable</span>
+<span class="sd">            Starting node of the edge.</span>
+<span class="sd">        end_node : Hashable</span>
+<span class="sd">            Ending node of the edge.</span>
+<span class="sd">        component : Component</span>
+<span class="sd">            The component to be added as an edge.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional keyword arguments to be passed to the edge addition</span>
+<span class="sd">            method.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            This method does not return any value.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn import Network</span>
+<span class="sd">            &gt;&gt;&gt; from pydhn.components import Pipe</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; pipe = Pipe(length=10)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_component(&#39;pipe_1&#39;, 0, 1, pipe)</span>
+<span class="sd">            &gt;&gt;&gt; net[(0, 1)][&quot;length&quot;]</span>
+<span class="sd">            10</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">component_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span>
+            <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span>
+            <span class="n">component</span><span class="o">=</span><span class="n">component_copy</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.add_pipe">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_pipe">[docs]</a>
+    <span class="nd">@docstring_parameters</span><span class="p">(</span>
+        <span class="n">D_PIPES</span><span class="o">=</span><span class="n">D_PIPES</span><span class="p">,</span>
+        <span class="n">DEPTH</span><span class="o">=</span><span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">KI</span><span class="o">=</span><span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">IT</span><span class="o">=</span><span class="n">INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">L_PIPES</span><span class="o">=</span><span class="n">L_PIPES</span><span class="p">,</span>
+        <span class="n">RG</span><span class="o">=</span><span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">KIP</span><span class="o">=</span><span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">IPT</span><span class="o">=</span><span class="n">INTERNAL_PIPE_THICKNESS</span><span class="p">,</span>
+        <span class="n">K_CASING</span><span class="o">=</span><span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">CASING_THICKNESS</span><span class="o">=</span><span class="n">CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">DISCRETIZATION</span><span class="o">=</span><span class="n">DISCRETIZATION</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_pipe</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">start_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">end_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">D_PIPES</span><span class="p">,</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">k_insulation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">insulation_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">L_PIPES</span><span class="p">,</span>
+        <span class="n">roughness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">k_internal_pipe</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">internal_pipe_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">INTERNAL_PIPE_THICKNESS</span><span class="p">,</span>
+        <span class="n">k_casing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">casing_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">discretization</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DISCRETIZATION</span><span class="p">,</span>
+        <span class="n">line</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a branch component of type &quot;base_pipe&quot; to the directed graph of</span>
+<span class="sd">        the network as an edge between start_node and end_node. The &quot;base_pipe&quot;</span>
+<span class="sd">        is a steady-state pipe type where volumes of water can be discretized</span>
+<span class="sd">        for more accurate results.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            The label for the edge.</span>
+<span class="sd">        start_node : Hashable</span>
+<span class="sd">            Starting node of the edge.</span>
+<span class="sd">        end_node : Hashable</span>
+<span class="sd">            Ending node of the edge.</span>
+<span class="sd">        diameter : float, optional</span>
+<span class="sd">            Internal diameter of the pipe (m). The default is {D_PIPES}.</span>
+<span class="sd">        depth : float, optional</span>
+<span class="sd">            Burying depth of the pipe (m). The default is {DEPTH}.</span>
+<span class="sd">        k_insulation : float, optional</span>
+<span class="sd">            Thermal conductivity of insulation (W/(m·K)). The default is {KI}.</span>
+<span class="sd">        insulation_thickness : float, optional</span>
+<span class="sd">            Thickness of the insulation layer (m). The default is {IT}.</span>
+<span class="sd">        length : float, optional</span>
+<span class="sd">            Length of the pipe (m). The default is {L_PIPES}.</span>
+<span class="sd">        roughness : float, optional</span>
+<span class="sd">            Roughness of the internal pipe surface (mm). The default is {RG}.</span>
+<span class="sd">        k_internal_pipe : float, optional</span>
+<span class="sd">            Thermal conductivity of the pipe (W/(m·K)). The default is {KIP}.</span>
+<span class="sd">        internal_pipe_thickness : float, optional</span>
+<span class="sd">            Thickness of the pipe (m). The default is {IPT}.</span>
+<span class="sd">        k_casing : float, optional</span>
+<span class="sd">            Thermal conductivity of the casing (W/(m·K)). The default is</span>
+<span class="sd">            {K_CASING}.</span>
+<span class="sd">        casing_thickness : float, optional</span>
+<span class="sd">           Thickness of the casing (m). The default is {CASING_THICKNESS}.</span>
+<span class="sd">        discretization : float, optional</span>
+<span class="sd">            Length of segments for discretizing the pipe (m). The default is</span>
+<span class="sd">            {DISCRETIZATION}.</span>
+<span class="sd">        line : str, optional</span>
+<span class="sd">            Either &quot;supply&quot; or &quot;return&quot;. The default is None.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional keyword arguments.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            This method does not return any value.</span>
+
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&#39;pipe_1&#39;, 0, 1, length=10)</span>
+<span class="sd">            &gt;&gt;&gt; net[(0, 1)][&quot;length&quot;]</span>
+<span class="sd">            10</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: add option to compute length</span>
+
+        <span class="c1"># Compute delta z</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start_z</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)[</span><span class="n">start_node</span><span class="p">]</span>
+            <span class="n">end_z</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)[</span><span class="n">end_node</span><span class="p">]</span>
+            <span class="n">delta_z</span> <span class="o">=</span> <span class="n">end_z</span> <span class="o">-</span> <span class="n">start_z</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">delta_z</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Can&#39;t compute delta z, height of nodes unknown.&quot;</span><span class="p">)</span>
+
+        <span class="n">component</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;base_pipe&quot;</span><span class="p">,</span>
+            <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+            <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span>
+            <span class="n">k_insulation</span><span class="o">=</span><span class="n">k_insulation</span><span class="p">,</span>
+            <span class="n">insulation_thickness</span><span class="o">=</span><span class="n">insulation_thickness</span><span class="p">,</span>
+            <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
+            <span class="n">roughness</span><span class="o">=</span><span class="n">roughness</span><span class="p">,</span>
+            <span class="n">k_internal_pipe</span><span class="o">=</span><span class="n">k_internal_pipe</span><span class="p">,</span>
+            <span class="n">internal_pipe_thickness</span><span class="o">=</span><span class="n">internal_pipe_thickness</span><span class="p">,</span>
+            <span class="n">k_casing</span><span class="o">=</span><span class="n">k_casing</span><span class="p">,</span>
+            <span class="n">casing_thickness</span><span class="o">=</span><span class="n">casing_thickness</span><span class="p">,</span>
+            <span class="n">dz</span><span class="o">=</span><span class="n">delta_z</span><span class="p">,</span>
+            <span class="n">discretization</span><span class="o">=</span><span class="n">discretization</span><span class="p">,</span>
+            <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add entry to graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.add_lagrangian_pipe">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_lagrangian_pipe">[docs]</a>
+    <span class="nd">@docstring_parameters</span><span class="p">(</span>
+        <span class="n">D_PIPES</span><span class="o">=</span><span class="n">D_PIPES</span><span class="p">,</span>
+        <span class="n">DEPTH</span><span class="o">=</span><span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">KI</span><span class="o">=</span><span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">IT</span><span class="o">=</span><span class="n">INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">L_PIPES</span><span class="o">=</span><span class="n">L_PIPES</span><span class="p">,</span>
+        <span class="n">RG</span><span class="o">=</span><span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">KIP</span><span class="o">=</span><span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">IPT</span><span class="o">=</span><span class="n">INTERNAL_PIPE_THICKNESS</span><span class="p">,</span>
+        <span class="n">K_CASING</span><span class="o">=</span><span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">CASING_THICKNESS</span><span class="o">=</span><span class="n">CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">RW</span><span class="o">=</span><span class="n">RHO_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">CIP</span><span class="o">=</span><span class="n">CP_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">SZ</span><span class="o">=</span><span class="n">STEPSIZE</span><span class="p">,</span>
+        <span class="n">HE</span><span class="o">=</span><span class="n">H_EXT</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_lagrangian_pipe</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">start_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">end_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">D_PIPES</span><span class="p">,</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">k_insulation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">insulation_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">L_PIPES</span><span class="p">,</span>
+        <span class="n">roughness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">k_internal_pipe</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">internal_pipe_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">INTERNAL_PIPE_THICKNESS</span><span class="p">,</span>
+        <span class="n">k_casing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">casing_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">rho_wall</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RHO_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">cp_wall</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">CP_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">h_ext</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">H_EXT</span><span class="p">,</span>
+        <span class="n">stepsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">STEPSIZE</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a component of type &quot;lagrangian_pipe&quot; to the directed graph of the</span>
+<span class="sd">        network as an edge between start_node and end_node.</span>
+<span class="sd">        The &quot;lagrangian_pipe&quot; branch component is a dynamic pipe type based on</span>
+<span class="sd">        the Lagrangian approach. It takes into account the heat capacity of the</span>
+<span class="sd">        fluid and internal pipe walls.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            The label for the edge.</span>
+<span class="sd">        start_node : Hashable</span>
+<span class="sd">            Starting node of the edge.</span>
+<span class="sd">        end_node : Hashable</span>
+<span class="sd">            Ending node of the edge.</span>
+<span class="sd">        diameter : float, optional</span>
+<span class="sd">            Internal diameter of the pipe (m). The default is {D_PIPES}.</span>
+<span class="sd">        depth : float, optional</span>
+<span class="sd">            Burying depth of the pipe (m). The default is {DEPTH}.</span>
+<span class="sd">        k_insulation : float, optional</span>
+<span class="sd">            Thermal conductivity of insulation (W/(m·K)). The default is {KI}.</span>
+<span class="sd">        insulation_thickness : float, optional</span>
+<span class="sd">            Thickness of the insulation layer (m). The default is {IT}.</span>
+<span class="sd">        length : float, optional</span>
+<span class="sd">            Length of the pipe (m). The default is {L_PIPES}.</span>
+<span class="sd">        roughness : float, optional</span>
+<span class="sd">            Roughness of the internal pipe surface (mm). The default is {RG}.</span>
+<span class="sd">        k_internal_pipe : float, optional</span>
+<span class="sd">            Thermal conductivity of the pipe (W/(m·K)). The default is {KIP}.</span>
+<span class="sd">        internal_pipe_thickness : float, optional</span>
+<span class="sd">            Thickness of the pipe (m). The default is {IPT}.</span>
+<span class="sd">        k_casing : float, optional</span>
+<span class="sd">            Thermal conductivity of the casing (W/(m·K)). The default is</span>
+<span class="sd">            {K_CASING}.</span>
+<span class="sd">        casing_thickness : float, optional</span>
+<span class="sd">           Thickness of the casing (m). The default is {CASING_THICKNESS}.</span>
+<span class="sd">        rho_wall : float, optional</span>
+<span class="sd">            Density of internal pipe (kg/m³). The default is {RW}.</span>
+<span class="sd">        cp_wall : float, optional</span>
+<span class="sd">            Specific heat capacity of pipe wall (J/(kg·K)). The default is</span>
+<span class="sd">            {CIP}.</span>
+<span class="sd">        stepsize : float, optional</span>
+<span class="sd">            Size of a time-step (s). The default is {SZ}.</span>
+<span class="sd">        h_ext : float, optional</span>
+<span class="sd">            External heat transfer coefficient (W/(m²·K)). The default is {HE}.</span>
+<span class="sd">        line : str, optional</span>
+<span class="sd">            Either &quot;supply&quot; or &quot;return&quot;. The default is None.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional keyword arguments.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            This method does not return any value.</span>
+
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_lagrangian_pipe(&#39;pipe_1&#39;, 0, 1, stepsize=60)</span>
+<span class="sd">            &gt;&gt;&gt; net[(0, 1)][&quot;stepsize&quot;]</span>
+<span class="sd">            60</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Compute delta z</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start_z</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)[</span><span class="n">start_node</span><span class="p">]</span>
+            <span class="n">end_z</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)[</span><span class="n">end_node</span><span class="p">]</span>
+            <span class="n">delta_z</span> <span class="o">=</span> <span class="n">end_z</span> <span class="o">-</span> <span class="n">start_z</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">delta_z</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Can&#39;t compute delta z, height of nodes unknown.&quot;</span><span class="p">)</span>
+
+        <span class="n">component</span> <span class="o">=</span> <span class="n">LagrangianPipe</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;base_pipe&quot;</span><span class="p">,</span>
+            <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+            <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span>
+            <span class="n">k_insulation</span><span class="o">=</span><span class="n">k_insulation</span><span class="p">,</span>
+            <span class="n">insulation_thickness</span><span class="o">=</span><span class="n">insulation_thickness</span><span class="p">,</span>
+            <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
+            <span class="n">roughness</span><span class="o">=</span><span class="n">roughness</span><span class="p">,</span>
+            <span class="n">k_internal_pipe</span><span class="o">=</span><span class="n">k_internal_pipe</span><span class="p">,</span>
+            <span class="n">internal_pipe_thickness</span><span class="o">=</span><span class="n">internal_pipe_thickness</span><span class="p">,</span>
+            <span class="n">k_casing</span><span class="o">=</span><span class="n">k_casing</span><span class="p">,</span>
+            <span class="n">casing_thickness</span><span class="o">=</span><span class="n">casing_thickness</span><span class="p">,</span>
+            <span class="n">rho_wall</span><span class="o">=</span><span class="n">rho_wall</span><span class="p">,</span>
+            <span class="n">cp_wall</span><span class="o">=</span><span class="n">cp_wall</span><span class="p">,</span>
+            <span class="n">h_ext</span><span class="o">=</span><span class="n">h_ext</span><span class="p">,</span>
+            <span class="n">dz</span><span class="o">=</span><span class="n">delta_z</span><span class="p">,</span>
+            <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span>
+            <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add entry to graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.add_consumer">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_consumer">[docs]</a>
+    <span class="nd">@docstring_parameters</span><span class="p">(</span>
+        <span class="n">D_HX</span><span class="o">=</span><span class="n">D_HX</span><span class="p">,</span>
+        <span class="n">MMIN</span><span class="o">=</span><span class="n">MASS_FLOW_MIN_CONS</span><span class="p">,</span>
+        <span class="n">HD</span><span class="o">=</span><span class="n">HEAT_DEMAND</span><span class="p">,</span>
+        <span class="n">DTD</span><span class="o">=</span><span class="n">DT_DESIGN</span><span class="p">,</span>
+        <span class="n">TS</span><span class="o">=</span><span class="n">T_SECONDARY</span><span class="p">,</span>
+        <span class="n">STT</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HX_CONS</span><span class="p">,</span>
+        <span class="n">STTR</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HX_CONS_REV</span><span class="p">,</span>
+        <span class="n">SVT</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HX_CONS</span><span class="p">,</span>
+        <span class="n">SVTR</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HX_CONS_REV</span><span class="p">,</span>
+        <span class="n">PMAX</span><span class="o">=</span><span class="n">POWER_MAX_HX</span><span class="p">,</span>
+        <span class="n">TOM</span><span class="o">=</span><span class="n">T_OUT_MIN</span><span class="p">,</span>
+        <span class="n">STH</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HYD_CONS</span><span class="p">,</span>
+        <span class="n">SVH</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HYD_CONS</span><span class="p">,</span>
+        <span class="n">CTH</span><span class="o">=</span><span class="n">CONTROL_TYPE_CONS</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_consumer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">start_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">end_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">D_HX</span><span class="p">,</span>
+        <span class="n">mass_flow_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">MASS_FLOW_MIN_CONS</span><span class="p">,</span>
+        <span class="n">heat_demand</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">HEAT_DEMAND</span><span class="p">,</span>
+        <span class="n">design_delta_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DT_DESIGN</span><span class="p">,</span>
+        <span class="n">t_secondary</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">T_SECONDARY</span><span class="p">,</span>
+        <span class="n">setpoint_type_hx</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SETPOINT_TYPE_HX_CONS</span><span class="p">,</span>
+        <span class="n">setpoint_type_hx_rev</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SETPOINT_TYPE_HX_CONS_REV</span><span class="p">,</span>
+        <span class="n">setpoint_value_hx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">SETPOINT_VALUE_HX_CONS</span><span class="p">,</span>
+        <span class="n">setpoint_value_hx_rev</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">SETPOINT_VALUE_HX_CONS_REV</span><span class="p">,</span>
+        <span class="n">power_max_hx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">POWER_MAX_HX</span><span class="p">,</span>
+        <span class="n">t_out_min_hx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">T_OUT_MIN</span><span class="p">,</span>
+        <span class="n">setpoint_type_hyd</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">SETPOINT_TYPE_HYD_CONS</span><span class="p">,</span>
+        <span class="n">setpoint_value_hyd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">SETPOINT_VALUE_HYD_CONS</span><span class="p">,</span>
+        <span class="n">control_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">CONTROL_TYPE_CONS</span><span class="p">,</span>
+        <span class="n">stepsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3600.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a single edge of type &quot;base_consumer&quot; to the directed graph of the</span>
+<span class="sd">        network. The base consumer is an ideal leaf component with imposed mass</span>
+<span class="sd">        flow rate, which can either be specified by the user with the parameter</span>
+<span class="sd">        setpoint_value_hyd when the control type is &quot;mass_flow&quot;, or computed</span>
+<span class="sd">        from the optional inputs heat_demand and design_delta_t when the</span>
+<span class="sd">        control type is &quot;energy&quot;. Imposing a setpoint pressure difference is</span>
+<span class="sd">        currently not supported.</span>
+
+<span class="sd">        For the thermal simulation, the base consumer has 3 different possible</span>
+<span class="sd">        setpoint types (setpoint_type_hx):</span>
+
+<span class="sd">            * &quot;t_out&quot; imposes a specified outlet temperature (°C)</span>
+<span class="sd">            * &quot;delta_t&quot; imposes a specified temperature difference (K) \</span>
+<span class="sd">               between the ending and starting node of the edge of the \</span>
+<span class="sd">                   component</span>
+<span class="sd">            * &quot;delta_q&quot; imposes a specified energy loss or gain (Wh)</span>
+
+<span class="sd">        Regardless of the setpoint type chosen, the setpoint value is given by</span>
+<span class="sd">        setpoint_value_hx.</span>
+
+<span class="sd">        In case reverse flow is expected, the parameters setpoint_type_hx_rev</span>
+<span class="sd">        and setpoint_value_hx_rev should also be specified to control the</span>
+<span class="sd">        behaviour of the component in such cases.</span>
+
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            The label for the edge.</span>
+<span class="sd">        start_node : Hashable</span>
+<span class="sd">            Starting node of the edge.</span>
+<span class="sd">        end_node : Hashable</span>
+<span class="sd">            Ending node of the edge.</span>
+<span class="sd">        diameter : float, optional</span>
+<span class="sd">            Internal diameter of the heat exchanger (m). This parameter is not</span>
+<span class="sd">            currently used, as singular pressure losses are not implemented.</span>
+<span class="sd">            The default is {D_HX}.</span>
+<span class="sd">        mass_flow_min : float, optional</span>
+<span class="sd">            Minimum mass flow allowed through the consumer (kg/s). Setting this</span>
+<span class="sd">            parameter enforces a minimum mass flow even if the heat demand is</span>
+<span class="sd">            0. The default is {MMIN}.</span>
+<span class="sd">        heat_demand : float, optional</span>
+<span class="sd">            Heat demand of the consumer (Wh), only used to compute the imposed</span>
+<span class="sd">            mass flow when the control type is set to &quot;energy&quot;. A positive heat</span>
+<span class="sd">            demand means that the consumer wants energy from the network. This</span>
+<span class="sd">            parameter does not control the actual amount of energy exchanged.</span>
+<span class="sd">            The default is {HD}.</span>
+<span class="sd">        design_delta_t : float, optional</span>
+<span class="sd">            Expected temperature difference through the heat exchanger of the</span>
+<span class="sd">            consumer (K), only used to compute the imposed mass flow when the</span>
+<span class="sd">            control type is set to &quot;energy&quot;. A positive temperature difference</span>
+<span class="sd">            means that the consumer is expected to reduce the inlet temperature</span>
+<span class="sd">            by that value. This parameter does not control the actual</span>
+<span class="sd">            temperature difference during the thermal simulation. The default</span>
+<span class="sd">            is {DTD}.</span>
+<span class="sd">        t_secondary : float, optional</span>
+<span class="sd">            Temperature of the secondary system (°C). This parameter is not</span>
+<span class="sd">            currently used. The default is {TS}.</span>
+<span class="sd">        setpoint_type_hx : str, optional</span>
+<span class="sd">            Type of setpoint for the thermal simulation in case of forward</span>
+<span class="sd">            flow. Possible values are &quot;t_out&quot;, &quot;delta_t&quot; and &quot;delta_q&quot;. The</span>
+<span class="sd">            default is {STT}.</span>
+<span class="sd">        setpoint_type_hx_rev : str, optional</span>
+<span class="sd">            Type of setpoint for the thermal simulation in case of reverse</span>
+<span class="sd">            flow. Possible values are &quot;t_out&quot;, &quot;delta_t&quot; and &quot;delta_q&quot;. The</span>
+<span class="sd">            default is {STTR}.</span>
+<span class="sd">        setpoint_value_hx : float, optional</span>
+<span class="sd">            Setpoint value of the chosen setpoint type for the thermal</span>
+<span class="sd">            simulation in case of forward flow. The default is {SVT}.</span>
+<span class="sd">        setpoint_value_hx_rev : float, optional</span>
+<span class="sd">            Setpoint value of the chosen setpoint type for the thermal</span>
+<span class="sd">            simulation in case of reverse flow. The default is {SVTR}.</span>
+<span class="sd">        power_max_hx : float, optional</span>
+<span class="sd">            Maximum power of the heat exchanger (W). If set, it limits the heat</span>
+<span class="sd">            exchange enforced by the defined setpoints, which are not anymore</span>
+<span class="sd">            guaranteed to be reached. The default is {PMAX}.</span>
+<span class="sd">        t_out_min_hx : float, optional</span>
+<span class="sd">            Minimum outlet temperature (°C). If set, it limits the outlet</span>
+<span class="sd">            temperature resulting from the simulation with the defined</span>
+<span class="sd">            setpoints, which are not anymore guaranteed to be reached. The</span>
+<span class="sd">            default is {TOM}.</span>
+<span class="sd">        setpoint_type_hyd : str, optional</span>
+<span class="sd">            Hydraulic setpoint type. Currently, the only supported option is</span>
+<span class="sd">            &quot;mass_flow&quot;. The default is {STH}.</span>
+<span class="sd">        setpoint_value_hyd : float, optional</span>
+<span class="sd">            Setpoint value of the chosen setpoint type for the hydraulic</span>
+<span class="sd">            simulation. Currently, the only supported hydraulic setpoint type</span>
+<span class="sd">            is mass flow (kg/s). The default is {SVH}.</span>
+<span class="sd">        control_type : str, optional</span>
+<span class="sd">            How to compute the imposed mass flow. It can be either &quot;mass_flow&quot;,</span>
+<span class="sd">            to impose the value of setpoint_value_hyd, or &quot;energy&quot;, to compute</span>
+<span class="sd">            the mass flow from the expected energy_demand and design_delta_t.</span>
+<span class="sd">            The default is {CTH}.</span>
+<span class="sd">        stepsize: float, optional</span>
+<span class="sd">            Size of the time step in seconds. For steady-state simulations, use</span>
+<span class="sd">            3600. The default is 3600.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional keyword arguments.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            This method does not return any value.</span>
+
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_consumer(&#39;cons_1&#39;, 0, 1, control_type=&#39;energy&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; net[(0, 1)][&quot;control_type&quot;]</span>
+<span class="sd">            &#39;energy&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">control_type</span> <span class="o">==</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">and</span> <span class="n">setpoint_value_hyd</span> <span class="o">!=</span> <span class="n">SETPOINT_TYPE_HYD_CONS</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The control type has been set to energy, but a &quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;setpoint_value_hyd has also been sepecified.&quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;setpoint_value_hyd might be overridden during simulation.&quot;</span>
+
+        <span class="n">component</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;base_consumer&quot;</span><span class="p">,</span>
+            <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+            <span class="n">mass_flow_min</span><span class="o">=</span><span class="n">mass_flow_min</span><span class="p">,</span>
+            <span class="n">heat_demand</span><span class="o">=</span><span class="n">heat_demand</span><span class="p">,</span>
+            <span class="n">design_delta_t</span><span class="o">=</span><span class="n">design_delta_t</span><span class="p">,</span>
+            <span class="n">t_secondary</span><span class="o">=</span><span class="n">t_secondary</span><span class="p">,</span>
+            <span class="n">setpoint_type_hx</span><span class="o">=</span><span class="n">setpoint_type_hx</span><span class="p">,</span>
+            <span class="n">setpoint_type_hx_rev</span><span class="o">=</span><span class="n">setpoint_type_hx_rev</span><span class="p">,</span>
+            <span class="n">setpoint_value_hx</span><span class="o">=</span><span class="n">setpoint_value_hx</span><span class="p">,</span>
+            <span class="n">setpoint_value_hx_rev</span><span class="o">=</span><span class="n">setpoint_value_hx_rev</span><span class="p">,</span>
+            <span class="n">power_max_hx</span><span class="o">=</span><span class="n">power_max_hx</span><span class="p">,</span>
+            <span class="n">t_out_min_hx</span><span class="o">=</span><span class="n">t_out_min_hx</span><span class="p">,</span>
+            <span class="n">setpoint_type_hyd</span><span class="o">=</span><span class="n">setpoint_type_hyd</span><span class="p">,</span>
+            <span class="n">setpoint_value_hyd</span><span class="o">=</span><span class="n">setpoint_value_hyd</span><span class="p">,</span>
+            <span class="n">control_type</span><span class="o">=</span><span class="n">control_type</span><span class="p">,</span>
+            <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add entry to graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.add_producer">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_producer">[docs]</a>
+    <span class="nd">@docstring_parameters</span><span class="p">(</span>
+        <span class="n">SP</span><span class="o">=</span><span class="n">STATIC_PRESSURE</span><span class="p">,</span>
+        <span class="n">STT</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HX_PROD</span><span class="p">,</span>
+        <span class="n">STTR</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HX_PROD_REV</span><span class="p">,</span>
+        <span class="n">SVT</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HX_PROD</span><span class="p">,</span>
+        <span class="n">SVTR</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HX_PROD_REV</span><span class="p">,</span>
+        <span class="n">PMAX</span><span class="o">=</span><span class="n">POWER_MAX_HX</span><span class="p">,</span>
+        <span class="n">TOM</span><span class="o">=</span><span class="n">T_OUT_MIN</span><span class="p">,</span>
+        <span class="n">STH</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HYD_PROD</span><span class="p">,</span>
+        <span class="n">SVH</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HYD_PROD</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_producer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">start_node</span><span class="p">,</span>
+        <span class="n">end_node</span><span class="p">,</span>
+        <span class="n">static_pressure</span><span class="o">=</span><span class="n">STATIC_PRESSURE</span><span class="p">,</span>
+        <span class="n">setpoint_type_hx</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HX_PROD</span><span class="p">,</span>
+        <span class="n">setpoint_type_hx_rev</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HX_PROD_REV</span><span class="p">,</span>
+        <span class="n">setpoint_value_hx</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HX_PROD</span><span class="p">,</span>
+        <span class="n">setpoint_value_hx_rev</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HX_PROD_REV</span><span class="p">,</span>
+        <span class="n">power_max_hx</span><span class="o">=</span><span class="n">POWER_MAX_HX</span><span class="p">,</span>
+        <span class="n">t_out_min</span><span class="o">=</span><span class="n">T_OUT_MIN</span><span class="p">,</span>
+        <span class="n">setpoint_type_hyd</span><span class="o">=</span><span class="n">SETPOINT_TYPE_HYD_PROD</span><span class="p">,</span>
+        <span class="n">setpoint_value_hyd</span><span class="o">=</span><span class="n">SETPOINT_VALUE_HYD_PROD</span><span class="p">,</span>
+        <span class="n">stepsize</span><span class="o">=</span><span class="mf">3600.0</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a single edge of type &quot;base_producer&quot; to the directed graph of the</span>
+<span class="sd">        network. The base producer is an ideal leaf component with imposed</span>
+<span class="sd">        pressure difference (for the main producer) or mass flow rate (for</span>
+<span class="sd">        secondary producers).</span>
+
+<span class="sd">        For the thermal simulation, the base producer has 3 different possible</span>
+<span class="sd">        setpoint types (setpoint_type_hx):</span>
+
+<span class="sd">            - &quot;t_out&quot; imposes a specified outlet temperature (°C)</span>
+<span class="sd">            - &quot;delta_t&quot; imposes a specified temperature difference (K) between</span>
+<span class="sd">               the ending and starting node of the edge of the component</span>
+<span class="sd">            - &quot;delta_q&quot; imposes a specified energy loss or gain (Wh)</span>
+
+<span class="sd">        Regardless of the setpoint type chosen, the setpoint value is given by</span>
+<span class="sd">        setpoint_value_hx.</span>
+
+<span class="sd">        In case reverse flow is expected, the parameters setpoint_type_hx_rev</span>
+<span class="sd">        and setpoint_value_hx_rev should also be specified to control the</span>
+<span class="sd">        behaviour of the component in such cases.</span>
+
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            The label for the edge.</span>
+<span class="sd">        start_node : Hashable</span>
+<span class="sd">            Starting node of the edge.</span>
+<span class="sd">        end_node : Hashable</span>
+<span class="sd">            Ending node of the edge.</span>
+<span class="sd">        static_pressure : float, optional</span>
+<span class="sd">            The end node of the producer can be used as slack node to impose</span>
+<span class="sd">            a pressure value in one node of the network. The pressure in all</span>
+<span class="sd">            other nodes will be then computed from the pressure differences in</span>
+<span class="sd">            edges resulting from the hydraulic simulation. The default is {SP}.</span>
+<span class="sd">        setpoint_type_hx : str, optional</span>
+<span class="sd">            Type of setpoint for the thermal simulation in case of forward</span>
+<span class="sd">            flow. Possible values are &quot;t_out&quot;, &quot;delta_t&quot; and &quot;delta_q&quot;. The</span>
+<span class="sd">            default is {STT}.</span>
+<span class="sd">        setpoint_type_hx_rev : str, optional</span>
+<span class="sd">            Type of setpoint for the thermal simulation in case of reverse</span>
+<span class="sd">            flow. Possible values are &quot;t_out&quot;, &quot;delta_t&quot; and &quot;delta_q&quot;. The</span>
+<span class="sd">            default is {STTR}.</span>
+<span class="sd">        setpoint_value_hx : float, optional</span>
+<span class="sd">            Setpoint value of the chosen setpoint type for the thermal</span>
+<span class="sd">            simulation in case of forward flow. The default is {SVT}.</span>
+<span class="sd">        setpoint_value_hx_rev : float, optional</span>
+<span class="sd">            Setpoint value of the chosen setpoint type for the thermal</span>
+<span class="sd">            simulation in case of reverse flow. The default is {SVTR}.</span>
+<span class="sd">        power_max_hx : float, optional</span>
+<span class="sd">            Maximum power of the heat exchanger (W). If set, it limits the heat</span>
+<span class="sd">            exchange enforced by the defined setpoints, which are not anymore</span>
+<span class="sd">            guaranteed to be reached. The default is {PMAX}.</span>
+<span class="sd">        t_out_min : float, optional</span>
+<span class="sd">            Minimum outlet temperature (°C). If set, it limits the outlet</span>
+<span class="sd">            temperature resulting from the simulation with the defined</span>
+<span class="sd">            setpoints, which are not anymore guaranteed to be reached. The</span>
+<span class="sd">            default is {TOM}.</span>
+<span class="sd">        setpoint_type_hyd : str, optional</span>
+<span class="sd">            Hydraulic setpoint type, either &quot;pressure&quot; for imposing a pressure</span>
+<span class="sd">            difference (Pa) or &quot;mass_flow&quot; to impose a certain mass flow rate</span>
+<span class="sd">            (kg/s). Currently, one (main) producer needs to have a setpoint of</span>
+<span class="sd">            type &quot;pressure&quot;, while all the others should have a &quot;mass_flow&quot;</span>
+<span class="sd">            setpoint. Having multiple producers with a &quot;pressure&quot; setpoint also</span>
+<span class="sd">            works, but the simulation might not converge in complex cases. The</span>
+<span class="sd">            default is {STH}.</span>
+<span class="sd">        setpoint_value_hyd : float, optional</span>
+<span class="sd">            Setpoint value of the chosen setpoint type for the hydraulic</span>
+<span class="sd">            simulation. The default is {SVH}.</span>
+<span class="sd">        stepsize: float, optional</span>
+<span class="sd">            Size of the time step in seconds. For steady-state simulations, use</span>
+<span class="sd">            3600. The default is 3600.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional keyword arguments.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            This method does not return any value.</span>
+
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1, z=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_producer(&#39;cons_1&#39;, 0, 1, setpoint_type_hx=&#39;t_out&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; net[(0, 1)][&quot;setpoint_type_hx&quot;]</span>
+<span class="sd">            &#39;t_out&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">component</span> <span class="o">=</span> <span class="n">Producer</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">static_pressure</span><span class="o">=</span><span class="n">static_pressure</span><span class="p">,</span>
+            <span class="n">setpoint_type_hx</span><span class="o">=</span><span class="n">setpoint_type_hx</span><span class="p">,</span>
+            <span class="n">setpoint_type_hx_rev</span><span class="o">=</span><span class="n">setpoint_type_hx_rev</span><span class="p">,</span>
+            <span class="n">setpoint_value_hx</span><span class="o">=</span><span class="n">setpoint_value_hx</span><span class="p">,</span>
+            <span class="n">setpoint_value_hx_rev</span><span class="o">=</span><span class="n">setpoint_value_hx_rev</span><span class="p">,</span>
+            <span class="n">power_max_hx</span><span class="o">=</span><span class="n">power_max_hx</span><span class="p">,</span>
+            <span class="n">t_out_min</span><span class="o">=</span><span class="n">t_out_min</span><span class="p">,</span>
+            <span class="n">setpoint_type_hyd</span><span class="o">=</span><span class="n">setpoint_type_hyd</span><span class="p">,</span>
+            <span class="n">setpoint_value_hyd</span><span class="o">=</span><span class="n">setpoint_value_hyd</span><span class="p">,</span>
+            <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add entry to graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.add_branch_valve">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_branch_valve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_branch_valve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">kv</span><span class="o">=</span><span class="n">KV</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a single edge of type &quot;base_branch_valve&quot; to the directed graph of</span>
+<span class="sd">        the network. For a description of the component see</span>
+<span class="sd">        :class:`~pydhn.components.base_branch_valve.BranchValve`.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            The label for the edge.</span>
+<span class="sd">        start_node : Hashable</span>
+<span class="sd">            Starting node of the edge.</span>
+<span class="sd">        end_node : Hashable</span>
+<span class="sd">            Ending node of the edge.</span>
+<span class="sd">        kv : TYPE, optional</span>
+<span class="sd">            DESCRIPTION.</span>
+<span class="sd">            For the default value see :const:`~pydhn.default_values.default_values.KV`.</span>
+<span class="sd">        **kwargs : TYPE</span>
+<span class="sd">            DESCRIPTION.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">component</span> <span class="o">=</span> <span class="n">BranchValve</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;base_branch_valve&quot;</span><span class="p">,</span> <span class="n">kv</span><span class="o">=</span><span class="n">kv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add entry to graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.add_branch_pump">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_branch_pump">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_branch_pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">delta_p</span><span class="o">=</span><span class="n">DELTA_P</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a single edge of type &quot;branch_pump&quot; to the directed graph of the</span>
+<span class="sd">        network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">component</span> <span class="o">=</span> <span class="n">BranchPump</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">delta_p</span><span class="o">=</span><span class="n">delta_p</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Add entry to graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.add_bypass_pipe">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_bypass_pipe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_bypass_pipe</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">start_node</span><span class="p">,</span>
+        <span class="n">end_node</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="o">=</span><span class="n">D_BYPASS</span><span class="p">,</span>
+        <span class="n">depth</span><span class="o">=</span><span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">k_insulation</span><span class="o">=</span><span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">length</span><span class="o">=</span><span class="n">L_BYPASS_PIPES</span><span class="p">,</span>
+        <span class="n">insulation_thickness</span><span class="o">=</span><span class="n">BYPASS_INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">roughness</span><span class="o">=</span><span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">k_internal_pipe</span><span class="o">=</span><span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">internal_pipe_thickness</span><span class="o">=</span><span class="n">INTERNAL_BYPASS_THICKNESS</span><span class="p">,</span>
+        <span class="n">k_casing</span><span class="o">=</span><span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">casing_thickness</span><span class="o">=</span><span class="n">BYPASS_CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">discretization</span><span class="o">=</span><span class="n">DISCRETIZATION</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a single edge of type &quot;bypass_pipe&quot; to the directed graph of the</span>
+<span class="sd">        network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO: add option to compute length</span>
+
+        <span class="c1"># Compute delta z</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">start_z</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)[</span><span class="n">start_node</span><span class="p">]</span>
+            <span class="n">end_z</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)[</span><span class="n">end_node</span><span class="p">]</span>
+            <span class="n">delta_z</span> <span class="o">=</span> <span class="n">end_z</span> <span class="o">-</span> <span class="n">start_z</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">delta_z</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Can&#39;t compute delta z, height of nodes unknown.&quot;</span><span class="p">)</span>
+
+        <span class="n">component</span> <span class="o">=</span> <span class="n">BypassPipe</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;base_bypass_pipe&quot;</span><span class="p">,</span>
+            <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+            <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span>
+            <span class="n">k_insulation</span><span class="o">=</span><span class="n">k_insulation</span><span class="p">,</span>
+            <span class="n">insulation_thickness</span><span class="o">=</span><span class="n">insulation_thickness</span><span class="p">,</span>
+            <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
+            <span class="n">roughness</span><span class="o">=</span><span class="n">roughness</span><span class="p">,</span>
+            <span class="n">k_internal_pipe</span><span class="o">=</span><span class="n">k_internal_pipe</span><span class="p">,</span>
+            <span class="n">internal_pipe_thickness</span><span class="o">=</span><span class="n">internal_pipe_thickness</span><span class="p">,</span>
+            <span class="n">k_casing</span><span class="o">=</span><span class="n">k_casing</span><span class="p">,</span>
+            <span class="n">casing_thickness</span><span class="o">=</span><span class="n">casing_thickness</span><span class="p">,</span>
+            <span class="n">dz</span><span class="o">=</span><span class="n">delta_z</span><span class="p">,</span>
+            <span class="n">discretization</span><span class="o">=</span><span class="n">discretization</span><span class="p">,</span>
+            <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add entry to graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="n">end_node</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># Utilities</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># General utilities for the class.</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Network.run_sanity_checks">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.run_sanity_checks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_sanity_checks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">check_isomorphism</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs sanity checks on the Network against common mistakes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        verbose : Bool, optional</span>
+<span class="sd">            Defines the level of verbosity. The default is 1.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        errors : Dict</span>
+<span class="sd">            Dictionary with the results of the sanity check. A True value means</span>
+<span class="sd">            that an error was found during that test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">run_sanity_checks</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="n">check_isomorphism</span><span class="o">=</span><span class="n">check_isomorphism</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Network.to_citysim_xml">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.network.html#pydhn.classes.network.Network.to_citysim_xml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_citysim_xml</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">climatefile_path</span><span class="p">,</span> <span class="n">fluid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">demand_dataframe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_days</span><span class="o">=</span><span class="mi">365</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert and save the Network object to a CitySim XML file. The</span>
+<span class="sd">        buildings in the file are modelled as single walls and won&#39;t be</span>
+<span class="sd">        simulated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">to_citysim_xml</span><span class="p">(</span>
+            <span class="n">net</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+            <span class="n">fluid</span><span class="o">=</span><span class="n">fluid</span><span class="p">,</span>
+            <span class="n">climatefile_path</span><span class="o">=</span><span class="n">climatefile_path</span><span class="p">,</span>
+            <span class="n">demand_dataframe</span><span class="o">=</span><span class="n">demand_dataframe</span><span class="p">,</span>
+            <span class="n">n_days</span><span class="o">=</span><span class="n">n_days</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

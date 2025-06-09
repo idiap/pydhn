@@ -1,0 +1,15 @@
+plotting
+========
+
+.. automodule:: pydhn.plotting
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+.. toctree::
+   :maxdepth: 4
+
+   pydhn.plotting.interactive
+   pydhn.plotting.plotting

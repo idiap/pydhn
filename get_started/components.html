@@ -1,0 +1,1134 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Components &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulation" href="simulation.html" />
+    <link rel="prev" title="Soils" href="soil.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="soil.html">Soils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#component">Component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pipe">Pipe</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hydraulics">Hydraulics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#thermal">Thermal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lagrangian-pipe">Lagrangian Pipe</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Hydraulics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Thermal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#producer">Producer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#baseprodhyd">Hydraulics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#baseprodther">Thermal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#consumer">Consumer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Hydraulics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Thermal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#branch-valve">Branch Valve</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Hydraulics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Thermal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#branch-pump">Branch Pump</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Hydraulics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Thermal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bypass-pipe">Bypass Pipe</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Hydraulics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Thermal</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Components</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/get_started/components.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="components">
+<h1>Components<a class="headerlink" href="#components" title="Link to this heading"></a></h1>
+<p>Components are objects representing different elements of the network stored as edges in the network graph. A differentiation is made in PyDHN between <strong>branch</strong> and <strong>edge</strong> components (see <a class="reference internal" href="network.html#netprinciples"><span class="std std-ref">here</span></a>) and between <strong>ideal</strong> and <strong>real</strong> components. These categorizations are used to speed up the hydraulic convergence, currently based on a modified loop method. The difference between <em>ideal</em> and <em>real</em> components is that the former enforce a setpoint, such as a certain mass flow rate, while the latter define a relationship between pressure losses and mass flow.</p>
+<section id="component">
+<h2>Component<a class="headerlink" href="#component" title="Link to this heading"></a></h2>
+<p>The class <a class="reference internal" href="../generated/pydhn.components.abstract_component.html#pydhn.components.abstract_component.Component" title="pydhn.components.abstract_component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> provides a blueprint for all component classes and defines the main methods that are used during simulations. Each component has its own attributes, stored as a dictionary within the property <code class="docutils literal notranslate"><span class="pre">_attrs</span></code>. By default, in addition to all the attributes that are enforced as mandatory inputs, <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are also stored there:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">test_attr</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s1">&#39;test_attr&#39;</span><span class="p">])</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+<p>Attributes however are not meant to be accessed by directly calling <code class="docutils literal notranslate"><span class="pre">_attrs</span></code>, but with the built-it <code class="xref py py-meth docutils literal notranslate"><span class="pre">__getitem__()</span></code> method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">test_attr</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="p">[</span><span class="s1">&#39;test_attr&#39;</span><span class="p">])</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+<p>and can be changed via the <a class="reference internal" href="../generated/pydhn.components.abstract_component.html#pydhn.components.abstract_component.Component.set" title="pydhn.components.abstract_component.Component.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set()</span></code></a> method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">test_attr</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;test_attr&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="p">[</span><span class="s1">&#39;test_attr&#39;</span><span class="p">])</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+<p>In addition, the properties <code class="docutils literal notranslate"><span class="pre">_type</span></code>, with the unique name of the component type, <code class="docutils literal notranslate"><span class="pre">_class</span></code> (either <code class="docutils literal notranslate"><span class="pre">&quot;branch_component&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;leaf_component&quot;</span></code>) and <code class="docutils literal notranslate"><span class="pre">_is_ideal</span></code> (either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>) should be specified when creating a new component class:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create custom class</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyComp</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">(</span><span class="n">MyComp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="c1"># Component class and type</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_class</span> <span class="o">=</span> <span class="s2">&quot;branch_component&quot;</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;my_custom_component&quot;</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_is_ideal</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">... </span>        <span class="c1"># Add new inputs</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Instantiate a MyComp object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_comp</span> <span class="o">=</span> <span class="n">MyComp</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print component_type</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_comp</span><span class="p">[</span><span class="s1">&#39;component_type&#39;</span><span class="p">])</span>
+<span class="go">my_custom_component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print component_class</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_comp</span><span class="p">[</span><span class="s1">&#39;component_class&#39;</span><span class="p">])</span>
+<span class="go">branch_component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print is_ideal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_comp</span><span class="p">[</span><span class="s1">&#39;is_ideal&#39;</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>More complex logic can also be implemented by modifying the method <code class="xref py py-meth docutils literal notranslate"><span class="pre">_run_control_logic()</span></code>, which defines return rules for one or more attributes:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create custom class</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyComp</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="nb">super</span><span class="p">(</span><span class="n">MyComp</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="c1"># Component class and type</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_class</span> <span class="o">=</span> <span class="s2">&quot;branch_component&quot;</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;my_custom_component&quot;</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_is_ideal</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">... </span>        <span class="c1"># Add new inputs</span>
+<span class="gp">... </span>        <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>           <span class="s2">&quot;test_value&quot;</span><span class="p">:</span> <span class="n">test_value</span>
+<span class="gp">... </span>        <span class="p">}</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="c1"># Implement the _run_control_logic method</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">_run_control_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;test_value&quot;</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;test_value&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="kc">None</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Instantiate a MyComp object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_comp</span> <span class="o">=</span> <span class="n">MyComp</span><span class="p">(</span><span class="n">test_value</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print test_value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_comp</span><span class="o">.</span><span class="n">_run_control_logic</span><span class="p">(</span><span class="s1">&#39;test_value&#39;</span><span class="p">))</span>
+<span class="go">25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check that the original value was not modified</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_comp</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s1">&#39;test_value&#39;</span><span class="p">])</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+<p>Finally, for each component two private methods defining the functioning during simulations need to be implemented: <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_delta_p()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_temperatures()</span></code>.</p>
+</section>
+<section id="pipe">
+<h2>Pipe<a class="headerlink" href="#pipe" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component type</p></th>
+<th class="head"><p>Component class</p></th>
+<th class="head"><p>Is ideal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>base_pipe</p></td>
+<td><p>branch_component</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="../generated/pydhn.components.base_pipe.html#pydhn.components.base_pipe.Pipe" title="pydhn.components.base_pipe.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a> is the base implementation for steady-state pipes. It has the following main attributes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Documentation</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>diameter</p></td>
+<td><p><span class="math notranslate nohighlight">\(D_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.D_PIPES" title="pydhn.default_values.default_values.D_PIPES"><code class="xref py py-const docutils literal notranslate"><span class="pre">D_PIPES</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0204</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>length</p></td>
+<td><p><span class="math notranslate nohighlight">\(L_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.L_PIPES" title="pydhn.default_values.default_values.L_PIPES"><code class="xref py py-const docutils literal notranslate"><span class="pre">L_PIPES</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">1.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>roughness</p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.ROUGHNESS" title="pydhn.default_values.default_values.ROUGHNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">ROUGHNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.045</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(mm\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>depth</p></td>
+<td><p><span class="math notranslate nohighlight">\(\delta\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.DEPTH" title="pydhn.default_values.default_values.DEPTH"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEPTH</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">1.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_insulation</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{ins}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INSULATION" title="pydhn.default_values.default_values.K_INSULATION"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_INSULATION</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.026</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>insulation_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{ins}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.INSULATION_THICKNESS" title="pydhn.default_values.default_values.INSULATION_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">INSULATION_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.034</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_internal_pipe</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{ip}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INTERNAL_PIPE" title="pydhn.default_values.default_values.K_INTERNAL_PIPE"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_INTERNAL_PIPE</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">45.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>internal_pipe_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{ip}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS" title="pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">INTERNAL_PIPE_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.023</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_casing</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{cas}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_CASING" title="pydhn.default_values.default_values.K_CASING"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_CASING</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.4</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>casing_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{cas}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.CASING_THICKNESS" title="pydhn.default_values.default_values.CASING_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">CASING_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.003</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>discretization</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.DISCRETIZATION" title="pydhn.default_values.default_values.DISCRETIZATION"><code class="xref py py-const docutils literal notranslate"><span class="pre">DISCRETIZATION</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">10</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<section id="hydraulics">
+<span id="basepipehyd"></span><h3>Hydraulics<a class="headerlink" href="#hydraulics" title="Link to this heading"></a></h3>
+<p>The base Pipe implements the following formula to compute pressure losses:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{pipe_dp}
+\Delta p = \frac{L_p f_D}{4 \pi^2 \rho \left( \frac{D_p}{2} \right) ^5}  \lvert\dot m\lvert\dot m
+\end{equation}\]</div>
+<p>Plus eventually the hydrostatic pressure:</p>
+<div class="math notranslate nohighlight">
+\[\rho g \Delta z\]</div>
+<p>The friction factor <span class="math notranslate nohighlight">\(f_D\)</span> is computed as a function of the Reynolds number <span class="math notranslate nohighlight">\(Re\)</span>. For laminar flow (<span class="math notranslate nohighlight">\(Re \leq 2300\)</span>) the friction factor is computed as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{fd_lam1}
+f_D = \frac{64}{Re}
+\end{equation}\]</div>
+<p>For turbulent flow (<span class="math notranslate nohighlight">\(Re \geq 4000\)</span>) Haaland equation is used:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{fd_lam2}
+f_D = \left\{ 1.8\log_{10} \left[ \left( \frac{\epsilon}{3.7 D_p} \right)^{1.11} + \frac{6.9}{Re}\right]\right\}^{-2}
+\end{equation}\]</div>
+<p>Finally, for the transition regimen (<span class="math notranslate nohighlight">\(2320 &lt; Re &lt; 4000\)</span>), the relationship given in <a class="reference internal" href="../about/references.html#haza21" id="id1"><span>[HaZa21]</span></a> is used.</p>
+</section>
+<section id="thermal">
+<span id="basepipether"></span><h3>Thermal<a class="headerlink" href="#thermal" title="Link to this heading"></a></h3>
+<p>The base Pipe implements a simple steady-state model. The outlet temperature, limited by the soil temperature <span class="math notranslate nohighlight">\(\theta_{s}\)</span>, is computed as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{dt_pipes}
+\theta_{out} = max\left\{ \theta _{s}, \theta_{in} - \frac{Q}{\dot m c_p} \right\}
+\end{equation}\]</div>
+<p>The thermal losses <span class="math notranslate nohighlight">\(Q\)</span> (Wh) are computed as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{pipe_dq}
+Q = \frac{\theta _{in} - \theta _{s}}{R_{0,1} + R_{1,2} + R_{2,3} + R_{conv} + R_{s}} L_p - \frac{\dot m}{\rho} \lvert \Delta p _{fr} \lvert
+\end{equation}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Delta p _{fr}\)</span> is the frictional component of the pressure loss and <span class="math notranslate nohighlight">\(R_{ip}\)</span>, <span class="math notranslate nohighlight">\(R_{ins}\)</span> and <span class="math notranslate nohighlight">\(R_{cas}\)</span> are the thermal resistances of the internal pipe, insulation, casing respectively:</p>
+<div class="math notranslate nohighlight">
+\[\begin{align*}
+R_{ip} = \frac{\ln{\frac{r_{1}}{r_{0}}}}{2 \pi k_{ip}}
+&amp;&amp;
+R_{ins} = \frac{\ln{\frac{r_{2}}{r_{1}}}}{2 \pi k_{ins}}
+&amp;&amp;
+R_{cas} = \frac{\ln{\frac{r_{3}}{r_{2}}}}{2 \pi k_{cas}}
+\end{align*}\]</div>
+<p>And:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{r_conv}
+R_{conv} = \frac{1}{2 \pi r_0 h}
+\end{equation}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{int_tr_coeff}
+h = \frac{ k_{f} Nu}{2 r_0 }
+\end{equation}\]</div>
+<p>Finally, <span class="math notranslate nohighlight">\(R_{s}\)</span> is the thermal resistance of the soil computed as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{equation}\label{r_soil_1}
+R_{s} =
+        \begin{cases}
+                \frac{\ln(\frac{2\delta}{r_3})}{2 \pi k _s},&amp; \text{if } \delta &gt; 3r_0\\
+                \frac{\ln(x + \sqrt{x ^2 -1})}{2 \pi k _s},              &amp; \text{otherwise}
+        \end{cases}
+\end{equation}\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{r_soil_2}
+        x = \delta/r_3
+\end{equation}\]</div>
+<p>For the thermal simulation, base Pipes can be discretized in segments of a given length for increasing the accuracy at the cost of computational speed.</p>
+</section>
+</section>
+<section id="lagrangian-pipe">
+<h2>Lagrangian Pipe<a class="headerlink" href="#lagrangian-pipe" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component type</p></th>
+<th class="head"><p>Component class</p></th>
+<th class="head"><p>Is ideal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>lagrangian_pipe</p></td>
+<td><p>branch_component</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="../generated/pydhn.components.lagrangian_pipe.html#pydhn.components.lagrangian_pipe.LagrangianPipe" title="pydhn.components.lagrangian_pipe.LagrangianPipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">LagrangianPipe</span></code></a> is the implementation of a dynamic pipe based on the Lagrangian approach described in <a class="reference internal" href="../about/references.html#deal19" id="id2"><span>[DeAl19]</span></a>. It has the following main attributes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Documentation</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>diameter</p></td>
+<td><p><span class="math notranslate nohighlight">\(D_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.D_PIPES" title="pydhn.default_values.default_values.D_PIPES"><code class="xref py py-const docutils literal notranslate"><span class="pre">D_PIPES</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0204</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>length</p></td>
+<td><p><span class="math notranslate nohighlight">\(L_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.L_PIPES" title="pydhn.default_values.default_values.L_PIPES"><code class="xref py py-const docutils literal notranslate"><span class="pre">L_PIPES</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">1.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>roughness</p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.ROUGHNESS" title="pydhn.default_values.default_values.ROUGHNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">ROUGHNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.045</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(mm\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>depth</p></td>
+<td><p><span class="math notranslate nohighlight">\(\delta\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.DEPTH" title="pydhn.default_values.default_values.DEPTH"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEPTH</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">1.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_insulation</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{ins}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INSULATION" title="pydhn.default_values.default_values.K_INSULATION"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_INSULATION</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.026</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>insulation_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{ins}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.INSULATION_THICKNESS" title="pydhn.default_values.default_values.INSULATION_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">INSULATION_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.034</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_internal_pipe</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{ip}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INTERNAL_PIPE" title="pydhn.default_values.default_values.K_INTERNAL_PIPE"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_INTERNAL_PIPE</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">45.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>internal_pipe_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{ip}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS" title="pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">INTERNAL_PIPE_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.023</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_casing</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{cas}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_CASING" title="pydhn.default_values.default_values.K_CASING"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_CASING</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.4</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>casing_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{cas}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.CASING_THICKNESS" title="pydhn.default_values.default_values.CASING_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">CASING_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.003</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>rho_wall</p></td>
+<td><p><span class="math notranslate nohighlight">\(\rho_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.RHO_INTERNAL_PIPE" title="pydhn.default_values.default_values.RHO_INTERNAL_PIPE"><code class="xref py py-const docutils literal notranslate"><span class="pre">RHO_INTERNAL_PIPE</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">940.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(kg/m^3\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>cp_wall</p></td>
+<td><p><span class="math notranslate nohighlight">\(cp_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.CP_INTERNAL_PIPE" title="pydhn.default_values.default_values.CP_INTERNAL_PIPE"><code class="xref py py-const docutils literal notranslate"><span class="pre">CP_INTERNAL_PIPE</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">2000.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(J/(kg·K)\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>h_ext</p></td>
+<td><p><span class="math notranslate nohighlight">\(h_{ext}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.H_EXT" title="pydhn.default_values.default_values.H_EXT"><code class="xref py py-const docutils literal notranslate"><span class="pre">H_EXT</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m^2·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>stepsize</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta s\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.STEPSIZE" title="pydhn.default_values.default_values.STEPSIZE"><code class="xref py py-const docutils literal notranslate"><span class="pre">STEPSIZE</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">3600.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(s\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>Each pipe is initialized with a single volume of fluid at a temperature of <code class="autovalue docutils literal notranslate"><span class="pre">50.0</span></code> °C. At each time-step, a new volume is inserted in the pipe, pushing all existing volumes.</p>
+<section id="id3">
+<h3>Hydraulics<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>The Lagrangian Pipe implements the same hydraulics of the <a class="reference internal" href="../generated/pydhn.components.base_pipe.html#pydhn.components.base_pipe.Pipe" title="pydhn.components.base_pipe.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a> class described <a class="reference internal" href="#basepipehyd"><span class="std std-ref">here</span></a></p>
+</section>
+<section id="id4">
+<h3>Thermal<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>The equations used for the thermal simulation in the <a class="reference internal" href="../generated/pydhn.components.lagrangian_pipe.html#pydhn.components.lagrangian_pipe.LagrangianPipe" title="pydhn.components.lagrangian_pipe.LagrangianPipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">LagrangianPipe</span></code></a> class are described in detail in <a class="reference internal" href="../about/references.html#deal19" id="id5"><span>[DeAl19]</span></a>. The outlet temperature is computed as the weighted average between the volumes exiting the pipe. If the mass flow is zero, the outlet temperature is the temperature at the outlet section of the pipe. Currently, the function used to compute the temperatures is not vectorized, so the simulation loop will call the method <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_temperatures()</span></code> for each element of this tipe separately using a for loop.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The stepsize is defined for each pipe separately and there is no mechanism in place to check that all dynamic components share the same stepsize.</p>
+</div>
+<p>The component keeps an internal memory of the moving volumes of fluid and their temperatures:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">LagrangianPipe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantWater</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Soil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">LagrangianPipe</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluid</span> <span class="o">=</span> <span class="n">ConstantWater</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soil</span> <span class="o">=</span> <span class="n">Soil</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print list of internal volumes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">_volumes</span><span class="p">)</span>
+<span class="go">[0.03268513]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print list of internal temperatures</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">_temperatures</span><span class="p">)</span>
+<span class="go">[50.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set a mass flow of 1 kg/s</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Simulate one time-step with inlet temperature of 45°C</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">_compute_temperatures</span><span class="p">(</span><span class="n">fluid</span><span class="o">=</span><span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="n">soil</span><span class="p">,</span> <span class="n">t_in</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print list of internal volumes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">_volumes</span><span class="p">)</span>
+<span class="go">[0.00505051 0.02763462]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print list of internal temperatures</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">_temperatures</span><span class="p">)</span>
+<span class="go">[45.        49.9998273]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="producer">
+<h2>Producer<a class="headerlink" href="#producer" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component type</p></th>
+<th class="head"><p>Component class</p></th>
+<th class="head"><p>Is ideal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>base_producer</p></td>
+<td><p>leaf_component</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="../generated/pydhn.components.base_producer.html#pydhn.components.base_producer.Producer" title="pydhn.components.base_producer.Producer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Producer</span></code></a> models a simple heat source where hydraulics and thermal setpoints are enforced. It has the following main attributes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Documentation</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>static_pressure</p></td>
+<td><p><span class="math notranslate nohighlight">\(p_s\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.STATIC_PRESSURE" title="pydhn.default_values.default_values.STATIC_PRESSURE"><code class="xref py py-const docutils literal notranslate"><span class="pre">STATIC_PRESSURE</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">nan</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(Pa\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>setpoint_type_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD" title="pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">t_out</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>setpoint_value_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\theta_{out}\)</span> or <span class="math notranslate nohighlight">\(\Delta T\)</span> or <span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD" title="pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">80.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(°C\)</span> or <span class="math notranslate nohighlight">\(K\)</span> or <span class="math notranslate nohighlight">\(Wh\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>setpoint_type_hx_rev</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV" title="pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD_REV</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">delta_t</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>setpoint_value_hx_rev</p></td>
+<td><p><span class="math notranslate nohighlight">\(\theta_{out}\)</span> or <span class="math notranslate nohighlight">\(\Delta T\)</span> or <span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV" title="pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD_REV</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(°C\)</span> or <span class="math notranslate nohighlight">\(K\)</span> or <span class="math notranslate nohighlight">\(Wh\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>power_max_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\dot Q_{max}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.POWER_MAX_HX" title="pydhn.default_values.default_values.POWER_MAX_HX"><code class="xref py py-const docutils literal notranslate"><span class="pre">POWER_MAX_HX</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">nan</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>t_out_min_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\theta_{min}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.T_OUT_MIN" title="pydhn.default_values.default_values.T_OUT_MIN"><code class="xref py py-const docutils literal notranslate"><span class="pre">T_OUT_MIN</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">nan</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(°C\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>setpoint_type_hyd</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD" title="pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HYD_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">pressure</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>setpoint_value_hyd</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta p_{set}\)</span> or <span class="math notranslate nohighlight">\(\dot m_{set}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD" title="pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HYD_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">-1000000.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(Pa\)</span> or <span class="math notranslate nohighlight">\(kg/s\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>stepsize</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta s\)</span></p></td>
+<td><p><code class="xref py py-const docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3600.0</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(s\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>Commonly, one producer is used as the “main” component, enforcing a differential pressure to the network (using a <code class="docutils literal notranslate"><span class="pre">'pressure'</span></code> setpoint), while the other producers, if present, have an imposed mass flow.</p>
+<section id="baseprodhyd">
+<span id="id6"></span><h3>Hydraulics<a class="headerlink" href="#baseprodhyd" title="Link to this heading"></a></h3>
+<p>The base producer has two modes of operations: either the mass flow <span class="math notranslate nohighlight">\(\dot m\)</span> (kg/s) or pressure difference <span class="math notranslate nohighlight">\(\Delta p\)</span> (Pa) can be imposed. This is done by setting the relevant <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_type_hyd</span></code>, respectively <code class="docutils literal notranslate"><span class="pre">'mass_flow'</span></code> or <code class="docutils literal notranslate"><span class="pre">'pressure'</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A negative pressure difference indicates a pressure lift along the positive direction of the edge.</p>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Producer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantWater</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">Producer</span><span class="p">(</span><span class="n">setpoint_type_hyd</span><span class="o">=</span><span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="n">setpoint_value_hyd</span><span class="o">=-</span><span class="mi">50000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluid</span> <span class="o">=</span> <span class="n">ConstantWater</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">delta_p</span><span class="p">,</span> <span class="n">mdot</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">_compute_delta_p</span><span class="p">(</span><span class="n">fluid</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">delta_p</span><span class="p">)</span>
+<span class="go">-50000</span>
+</pre></div>
+</div>
+</section>
+<section id="baseprodther">
+<span id="id7"></span><h3>Thermal<a class="headerlink" href="#baseprodther" title="Link to this heading"></a></h3>
+<p>The base producer can enforce three different types of setpoints for the thermal simulation depending on the value given to <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_type_hx</span></code> the outlet temperature <code class="docutils literal notranslate"><span class="pre">'t_out'</span></code>, the injected energy <code class="docutils literal notranslate"><span class="pre">'delta_q'</span></code> or the temperature difference <code class="docutils literal notranslate"><span class="pre">'delta_t'</span></code>. The value of the chosen setpoint is then given by <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_value_hx</span></code>. Regardless of the setpoint type, a limitation can be further imposed by limiting the outlet temperature - specifying a value for <code class="xref py py-attr docutils literal notranslate"><span class="pre">t_out_min_hx</span></code> - or the maximum power - specifying a value for <code class="xref py py-attr docutils literal notranslate"><span class="pre">power_max_hx</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">power_max_hx</span></code> comes from an old version of PyDHN where time-steps were assumed to be hourly. What it is actually limiting is the <strong>energy</strong> and not the power of the heat source, according to the formula:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{equation}\label{dt_prod}
+\theta_{out} = min\left\{ \theta _{set}, \frac{ Q_{max}}{\dot m c_p} + \theta_{in}\right\}
+\end{equation}\]</div>
+</div></blockquote>
+<p>This behaviour has changed in the current <cite>main</cite> branch and is only present in versions <cite>&lt;=0.1.3.</cite>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While the base producer allows different types of setpoints, it is advisable to use at least one <code class="docutils literal notranslate"><span class="pre">'t_out'</span></code>, as in most cases the solver might not converge in the absence of a fixed nodal temperature in the network.</p>
+</div>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_type_hx_rev</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_value_hx_rev</span></code> are used to specify what should happen in case of reverse flow (IE: negative mass flow). The values and usage are the same as the <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_type_hx</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_value_hx</span></code>.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Producer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantWater</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Soil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">Producer</span><span class="p">(</span><span class="n">setpoint_type_hx</span><span class="o">=</span><span class="s1">&#39;t_out&#39;</span><span class="p">,</span> <span class="n">setpoint_value_hx</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">setpoint_type_hx_rev</span><span class="o">=</span><span class="s1">&#39;delta_t&#39;</span><span class="p">,</span> <span class="n">setpoint_value_hx_rev</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluid</span> <span class="o">=</span> <span class="n">ConstantWater</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soil</span> <span class="o">=</span> <span class="n">Soil</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set a mass flow of 10 kg/s</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Simulate one time-step with inlet temperature of 45°C</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t_out</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">_compute_temperatures</span><span class="p">(</span><span class="n">fluid</span><span class="o">=</span><span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="n">soil</span><span class="p">,</span> <span class="n">t_in</span><span class="o">=</span><span class="mi">45</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print the outlet temperature</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">t_out</span><span class="p">)</span>
+<span class="go">70.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set a mass flow of -1 kg/s</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Simulate one time-step with inlet temperature of 45°C</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t_out</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">_compute_temperatures</span><span class="p">(</span><span class="n">fluid</span><span class="o">=</span><span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="n">soil</span><span class="p">,</span> <span class="n">t_in</span><span class="o">=</span><span class="mi">45</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print the outlet temperature</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">t_out</span><span class="p">)</span>
+<span class="go">45.0</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="consumer">
+<h2>Consumer<a class="headerlink" href="#consumer" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component type</p></th>
+<th class="head"><p>Component class</p></th>
+<th class="head"><p>Is ideal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>base_consumer</p></td>
+<td><p>leaf_component</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="../generated/pydhn.components.base_consumer.html#pydhn.components.base_consumer.Consumer" title="pydhn.components.base_consumer.Consumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Consumer</span></code></a> models a simple consumer where hydraulics and thermal setpoints are enforced. It has the following main attributes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Documentation</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>setpoint_type_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD" title="pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">t_out</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>setpoint_value_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\theta_{out}\)</span> or <span class="math notranslate nohighlight">\(\Delta T\)</span> or <span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD" title="pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">80.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(°C\)</span> or <span class="math notranslate nohighlight">\(K\)</span> or <span class="math notranslate nohighlight">\(Wh\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>setpoint_type_hx_rev</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV" title="pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD_REV</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">delta_t</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>setpoint_value_hx_rev</p></td>
+<td><p><span class="math notranslate nohighlight">\(\theta_{out}\)</span> or <span class="math notranslate nohighlight">\(\Delta T\)</span> or <span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV" title="pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD_REV</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(°C\)</span> or <span class="math notranslate nohighlight">\(K\)</span> or <span class="math notranslate nohighlight">\(Wh\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>power_max_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\dot Q_{max}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.POWER_MAX_HX" title="pydhn.default_values.default_values.POWER_MAX_HX"><code class="xref py py-const docutils literal notranslate"><span class="pre">POWER_MAX_HX</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">nan</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>t_out_min_hx</p></td>
+<td><p><span class="math notranslate nohighlight">\(\theta_{min}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.T_OUT_MIN" title="pydhn.default_values.default_values.T_OUT_MIN"><code class="xref py py-const docutils literal notranslate"><span class="pre">T_OUT_MIN</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">nan</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(°C\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>setpoint_type_hyd</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD" title="pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HYD_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">pressure</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>setpoint_value_hyd</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta p_{set}\)</span> or <span class="math notranslate nohighlight">\(\dot m_{set}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD" title="pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD"><code class="xref py py-const docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HYD_PROD</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">-1000000.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(Pa\)</span> or <span class="math notranslate nohighlight">\(kg/s\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>control_type</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.CONTROL_TYPE_CONS" title="pydhn.default_values.default_values.CONTROL_TYPE_CONS"><code class="xref py py-const docutils literal notranslate"><span class="pre">CONTROL_TYPE_CONS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">energy</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>design_delta_t</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta T_{des}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.DT_DESIGN" title="pydhn.default_values.default_values.DT_DESIGN"><code class="xref py py-const docutils literal notranslate"><span class="pre">DT_DESIGN</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">-30.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(K\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>heat_demand</p></td>
+<td><p><span class="math notranslate nohighlight">\(Q_{dem}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.HEAT_DEMAND" title="pydhn.default_values.default_values.HEAT_DEMAND"><code class="xref py py-const docutils literal notranslate"><span class="pre">HEAT_DEMAND</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">5000.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(Wh\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>stepsize</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta s\)</span></p></td>
+<td><p><code class="xref py py-const docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3600.0</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(s\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<section id="id8">
+<h3>Hydraulics<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>The base consumer has two possible control types that can be selected by setting the argument <code class="xref py py-attr docutils literal notranslate"><span class="pre">control_type</span></code> as either <code class="docutils literal notranslate"><span class="pre">'mass_flow'</span></code> or <code class="docutils literal notranslate"><span class="pre">'energy'</span></code>. The former behaves exactly like the hydraulic implementation of <a class="reference internal" href="../generated/pydhn.components.base_producer.html#pydhn.components.base_producer.Producer" title="pydhn.components.base_producer.Producer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Producer</span></code></a> class described <a class="reference internal" href="#baseprodhyd"><span class="std std-ref">here</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Note that selecting <code class="docutils literal notranslate"><span class="pre">'mass_flow'</span></code> as <code class="xref py py-attr docutils literal notranslate"><span class="pre">control_type</span></code> also allows to use the differential pressure as setpoint. Furthermore, it requires to se the additional attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_type_hyd</span></code>, that can again be <code class="docutils literal notranslate"><span class="pre">'mass_flow'</span></code>.     This is indeed confusing and will be changed in a future version.</p>
+</div>
+<p>The control type <code class="docutils literal notranslate"><span class="pre">'energy'</span></code> imposes again a mass flow setpoint, with the difference that the value is computed from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">heat_demand</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">design_delta_t</span></code> values as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{mdot_from_qdem}
+    \dot m_{set} = -\frac{Q _{dem} }{c_{p} \Delta T_{des}}
+    \end{equation}\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the signs of <span class="math notranslate nohighlight">\(Q _{dem}\)</span> and <span class="math notranslate nohighlight">\(\Delta T_{des}\)</span> have to generally be opposite: the demand is normally positive, as it is the energy requested, while the temperature difference is negative, as it represent the (expected) difference between the outlet and inlet temperature of the heat exchanger.</p>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Consumer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantWater</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span><span class="n">control_type</span><span class="o">=</span><span class="s1">&#39;energy&#39;</span><span class="p">,</span> <span class="n">heat_demand</span><span class="o">=</span><span class="mf">5000.</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">design_delta_t</span><span class="o">=-</span><span class="mf">30.</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check the hydraulic setpoint value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp</span><span class="p">[</span><span class="s1">&#39;setpoint_value_hyd&#39;</span><span class="p">]</span> <span class="c1"># it should be 5000/(30*4182) = 0.03985</span>
+<span class="go">0.03985333970986769</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3>Thermal<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p>The <a class="reference internal" href="../generated/pydhn.components.base_consumer.html#pydhn.components.base_consumer.Consumer" title="pydhn.components.base_consumer.Consumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Consumer</span></code></a> class implements the same method for <code class="xref py py-meth docutils literal notranslate"><span class="pre">_compute_temperatures()</span></code>  of the <a class="reference internal" href="../generated/pydhn.components.base_producer.html#pydhn.components.base_producer.Producer" title="pydhn.components.base_producer.Producer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Producer</span></code></a> class described <a class="reference internal" href="#baseprodther"><span class="std std-ref">here</span></a>. Commonly, the consumers are given <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_type_hx</span></code> as either <code class="docutils literal notranslate"><span class="pre">delta_t</span></code> or <code class="docutils literal notranslate"><span class="pre">delta_q</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="../generated/pydhn.components.base_consumer.html#pydhn.components.base_consumer.Consumer" title="pydhn.components.base_consumer.Consumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Consumer</span></code></a> has the additional argument <code class="xref py py-attr docutils literal notranslate"><span class="pre">heat_demand</span></code>, but this is only used to compute the mass flow setpoint in case <code class="xref py py-attr docutils literal notranslate"><span class="pre">control_type</span></code> is set to <code class="docutils literal notranslate"><span class="pre">'energy'</span></code>: it has no influence on the thermal simulation.</p>
+</div>
+</section>
+</section>
+<section id="branch-valve">
+<h2>Branch Valve<a class="headerlink" href="#branch-valve" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component type</p></th>
+<th class="head"><p>Component class</p></th>
+<th class="head"><p>Is ideal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>base_branch_valve</p></td>
+<td><p>branch_component</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="../generated/pydhn.components.base_branch_valve.html#pydhn.components.base_branch_valve.BranchValve" title="pydhn.components.base_branch_valve.BranchValve"><code class="xref py py-class docutils literal notranslate"><span class="pre">BranchValve</span></code></a> implements a valve controlled by the flow coefficient <span class="math notranslate nohighlight">\(K_v\)</span>. The model assumes no temperature changes in the fluid across the valve. It has the following main attributes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Documentation</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>kv</p></td>
+<td><p><span class="math notranslate nohighlight">\(K_v\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.KV" title="pydhn.default_values.default_values.KV"><code class="xref py py-const docutils literal notranslate"><span class="pre">KV</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m^3/h\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<section id="id10">
+<h3>Hydraulics<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p>The base valve implementation computes the pressure loss according to the following formula:</p>
+<div class="math notranslate nohighlight">
+\[\begin{equation}\label{kv_valve}
+\Delta p = \frac{1.296\cdot10^9}{\rho K_v^2} |\dot m| \dot m
+\end{equation}\]</div>
+</section>
+<section id="id11">
+<h3>Thermal<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<p>The base valve does not introduce any heat loss, and the outlet temperature is equal to the inlet temperature.</p>
+</section>
+</section>
+<section id="branch-pump">
+<h2>Branch Pump<a class="headerlink" href="#branch-pump" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component type</p></th>
+<th class="head"><p>Component class</p></th>
+<th class="head"><p>Is ideal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>branch_pump</p></td>
+<td><p>branch_component</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="../generated/pydhn.components.branch_pump.html#pydhn.components.branch_pump.BranchPump" title="pydhn.components.branch_pump.BranchPump"><code class="xref py py-class docutils literal notranslate"><span class="pre">BranchPump</span></code></a> implements a branch pump imposing a certain <span class="math notranslate nohighlight">\(\Delta p\)</span>. The model assumes no temperature changes in the fluid across the pump. It has the following main attributes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Documentation</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>setpoint_value_hyd</p></td>
+<td><p><span class="math notranslate nohighlight">\(\Delta p\)</span></p></td>
+<td><p><code class="xref py py-const docutils literal notranslate"><span class="pre">-</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(Pa\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<section id="id12">
+<h3>Hydraulics<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p>The base pump imposes the <span class="math notranslate nohighlight">\(\Delta p\)</span> value specified by the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">setpoint_type_hyd</span></code> regardless of the mass flow.</p>
+</section>
+<section id="id13">
+<h3>Thermal<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<p>The branch pump does not introduce any heat loss, and the outlet temperature is equal to the inlet temperature.</p>
+</section>
+</section>
+<section id="bypass-pipe">
+<h2>Bypass Pipe<a class="headerlink" href="#bypass-pipe" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component type</p></th>
+<th class="head"><p>Component class</p></th>
+<th class="head"><p>Is ideal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>base_bypass_pipe</p></td>
+<td><p>leaf_component</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference internal" href="../generated/pydhn.components.base_bypass_pipe.html#pydhn.components.base_bypass_pipe.BypassPipe" title="pydhn.components.base_bypass_pipe.BypassPipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">BypassPipe</span></code></a> is the implementation of <a class="reference internal" href="../generated/pydhn.components.base_pipe.html#pydhn.components.base_pipe.Pipe" title="pydhn.components.base_pipe.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a> as a leaf component. It has the following main attributes:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Documentation</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>diameter</p></td>
+<td><p><span class="math notranslate nohighlight">\(D_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.D_BYPASS" title="pydhn.default_values.default_values.D_BYPASS"><code class="xref py py-const docutils literal notranslate"><span class="pre">D_BYPASS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0372</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>length</p></td>
+<td><p><span class="math notranslate nohighlight">\(L_p\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.L_BYPASS_PIPES" title="pydhn.default_values.default_values.L_BYPASS_PIPES"><code class="xref py py-const docutils literal notranslate"><span class="pre">L_BYPASS_PIPES</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">1.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>roughness</p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.ROUGHNESS" title="pydhn.default_values.default_values.ROUGHNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">ROUGHNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.045</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(mm\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>depth</p></td>
+<td><p><span class="math notranslate nohighlight">\(\delta\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.DEPTH" title="pydhn.default_values.default_values.DEPTH"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEPTH</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">1.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_insulation</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{ins}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INSULATION" title="pydhn.default_values.default_values.K_INSULATION"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_INSULATION</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.026</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>insulation_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{ins}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.BYPASS_INSULATION_THICKNESS" title="pydhn.default_values.default_values.BYPASS_INSULATION_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">BYPASS_INSULATION_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.031</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_internal_pipe</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{ip}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_INTERNAL_PIPE" title="pydhn.default_values.default_values.K_INTERNAL_PIPE"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_INTERNAL_PIPE</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">45.0</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>internal_pipe_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{ip}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.INTERNAL_BYPASS_THICKNESS" title="pydhn.default_values.default_values.INTERNAL_BYPASS_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">INTERNAL_BYPASS_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0052</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>k_casing</p></td>
+<td><p><span class="math notranslate nohighlight">\(k_{cas}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.K_CASING" title="pydhn.default_values.default_values.K_CASING"><code class="xref py py-const docutils literal notranslate"><span class="pre">K_CASING</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.4</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(W/(m·K)\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>casing_thickness</p></td>
+<td><p><span class="math notranslate nohighlight">\(t_{cas}\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.BYPASS_CASING_THICKNESS" title="pydhn.default_values.default_values.BYPASS_CASING_THICKNESS"><code class="xref py py-const docutils literal notranslate"><span class="pre">BYPASS_CASING_THICKNESS</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">0.0054</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>discretization</p></td>
+<td><p><span class="math notranslate nohighlight">\(-\)</span></p></td>
+<td><p><a class="reference internal" href="../generated/pydhn.default_values.default_values.html#pydhn.default_values.default_values.DISCRETIZATION" title="pydhn.default_values.default_values.DISCRETIZATION"><code class="xref py py-const docutils literal notranslate"><span class="pre">DISCRETIZATION</span></code></a></p></td>
+<td><code class="autovalue docutils literal notranslate"><span class="pre">10</span></code></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<section id="id14">
+<h3>Hydraulics<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p>See <a class="reference internal" href="#basepipehyd"><span class="std std-ref">here</span></a>.</p>
+</section>
+<section id="id15">
+<h3>Thermal<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>See <a class="reference internal" href="#basepipether"><span class="std std-ref">here</span></a>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="soil.html" class="btn btn-neutral float-left" title="Soils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulation.html" class="btn btn-neutral float-right" title="Simulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

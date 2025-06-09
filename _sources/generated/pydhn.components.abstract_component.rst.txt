@@ -1,0 +1,8 @@
+abstract\_component
+===================
+
+
+.. automodule:: pydhn.components.abstract_component
+   :members:
+   :undoc-members:
+   :show-inheritance:

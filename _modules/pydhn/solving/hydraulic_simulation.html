@@ -1,0 +1,502 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.solving.hydraulic_simulation &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.solving.hydraulic_simulation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.solving.hydraulic_simulation</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;Generic functions needed for the hydraulic simulations.&quot;&quot;&quot;</span>
+
+<span class="c1"># Avoid circular import for type hints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.solving.pressure</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_dp</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluid</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.controllers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Controller</span>
+
+<span class="c1"># Cache for warm starting the guess on cycles mass flow</span>
+<span class="k">global</span> <span class="n">CYC_SOL_CACHE</span>
+<span class="n">CYC_SOL_CACHE</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_assign_node_pressure</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to compute the pressure in nodes from the pressure differences in</span>
+<span class="sd">    edges using depth first search. An initial value must be given for the</span>
+<span class="sd">    starting node (source) in the Network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the undirected Network graph</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">_graph</span>
+    <span class="c1"># Find source if not specified</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Check for static pressure</span>
+        <span class="n">edges</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;static_pressure&quot;</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">p</span> <span class="o">==</span> <span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">p</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">pressure_setpoints_mask</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">net</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)][</span><span class="s2">&quot;static_pressure&quot;</span><span class="p">],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">1e6</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">({</span><span class="n">v</span><span class="p">:</span> <span class="n">p</span><span class="p">},</span> <span class="s2">&quot;pressure&quot;</span><span class="p">)</span>
+
+    <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>  <span class="c1"># TODO: speed this up</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">dfs_edges</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">(),</span> <span class="n">source</span><span class="o">=</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="n">dp</span> <span class="o">=</span> <span class="n">net</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)][</span><span class="s2">&quot;delta_p&quot;</span><span class="p">]</span>
+            <span class="n">new_p</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="s2">&quot;pressure&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dp</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="n">dp</span> <span class="o">=</span> <span class="n">net</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)][</span><span class="s2">&quot;delta_p&quot;</span><span class="p">]</span>
+            <span class="n">new_p</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="s2">&quot;pressure&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge (</span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">) not found!&quot;</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">({</span><span class="n">v</span><span class="p">:</span> <span class="n">new_p</span><span class="p">},</span> <span class="s2">&quot;pressure&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="solve_hydraulics">
+<a class="viewcode-back" href="../../../generated/pydhn.solving.hydraulic_simulation.html#pydhn.solving.hydraulic_simulation.solve_hydraulics">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_hydraulics</span><span class="p">(</span>
+    <span class="n">net</span><span class="p">:</span> <span class="s2">&quot;Network&quot;</span><span class="p">,</span>
+    <span class="n">fluid</span><span class="p">:</span> <span class="s2">&quot;Fluid&quot;</span><span class="p">,</span>
+    <span class="n">controller</span><span class="p">:</span> <span class="s2">&quot;Controller&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">compute_hydrostatic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">compute_singular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">affine_fd</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">warm_guess</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">max_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">error_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">damping_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">decreasing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">adaptive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">ts_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs a steady-state hydraulic simulation of the network. The procedure is</span>
+<span class="sd">    based on a modified loop method, which solves for the equation:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{B}\phi(\mathbf{B}^T\mathbf{\tilde{\dot m}}) = \mathbf{0}</span>
+
+<span class="sd">    where:</span>
+
+<span class="sd">        * :math:`\mathbf{B}` is the cycle matrix of the network graph</span>
+<span class="sd">        * :math:`\mathbf{\tilde{\dot m}}` is the vector of cycle mass flows</span>
+<span class="sd">        * :math:`\phi` is a function relating mass flow and pressure difference</span>
+
+<span class="sd">    Using the Newton-Raphson method.</span>
+
+<span class="sd">    The function returns a dictionary with the results of the simulation and</span>
+<span class="sd">    details on the convergence of each Newton step.</span>
+<span class="sd">    Mass flow, pressure differences and nodal pressures of the input Network</span>
+<span class="sd">    are also modified in place with the results of the simulation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    net : Network</span>
+<span class="sd">        Network to be simulated.</span>
+<span class="sd">    fluid : Fluid</span>
+<span class="sd">        Working fluid to be used.</span>
+<span class="sd">    controller : Controller, optional</span>
+<span class="sd">        Controller object. The default is None.</span>
+<span class="sd">    compute_hydrostatic : bool, optional</span>
+<span class="sd">        Whether to consider hydrostatic pressure. The default is True.</span>
+<span class="sd">    compute_singular : bool, optional</span>
+<span class="sd">        Not implemented. The default is False.</span>
+<span class="sd">    affine_fd : bool, optional</span>
+<span class="sd">        Whether to use an affine function for pipe pressure losses in the</span>
+<span class="sd">        transitional flow regime.. The default is False.</span>
+<span class="sd">    warm_guess : bool, optional</span>
+<span class="sd">        Not implemented. The default is False.</span>
+<span class="sd">    max_iters : int, optional</span>
+<span class="sd">        Maximum number of iterations for the solver. The default is 100.</span>
+<span class="sd">    error_threshold : float, optional</span>
+<span class="sd">        Error threshold for the solver in Pa. The default is 100.</span>
+<span class="sd">    damping_factor : float, optional</span>
+<span class="sd">        Damping factor for the Newton iterations. The default is 1.</span>
+<span class="sd">    decreasing : bool, optional</span>
+<span class="sd">        Whether to reduce the damping factor at each Newton iteration. The</span>
+<span class="sd">        default is False.</span>
+<span class="sd">    adaptive : bool, optional</span>
+<span class="sd">        Whether to reduce the damping factor on plateau. The default is True.</span>
+<span class="sd">    verbose : int, optional</span>
+<span class="sd">        Controls the verbosity of the simulation. The default is 1.</span>
+<span class="sd">    ts_id : int, optional</span>
+<span class="sd">        Specifies the ID of the current time-step. The default is None.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Arbitrary keyword arguments.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary with the simulation results.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">CYC_SOL_CACHE</span>
+
+    <span class="c1"># Initialize the cycle matrix</span>
+    <span class="n">cycle_matrix</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">cycle_matrix</span>
+
+    <span class="c1"># Get masks</span>
+    <span class="n">leaves</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">leaf_components_mask</span>
+    <span class="n">p_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">leaves</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">pressure_setpoints_mask</span><span class="p">)</span>
+    <span class="n">m_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">leaves</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">mass_flow_setpoints_mask</span><span class="p">)</span>
+
+    <span class="c1"># Get cycle positions</span>
+    <span class="n">main_idx</span> <span class="o">=</span> <span class="n">p_mask</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">secondary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">leaves</span><span class="p">,</span> <span class="n">main_idx</span><span class="p">)</span>
+    <span class="n">matrix_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">cycle_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">matrix_indices_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span> <span class="n">p_mask</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">matrix_indices_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">secondary</span><span class="p">,</span> <span class="n">m_mask</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">matrix_indices_loops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">matrix_indices</span><span class="p">,</span> <span class="n">matrix_indices_p</span><span class="p">)</span>
+    <span class="n">matrix_indices_loops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">matrix_indices_loops</span><span class="p">,</span> <span class="n">matrix_indices_m</span><span class="p">)</span>
+
+    <span class="n">cycles_idxs</span> <span class="o">=</span> <span class="n">matrix_indices_loops</span>
+
+    <span class="c1"># Get controller data</span>
+    <span class="n">solve_control</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">controller</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">stage</span> <span class="o">==</span> <span class="s2">&quot;hydraulics&quot;</span><span class="p">:</span>
+            <span class="n">control_matrix</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">control_matrix</span>
+            <span class="n">control_edge_mask</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">edge_mask</span>
+            <span class="k">if</span> <span class="n">control_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">solve_control</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Get attributes</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;setpoint_value_hyd&quot;</span><span class="p">]</span>
+
+    <span class="n">edges</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">setpoint_values</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Find direction of edges in cycles</span>
+    <span class="n">directions</span> <span class="o">=</span> <span class="n">cycle_matrix</span><span class="p">[:,</span> <span class="n">secondary</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Assign each loop with a mass flow setpoint the setpoint value</span>
+    <span class="n">mdot_loop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">cycle_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">mdot_loop</span><span class="p">[</span><span class="n">matrix_indices_m</span><span class="p">]</span> <span class="o">=</span> <span class="n">setpoint_values</span><span class="p">[</span><span class="n">m_mask</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span><span class="p">[</span><span class="n">matrix_indices_m</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cycles_idxs</span><span class="p">)</span> <span class="ow">in</span> <span class="n">CYC_SOL_CACHE</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">],</span>
+            <span class="n">CYC_SOL_CACHE</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cycles_idxs</span><span class="p">)],</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">],</span>
+            <span class="mf">0.0001</span><span class="p">,</span>  <span class="c1"># np.random.random(len(cycles_idxs))</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Retrieve the mass flow in edges</span>
+    <span class="n">mdot</span> <span class="o">=</span> <span class="n">cycle_matrix</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">mdot_loop</span>
+
+    <span class="c1"># Set pressure in the network pressure boundary node</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">main_idx</span><span class="p">]</span>
+    <span class="n">static_p</span> <span class="o">=</span> <span class="n">net</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)][</span><span class="s2">&quot;static_pressure&quot;</span><span class="p">]</span>
+    <span class="n">net</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;pressure&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">static_p</span>
+
+    <span class="c1"># Initialize damp and converged</span>
+    <span class="n">damp</span> <span class="o">=</span> <span class="n">damping_factor</span>
+    <span class="n">converged</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">errors_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Convergence loop</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iters</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># Set new mass flow</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">mdot</span><span class="p">,</span> <span class="s2">&quot;mass_flow&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Compute dp</span>
+        <span class="n">dp</span><span class="p">,</span> <span class="n">dp_friction</span><span class="p">,</span> <span class="n">dp_hydro</span><span class="p">,</span> <span class="n">dp_der</span> <span class="o">=</span> <span class="n">compute_dp</span><span class="p">(</span>
+            <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
+            <span class="n">fluid</span><span class="o">=</span><span class="n">fluid</span><span class="p">,</span>
+            <span class="n">set_values</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="n">compute_hydrostatic</span><span class="p">,</span>
+            <span class="n">compute_singular</span><span class="o">=</span><span class="n">compute_singular</span><span class="p">,</span>
+            <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">ts_id</span><span class="o">=</span><span class="n">ts_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># In edges with pressure setpoints the pressure is set to be equal to</span>
+        <span class="c1"># the setpoint. In edges with mass flow setpoints the pressure is</span>
+        <span class="c1"># initially set to 0.</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">setpoint_values</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="s2">&quot;setpoint_value_hyd&quot;</span><span class="p">)</span>
+        <span class="n">dp</span><span class="p">[</span><span class="n">p_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">setpoint_values</span><span class="p">[</span><span class="n">p_mask</span><span class="p">]</span>  <span class="c1"># TODO: check</span>
+
+        <span class="c1"># print(dp[net.pressure_setpoints_mask])</span>
+        <span class="c1"># The error in each cycle is computed, and the values previously set to</span>
+        <span class="c1"># 0 are updated as the negative of the error for the corresponding</span>
+        <span class="c1"># cycle, effectively cancelling out the error</span>
+        <span class="n">residuals</span> <span class="o">=</span> <span class="n">cycle_matrix</span> <span class="o">@</span> <span class="n">dp</span>
+        <span class="n">dp</span><span class="p">[</span><span class="n">m_mask</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">residuals</span><span class="p">[</span><span class="n">matrix_indices_m</span><span class="p">]</span> <span class="o">*</span> <span class="n">directions</span><span class="p">[</span><span class="n">matrix_indices_m</span><span class="p">]</span>
+
+        <span class="c1"># Computes the directed sum of differential pressure in each graph</span>
+        <span class="c1"># cycle, any value above 0 is the error for that cycle</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">cycle_matrix</span> <span class="o">@</span> <span class="n">dp</span>
+        <span class="c1"># Computes the maximum absolute error</span>
+        <span class="n">max_abs_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">errors</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">solve_control</span><span class="p">:</span>
+            <span class="n">control_error</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">compute_residuals</span><span class="p">(</span><span class="n">delta_p</span><span class="o">=</span><span class="n">dp</span><span class="p">)</span>
+            <span class="n">max_control_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">control_error</span><span class="p">))</span>
+            <span class="n">max_abs_error</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_abs_error</span><span class="p">,</span> <span class="n">max_control_error</span><span class="p">)</span>
+
+        <span class="n">errors_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_abs_error</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at iteration </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">max_abs_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check if the simulation is converged</span>
+        <span class="k">if</span> <span class="n">max_abs_error</span> <span class="o">&lt;=</span> <span class="n">error_threshold</span><span class="p">:</span>
+            <span class="n">converged</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">nbytes</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">CYC_SOL_CACHE</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1e8</span><span class="p">:</span>
+                <span class="n">CYC_SOL_CACHE</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cycles_idxs</span><span class="p">)]</span> <span class="o">=</span> <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Check if iterations are done</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">max_iters</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Solve Ax=b where A is the diagonal Jacobian matrix of the pressures</span>
+        <span class="c1"># and b are the pressure errors in the cycle. Only the internal network</span>
+        <span class="c1"># cycles, and those where there are imposed operational variables are</span>
+        <span class="c1"># actually solved.</span>
+        <span class="n">jac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">dp_der</span><span class="p">)</span>
+        <span class="n">jac_loop</span> <span class="o">=</span> <span class="n">cycle_matrix</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span> <span class="o">@</span> <span class="n">jac</span> <span class="o">@</span> <span class="n">cycle_matrix</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">residuals</span> <span class="o">=</span> <span class="n">cycle_matrix</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span> <span class="o">@</span> <span class="n">dp</span>
+
+        <span class="k">if</span> <span class="n">solve_control</span><span class="p">:</span>
+            <span class="n">control_der</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">compute_der</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">jac_loop</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">jac_control_row</span> <span class="o">=</span> <span class="n">control_matrix</span> <span class="o">@</span> <span class="n">jac</span> <span class="o">@</span> <span class="n">cycle_matrix</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+                <span class="n">full_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">cycle_matrix</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">],</span> <span class="n">control_matrix</span><span class="p">])</span>
+                <span class="n">jac_control_column</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">full_mat</span><span class="p">[:,</span> <span class="n">control_edge_mask</span><span class="p">]</span> <span class="o">*</span> <span class="n">control_der</span><span class="p">[</span><span class="n">control_edge_mask</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">jac_control_column</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">jac_control_column</span> <span class="o">=</span> <span class="n">jac_control_column</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">jac_loop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">jac_loop</span><span class="p">,</span> <span class="n">jac_control_row</span><span class="p">])</span>
+                <span class="n">jac_loop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">jac_loop</span><span class="p">,</span> <span class="n">jac_control_column</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">jac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">control_der</span><span class="p">)</span>
+                <span class="n">jac_loop</span> <span class="o">=</span> <span class="n">control_matrix</span> <span class="o">@</span> <span class="n">jac</span> <span class="o">@</span> <span class="n">control_matrix</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="n">control_error</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">compute_residuals</span><span class="p">(</span><span class="n">delta_p</span><span class="o">=</span><span class="n">dp</span><span class="p">)</span>
+            <span class="n">residuals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">residuals</span><span class="p">,</span> <span class="n">control_error</span><span class="p">])</span>
+
+        <span class="c1"># Remove elements with all zeros to avoid singular matrix</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">jac_loop</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Solve</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">residuals</span><span class="p">))</span>
+        <span class="n">delta</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">jac_loop</span><span class="p">[</span><span class="n">mask</span><span class="p">][:,</span> <span class="n">mask</span><span class="p">],</span> <span class="o">-</span><span class="n">residuals</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+
+        <span class="c1"># Update the mass flow in cycles and compute the corresponding mass</span>
+        <span class="c1"># flow in edges</span>
+        <span class="n">mdot_loop</span><span class="p">[</span><span class="n">cycles_idxs</span><span class="p">]</span> <span class="o">+=</span> <span class="n">damp</span> <span class="o">*</span> <span class="n">delta</span><span class="p">[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cycles_idxs</span><span class="p">)]</span>
+        <span class="n">mdot</span> <span class="o">=</span> <span class="n">cycle_matrix</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">mdot_loop</span>
+
+        <span class="k">if</span> <span class="n">solve_control</span><span class="p">:</span>
+            <span class="n">delta_controller</span> <span class="o">=</span> <span class="n">damp</span> <span class="o">*</span> <span class="n">delta</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">cycles_idxs</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="n">controller</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">delta</span><span class="o">=</span><span class="n">delta_controller</span>
+            <span class="p">)</span>  <span class="c1"># * 1 - np.random.random(len(delta_controller))*0.1)</span>
+
+        <span class="c1"># The damping factor is lowered at each iteration</span>
+        <span class="k">if</span> <span class="n">decreasing</span><span class="p">:</span>
+            <span class="n">damp</span> <span class="o">=</span> <span class="n">damping_factor</span> <span class="o">-</span> <span class="n">damping_factor</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">max_iters</span><span class="p">)</span>
+
+        <span class="c1"># Reduce the damping factor if the error is not decreasing</span>
+        <span class="k">if</span> <span class="n">adaptive</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">max_abs_error</span> <span class="o">&gt;</span> <span class="n">errors_list</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">damp</span> <span class="o">-=</span> <span class="n">damp</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">max_iters</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">damp</span> <span class="o">=</span> <span class="n">damping_factor</span>
+
+    <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">converged</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Hydraulic simulation converged after </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> iterations with &quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;an error of </span><span class="si">{</span><span class="n">max_abs_error</span><span class="si">}</span><span class="s2"> Pa&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Hydraulic simulation not converged with an error of &quot;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">max_abs_error</span><span class="si">}</span><span class="s2"> Pa!&quot;</span>
+            <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Set values</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="s2">&quot;delta_p&quot;</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">dp_friction</span><span class="p">,</span> <span class="s2">&quot;delta_p_friction&quot;</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">dp_hydro</span><span class="p">,</span> <span class="s2">&quot;delta_p_hydrostatic&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Assign node pressure</span>
+    <span class="n">_assign_node_pressure</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+
+    <span class="c1"># Save output</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;history&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;hydraulics converged&quot;</span><span class="p">:</span> <span class="n">converged</span><span class="p">,</span>
+                <span class="s2">&quot;hydraulics iterations&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                <span class="s2">&quot;hydraulics errors&quot;</span><span class="p">:</span> <span class="n">errors_list</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Add column entry to results</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">][</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+    <span class="n">names</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">][</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">names</span>
+
+    <span class="c1"># Store node and edge results:</span>
+    <span class="c1"># Nodes</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pressure&quot;</span><span class="p">]</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">))</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">:])}}</span>
+    <span class="c1"># Edges</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_p&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_p_friction&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_p_hydrostatic&quot;</span><span class="p">]</span>
+    <span class="n">arrays</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">))</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">1</span><span class="p">:])}})</span>
+
+    <span class="c1"># Store results</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

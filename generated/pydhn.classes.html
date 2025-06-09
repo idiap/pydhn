@@ -1,0 +1,246 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>classes &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="abstract_network" href="pydhn.classes.abstract_network.html" />
+    <link rel="prev" title="citysim_ops" href="pydhn.citysim.citysim_ops.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pydhn.html">pydhn</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pydhn.citysim.html">citysim</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html">abstract_network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html">network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.results.html">results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.controllers.html">controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.html">default_values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.fluids.html">fluids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.networks.html">networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.plotting.html">plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.soils.html">soils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.solving.html">solving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pydhn.html">pydhn</a></li>
+      <li class="breadcrumb-item active">classes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pydhn.classes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pydhn.classes">
+<span id="classes"></span><h1>classes<a class="headerlink" href="#module-pydhn.classes" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pydhn.classes.abstract_network.html">abstract_network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.__init__"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.add_edge"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.add_edge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.add_node"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.add_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.adjacency_matrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.caching"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.caching</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.copy"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.cycle_matrix"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.cycle_matrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.edges"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.edges()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_edges_attribute_array"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.get_edges_attribute_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_edges_with_attribute"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.get_edges_with_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_nodes_attribute_array"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.get_nodes_attribute_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_nodes_with_attribute"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.get_nodes_with_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.incidence_matrix"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.incidence_matrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.load_gml"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.load_gml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.load_graph"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.load_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.n_edges"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.n_edges</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.n_nodes"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.n_nodes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.nodes"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.plot_network"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.plot_network()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.save_gml"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.save_gml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.save_graph"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.save_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_edge_attribute"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.set_edge_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_edge_attributes"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.set_edge_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_node_attribute"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.set_node_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_node_attributes"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.set_node_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_geodataframe"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.to_geodataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_geojson"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.to_geojson()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_linegraph"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.to_linegraph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_nx_graph"><code class="docutils literal notranslate"><span class="pre">AbstractNetwork.to_nx_graph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydhn.classes.network.html">network</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.__init__"><code class="docutils literal notranslate"><span class="pre">Network.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_branch_pump"><code class="docutils literal notranslate"><span class="pre">Network.add_branch_pump()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_branch_valve"><code class="docutils literal notranslate"><span class="pre">Network.add_branch_valve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_bypass_pipe"><code class="docutils literal notranslate"><span class="pre">Network.add_bypass_pipe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_component"><code class="docutils literal notranslate"><span class="pre">Network.add_component()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_consumer"><code class="docutils literal notranslate"><span class="pre">Network.add_consumer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_lagrangian_pipe"><code class="docutils literal notranslate"><span class="pre">Network.add_lagrangian_pipe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_pipe"><code class="docutils literal notranslate"><span class="pre">Network.add_pipe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.add_producer"><code class="docutils literal notranslate"><span class="pre">Network.add_producer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.branch_components_mask"><code class="docutils literal notranslate"><span class="pre">Network.branch_components_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.branch_components_pointer"><code class="docutils literal notranslate"><span class="pre">Network.branch_components_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.consumers_cycle_matrix"><code class="docutils literal notranslate"><span class="pre">Network.consumers_cycle_matrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.consumers_mask"><code class="docutils literal notranslate"><span class="pre">Network.consumers_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.consumers_pointer"><code class="docutils literal notranslate"><span class="pre">Network.consumers_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.cycle_matrix"><code class="docutils literal notranslate"><span class="pre">Network.cycle_matrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.ideal_components_mask"><code class="docutils literal notranslate"><span class="pre">Network.ideal_components_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.imposed_mdot_matrix"><code class="docutils literal notranslate"><span class="pre">Network.imposed_mdot_matrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.imposed_pumps_mask"><code class="docutils literal notranslate"><span class="pre">Network.imposed_pumps_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.imposed_valves_mask"><code class="docutils literal notranslate"><span class="pre">Network.imposed_valves_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.leaf_components_mask"><code class="docutils literal notranslate"><span class="pre">Network.leaf_components_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.leaf_components_pointer"><code class="docutils literal notranslate"><span class="pre">Network.leaf_components_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.main_edge_mask"><code class="docutils literal notranslate"><span class="pre">Network.main_edge_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.mask"><code class="docutils literal notranslate"><span class="pre">Network.mask()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.mass_flow_setpoints_mask"><code class="docutils literal notranslate"><span class="pre">Network.mass_flow_setpoints_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.mass_flow_setpoints_pointer"><code class="docutils literal notranslate"><span class="pre">Network.mass_flow_setpoints_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.n_consumers"><code class="docutils literal notranslate"><span class="pre">Network.n_consumers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.n_pipes"><code class="docutils literal notranslate"><span class="pre">Network.n_pipes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.n_producers"><code class="docutils literal notranslate"><span class="pre">Network.n_producers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.pipes_mask"><code class="docutils literal notranslate"><span class="pre">Network.pipes_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.pipes_pointer"><code class="docutils literal notranslate"><span class="pre">Network.pipes_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.pressure_setpoints_mask"><code class="docutils literal notranslate"><span class="pre">Network.pressure_setpoints_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.pressure_setpoints_pointer"><code class="docutils literal notranslate"><span class="pre">Network.pressure_setpoints_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.producers_mask"><code class="docutils literal notranslate"><span class="pre">Network.producers_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.producers_pointer"><code class="docutils literal notranslate"><span class="pre">Network.producers_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.pumps_mask"><code class="docutils literal notranslate"><span class="pre">Network.pumps_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.real_components_mask"><code class="docutils literal notranslate"><span class="pre">Network.real_components_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.return_line_mask"><code class="docutils literal notranslate"><span class="pre">Network.return_line_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.return_line_pointer"><code class="docutils literal notranslate"><span class="pre">Network.return_line_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.run_sanity_checks"><code class="docutils literal notranslate"><span class="pre">Network.run_sanity_checks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.secondary_producers_mask"><code class="docutils literal notranslate"><span class="pre">Network.secondary_producers_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.supply_line_mask"><code class="docutils literal notranslate"><span class="pre">Network.supply_line_mask</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.supply_line_pointer"><code class="docutils literal notranslate"><span class="pre">Network.supply_line_pointer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.to_citysim_xml"><code class="docutils literal notranslate"><span class="pre">Network.to_citysim_xml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network.valves_mask"><code class="docutils literal notranslate"><span class="pre">Network.valves_mask</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydhn.classes.results.html">results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results"><code class="docutils literal notranslate"><span class="pre">Results</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results.__init__"><code class="docutils literal notranslate"><span class="pre">Results.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results.append"><code class="docutils literal notranslate"><span class="pre">Results.append()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results.from_csv"><code class="docutils literal notranslate"><span class="pre">Results.from_csv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results.to_csv"><code class="docutils literal notranslate"><span class="pre">Results.to_csv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results.to_dataframes"><code class="docutils literal notranslate"><span class="pre">Results.to_dataframes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results.update"><code class="docutils literal notranslate"><span class="pre">Results.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pydhn.citysim.citysim_ops.html" class="btn btn-neutral float-left" title="citysim_ops" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pydhn.classes.abstract_network.html" class="btn btn-neutral float-right" title="abstract_network" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

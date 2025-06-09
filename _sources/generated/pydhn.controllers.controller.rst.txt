@@ -1,0 +1,8 @@
+controller
+==========
+
+
+.. automodule:: pydhn.controllers.controller
+   :members:
+   :undoc-members:
+   :show-inheritance:

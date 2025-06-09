@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Network class &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Fluids" href="fluids.html" />
+    <link rel="prev" title="Installation" href="../install/install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The Network class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#principles">Principles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-network">Creating a network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#accessing-data">Accessing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#updating-attributes">Updating attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">The Network class</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/get_started/network.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-network-class">
+<h1>The Network class<a class="headerlink" href="#the-network-class" title="Link to this heading"></a></h1>
+<section id="principles">
+<span id="netprinciples"></span><h2>Principles<a class="headerlink" href="#principles" title="Link to this heading"></a></h2>
+<p>Most functions in PyDHN work with a network object, which holds information about the network graph and its components. This object includes methods to read, compute, and modify these information. To accommodate various conventions for constructing this class, PyDHN provides a blueprint with essential functionalities through the <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork" title="pydhn.classes.abstract_network.AbstractNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractNetwork</span></code></a> class. This class is intended to serve as a parent class for specific network implementations, rather than being used directly.</p>
+<p>In practice, all functions in PyDHN currently expect a specific structure for the child class, as defined by the <a class="reference internal" href="../generated/pydhn.classes.network.html#pydhn.classes.network.Network" title="pydhn.classes.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a> class. In this structure, the network graph is directed, with edge directions establishing the reference frame. Components are stored in the edges, representing the various elements of the network, while nodes are only connection points between these elements.</p>
+<p>The architecture of a Network object’s graph is subject to some constraints, mostly due to the custom loop method implemented to simulate the network’s hydraulics. It must be a connected graph with nodes of total degree 2 or 3 and must follow a specific layout. This layout is characterized by two parallel lines, one for supply and one for return, interconnected only by out-of-line elements. Components that can be used in one of the two lines are called <strong>branch components</strong>, while components that are designed to be used between the two lines are called <strong>leaf components</strong>. At present, connecting two leaf components in sequence is not supported. Furthermore, one of the leaf components must be the “main” component, where a setpoint pressure difference is enforced. A simple example of this structure is shown below:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>1----&gt;2----&gt;3----&gt;4
+^     |     |     |
+|     |     |     |
+M    S1    S2    S3
+|     |     |     |
+|     v     v     v
+8&lt;----7&lt;----6&lt;----5
+</pre></div>
+</div>
+<p>In this example, nodes <em>1</em>-<em>4</em> form the supply line, and nodes <em>5</em>-<em>8</em> form the return line. The horizontal edges are branch components, while the vertical edges are leaf components. Among these, <em>M</em> represents the main node, such as a heat plant where an array of pumps enforces a predefined pressure lift.</p>
+</section>
+<section id="creating-a-network">
+<h2>Creating a network<a class="headerlink" href="#creating-a-network" title="Link to this heading"></a></h2>
+<p>We can easily build this toy example using the methods provided by the class. Let’s start with the supply line. First, we add nodes <em>1</em>-<em>4</em> using the method <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.add_node" title="pydhn.classes.abstract_network.AbstractNetwork.add_node"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_node()</span></code></a>. We have to specify a <code class="docutils literal notranslate"><span class="pre">name</span></code> that can be any hashable type, and optionally we can add the <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> coordinates for plotting. If we specify a <code class="docutils literal notranslate"><span class="pre">z</span></code> value, this can then be used to automatically compute the altitude difference between the two ends of a component, which can be useful if we want to take into account the hydrostatic pressure in the simulation.</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn</span><span class="w"> </span><span class="kn">import</span> <span class="n">Network</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also add any other named attribute that we like:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we need to add the pipes. One way would be to create a <a class="reference internal" href="../generated/pydhn.components.base_pipe.html#pydhn.components.base_pipe.Pipe" title="pydhn.components.base_pipe.Pipe"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipe</span></code></a> object and add it to the network using the method <a class="reference internal" href="../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_component" title="pydhn.classes.network.Network.add_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_component()</span></code></a>. For the most common components, however, specific methods are implemented that makes this process easier. In the case of the base pipe, we can use <a class="reference internal" href="../generated/pydhn.classes.network.html#pydhn.classes.network.Network.add_pipe" title="pydhn.classes.network.Network.add_pipe"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_pipe()</span></code></a>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;P_1-2&#39;</span><span class="p">,</span> <span class="n">start_node</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end_node</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s1">&#39;P_2-3&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s1">&#39;P_3-4&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We don’t need to add the nodes beforehand: if an edge is added between two nodes that don’t exist yet, these will be added automatically:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s1">&#39;P_5-6&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s1">&#39;P_6-7&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s1">&#39;P_7-8&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now go on and add the remaing edges, one producer and three consumers:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_producer</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_consumer</span><span class="p">(</span><span class="s1">&#39;S1&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_consumer</span><span class="p">(</span><span class="s1">&#39;S2&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">add_consumer</span><span class="p">(</span><span class="s1">&#39;S3&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-data">
+<h2>Accessing data<a class="headerlink" href="#accessing-data" title="Link to this heading"></a></h2>
+<p>The network object has an internal ordering for nodes and edges. By calling the methods <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.nodes" title="pydhn.classes.abstract_network.AbstractNetwork.nodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">nodes()</span></code></a> and <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.edges" title="pydhn.classes.abstract_network.AbstractNetwork.edges"><code class="xref py py-func docutils literal notranslate"><span class="pre">edges()</span></code></a>, an array of node and edge names can be retrieved that follows this order:</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>These methods currently have different behaviours. In order to fix this, <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.nodes" title="pydhn.classes.abstract_network.AbstractNetwork.nodes"><code class="xref py py-func docutils literal notranslate"><span class="pre">nodes()</span></code></a> will be modified in a future version.</p>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nodes</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nodes</span>
+<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges</span>
+<span class="go">array([[1, 2],</span>
+<span class="go">       [2, 3],</span>
+<span class="go">       [2, 7],</span>
+<span class="go">       [3, 4],</span>
+<span class="go">       [3, 6],</span>
+<span class="go">       [4, 5],</span>
+<span class="go">       [5, 6],</span>
+<span class="go">       [6, 7],</span>
+<span class="go">       [7, 8],</span>
+<span class="go">       [8, 1]])</span>
+</pre></div>
+</div>
+<p>We can also use the same methods to access one attribute, or multiple attributes at the same time:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nodes</span><span class="p">,</span> <span class="n">altitude</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">altitude</span>
+<span class="go">array([1., 1., 1., 1., 0., 0., 0., 0.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges</span><span class="p">,</span> <span class="n">delta_z</span><span class="p">,</span> <span class="n">th_ins</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">([</span><span class="s1">&#39;dz&#39;</span><span class="p">,</span> <span class="s1">&#39;insulation_thickness&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">delta_z</span>
+<span class="go">array([ 0.,  0., nan,  0., nan, nan,  0.,  0.,  0., nan])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">th_ins</span>
+<span class="go">array([0.034, 0.034,   nan, 0.034,   nan,   nan, 0.034, 0.034, 0.034,</span>
+<span class="go">         nan])</span>
+</pre></div>
+</div>
+<p>Masks can be used to find the indices of components meeting a certain criterion. The most general method is <a class="reference internal" href="../generated/pydhn.classes.network.html#pydhn.classes.network.Network.mask" title="pydhn.classes.network.Network.mask"><code class="xref py py-func docutils literal notranslate"><span class="pre">mask()</span></code></a>, which allows to specify different conditions:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">attr</span><span class="o">=</span><span class="s1">&#39;insulation_thickness&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">0.034</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s1">&#39;equality&#39;</span><span class="p">)</span>
+<span class="go">array([0, 1, 3, 6, 7, 8], dtype=int64)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">attr</span><span class="o">=</span><span class="s1">&#39;component_type&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;base_consumer&#39;</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s1">&#39;equality&#39;</span><span class="p">)</span>
+<span class="go">array([2, 4, 5], dtype=int64)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">attr</span><span class="o">=</span><span class="s1">&#39;component_type&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;base_producer&#39;</span><span class="p">,</span> <span class="s1">&#39;base_consumer&#39;</span><span class="p">],</span> <span class="n">condition</span><span class="o">=</span><span class="s1">&#39;membership&#39;</span><span class="p">)</span>
+<span class="go">array([2, 4, 5, 9], dtype=int64)</span>
+</pre></div>
+</div>
+<p>However, some specific masks also have their own method:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">producers_mask</span>
+<span class="go">array([9], dtype=int64)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="go">array([2, 4, 5], dtype=int64)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">pipes_mask</span>
+<span class="go">array([0, 1, 3, 6, 7, 8], dtype=int64)</span>
+</pre></div>
+</div>
+<p>A mask can be used to access the attributes of specific components:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">diameter</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="s1">&#39;insulation_thickness&#39;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pipes_mask</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diameter</span>
+<span class="go">array([0.034, 0.034, 0.034, 0.034, 0.034, 0.034])</span>
+</pre></div>
+</div>
+<p>Another way to access attrubutes is using the methods <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_nodes_attribute_array" title="pydhn.classes.abstract_network.AbstractNetwork.get_nodes_attribute_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nodes_attribute_array()</span></code></a> and <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_edges_attribute_array" title="pydhn.classes.abstract_network.AbstractNetwork.get_edges_attribute_array"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_edges_attribute_array()</span></code></a>, which however do not support masks:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">altitude</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_nodes_attribute_array</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">altitude</span>
+<span class="go">array([1., 1., 1., 1., 0., 0., 0., 0.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">th_ins</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s1">&#39;insulation_thickness&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">th_ins</span>
+<span class="go">array([0.034, 0.034,   nan, 0.034,   nan,   nan, 0.034, 0.034, 0.034,</span>
+<span class="go">         nan])</span>
+</pre></div>
+</div>
+<p>In order to access data from single attributes, we can use the <code class="docutils literal notranslate"><span class="pre">[]</span></code> syntax:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">{&#39;pos&#39;: (0, 1), &#39;z&#39;: 1, &#39;temperature&#39;: 50.0}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;pos&#39;</span><span class="p">]</span>
+<span class="go">(0, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span> 
+<span class="go">&lt;pydhn.components.base_pipe.Pipe at 0x256b58847a0&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+<span class="go">&#39;P_1-2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span><span class="o">.</span><span class="n">_get_type</span><span class="p">()</span>
+<span class="go">&#39;base_pipe&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="updating-attributes">
+<h2>Updating attributes<a class="headerlink" href="#updating-attributes" title="Link to this heading"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>These methods currently use a different convention for the order and name of key and value inputs. This behavious will be changed in a future version.</p>
+</div>
+<p>Node and edge attributes can be changed in bulk using the methods <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_node_attribute" title="pydhn.classes.abstract_network.AbstractNetwork.set_node_attribute"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_node_attribute()</span></code></a>  and <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_edge_attribute" title="pydhn.classes.abstract_network.AbstractNetwork.set_edge_attribute"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_edge_attribute()</span></code></a> if the value to be set is the same for all elements:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_node_attribute</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">35.</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;temperature&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">get_nodes_attribute_array</span><span class="p">(</span><span class="s1">&#39;temperature&#39;</span><span class="p">)</span>
+<span class="go">array([35., 35., 35., 35., 35., 35., 35., 35.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pipes_mask</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">)</span>
+<span class="go">array([10., 10., nan, 10., nan, nan, 10., 10., 10., nan])</span>
+</pre></div>
+</div>
+<p>Or <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_node_attributes" title="pydhn.classes.abstract_network.AbstractNetwork.set_node_attributes"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_node_attributes()</span></code></a>  and <a class="reference internal" href="../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_edge_attributes" title="pydhn.classes.abstract_network.AbstractNetwork.set_edge_attributes"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_edge_attributes()</span></code></a> if the value to be set is different for all elements:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ran</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">ran</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;new_attr&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">get_nodes_attribute_array</span><span class="p">(</span><span class="s1">&#39;new_attr&#39;</span><span class="p">)</span>
+<span class="go">array([0, 1, 2, 3, 4, 5, 6, 7])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ran_edge</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">pipes_mask</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">ran_edge</span><span class="p">,</span> <span class="s1">&#39;new_attr&#39;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">pipes_mask</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s1">&#39;new_attr&#39;</span><span class="p">)</span>
+<span class="go">array([ 0.,  1., nan,  2., nan, nan,  3.,  4.,  5., nan])</span>
+</pre></div>
+</div>
+<p>Single component attributes can finally be modified using the <a class="reference internal" href="../generated/pydhn.components.abstract_component.html#pydhn.components.abstract_component.Component.set" title="pydhn.components.abstract_component.Component.set"><code class="xref py py-func docutils literal notranslate"><span class="pre">set()</span></code></a> method:</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../install/install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fluids.html" class="btn btn-neutral float-right" title="Fluids" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

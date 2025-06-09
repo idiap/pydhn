@@ -1,0 +1,650 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.components.lagrangian_pipe &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.components.lagrangian_pipe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.components.lagrangian_pipe</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of the dynamic pipe model proposed in:</span>
+
+<span class="sd">    Denarie, A., M. Aprile, and M. Motta.</span>
+<span class="sd">    &quot;Heat transmission over long pipes: New model for fast and accurate</span>
+<span class="sd">    district heating simulations.&quot;</span>
+<span class="sd">    Energy 166 (2019): 267-276.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components.base_pipe</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">CASING_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">CP_INTERNAL_PIPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">D_PIPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DELTA_Z</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEPTH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">H_EXT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">INSULATION_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">INTERNAL_PIPE_THICKNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_CASING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_INSULATION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">K_INTERNAL_PIPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">L_PIPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">RHO_INTERNAL_PIPE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROUGHNESS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">STEPSIZE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">TEMPERATURE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.fluids.dimensionless_numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_nusselt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.fluids.dimensionless_numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_prandtl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">docstring_parameters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_divide</span>
+
+
+<div class="viewcode-block" id="LagrangianPipe">
+<a class="viewcode-back" href="../../../generated/pydhn.components.lagrangian_pipe.html#pydhn.components.lagrangian_pipe.LagrangianPipe">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LagrangianPipe</span><span class="p">(</span><span class="n">Pipe</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class implementing the Lagrange-based dynamic pipe proposed in:</span>
+
+<span class="sd">        Denarie, A., M. Aprile, and M. Motta.</span>
+<span class="sd">        &quot;Heat transmission over long pipes: New model for fast and accurate</span>
+<span class="sd">        district heating simulations.&quot;</span>
+<span class="sd">        Energy 166 (2019): 267-276.</span>
+
+<span class="sd">    As a branch component.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LagrangianPipe.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.components.lagrangian_pipe.html#pydhn.components.lagrangian_pipe.LagrangianPipe.__init__">[docs]</a>
+    <span class="nd">@docstring_parameters</span><span class="p">(</span>
+        <span class="n">D_PIPES</span><span class="p">,</span>
+        <span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">L_PIPES</span><span class="p">,</span>
+        <span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">INTERNAL_PIPE_THICKNESS</span><span class="p">,</span>
+        <span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">DELTA_Z</span><span class="p">,</span>
+        <span class="n">RHO_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">CP_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">STEPSIZE</span><span class="p">,</span>
+        <span class="n">H_EXT</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="o">=</span><span class="n">D_PIPES</span><span class="p">,</span>
+        <span class="n">depth</span><span class="o">=</span><span class="n">DEPTH</span><span class="p">,</span>
+        <span class="n">k_insulation</span><span class="o">=</span><span class="n">K_INSULATION</span><span class="p">,</span>
+        <span class="n">insulation_thickness</span><span class="o">=</span><span class="n">INSULATION_THICKNESS</span><span class="p">,</span>
+        <span class="n">length</span><span class="o">=</span><span class="n">L_PIPES</span><span class="p">,</span>
+        <span class="n">roughness</span><span class="o">=</span><span class="n">ROUGHNESS</span><span class="p">,</span>
+        <span class="n">k_internal_pipe</span><span class="o">=</span><span class="n">K_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">internal_pipe_thickness</span><span class="o">=</span><span class="n">INTERNAL_PIPE_THICKNESS</span><span class="p">,</span>
+        <span class="n">k_casing</span><span class="o">=</span><span class="n">K_CASING</span><span class="p">,</span>
+        <span class="n">casing_thickness</span><span class="o">=</span><span class="n">CASING_THICKNESS</span><span class="p">,</span>
+        <span class="n">dz</span><span class="o">=</span><span class="n">DELTA_Z</span><span class="p">,</span>
+        <span class="n">rho_wall</span><span class="o">=</span><span class="n">RHO_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">cp_wall</span><span class="o">=</span><span class="n">CP_INTERNAL_PIPE</span><span class="p">,</span>
+        <span class="n">stepsize</span><span class="o">=</span><span class="n">STEPSIZE</span><span class="p">,</span>
+        <span class="n">h_ext</span><span class="o">=</span><span class="n">H_EXT</span><span class="p">,</span>
+        <span class="n">line</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs all the necessary attributes for the object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        diameter : float, optional</span>
+<span class="sd">            Internal diameter of the pipe (m). The default is {}.</span>
+<span class="sd">        depth : float, optional</span>
+<span class="sd">            Burying depth of the pipe (m). The default is {}.</span>
+<span class="sd">        k_insulation : float, optional</span>
+<span class="sd">            Thermal conductivity of insulation (W/(m·K)). The default is {}.</span>
+<span class="sd">        insulation_thickness : float, optional</span>
+<span class="sd">            Thickness of the insulation layer (m). The default is {}.</span>
+<span class="sd">        length : float, optional</span>
+<span class="sd">            Length of the pipe (m). The default is {}.</span>
+<span class="sd">        roughness : float, optional</span>
+<span class="sd">            Roughness of the internal pipe surface (mm). The default is {}.</span>
+<span class="sd">        k_internal_pipe : float, optional</span>
+<span class="sd">            Thermal conductivity of the pipe (W/(m·K)). The default is {}.</span>
+<span class="sd">        internal_pipe_thickness : float, optional</span>
+<span class="sd">            Thickness of the pipe (m). The default is {}.</span>
+<span class="sd">        k_casing : float, optional</span>
+<span class="sd">            Thermal conductivity of the casing (W/(m·K)). The default is {}.</span>
+<span class="sd">        casing_thickness : float, optional</span>
+<span class="sd">            Thickness of the casing (m). The default is {}.</span>
+<span class="sd">        dz : float, optional</span>
+<span class="sd">            Altitude difference between the endpoints (m). The default is {}.</span>
+<span class="sd">        rho_wall : float, optional</span>
+<span class="sd">            Density of internal pipe (kg/m³). The default is {}.</span>
+<span class="sd">        cp_wall : float, optional</span>
+<span class="sd">            Specific heat capacity of pipe wall (J/(kg·K)). The default is {}.</span>
+<span class="sd">        stepsize : float, optional</span>
+<span class="sd">            Size of a time-step (s). The default is {}.</span>
+<span class="sd">        h_ext : float, optional</span>
+<span class="sd">            External heat transfer coefficient (W/(m²·K)). The default is {}.</span>
+<span class="sd">        line : str, optional</span>
+<span class="sd">            Either &quot;supply&quot; or &quot;return&quot;. The default is None.</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional keyord arguments.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">LagrangianPipe</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Component class and type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_class</span> <span class="o">=</span> <span class="s2">&quot;branch_component&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;lagrangian_pipe&quot;</span>
+
+        <span class="c1"># Add new inputs</span>
+        <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;diameter&quot;</span><span class="p">:</span> <span class="n">diameter</span><span class="p">,</span>
+            <span class="s2">&quot;depth&quot;</span><span class="p">:</span> <span class="n">depth</span><span class="p">,</span>
+            <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="n">length</span><span class="p">,</span>
+            <span class="s2">&quot;k_insulation&quot;</span><span class="p">:</span> <span class="n">k_insulation</span><span class="p">,</span>
+            <span class="s2">&quot;insulation_thickness&quot;</span><span class="p">:</span> <span class="n">insulation_thickness</span><span class="p">,</span>
+            <span class="s2">&quot;roughness&quot;</span><span class="p">:</span> <span class="n">roughness</span><span class="p">,</span>
+            <span class="s2">&quot;k_internal_pipe&quot;</span><span class="p">:</span> <span class="n">k_internal_pipe</span><span class="p">,</span>
+            <span class="s2">&quot;internal_pipe_thickness&quot;</span><span class="p">:</span> <span class="n">internal_pipe_thickness</span><span class="p">,</span>
+            <span class="s2">&quot;k_casing&quot;</span><span class="p">:</span> <span class="n">k_casing</span><span class="p">,</span>
+            <span class="s2">&quot;casing_thickness&quot;</span><span class="p">:</span> <span class="n">casing_thickness</span><span class="p">,</span>
+            <span class="s2">&quot;dz&quot;</span><span class="p">:</span> <span class="n">dz</span><span class="p">,</span>
+            <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="n">line</span><span class="p">,</span>
+            <span class="s2">&quot;rho_wall&quot;</span><span class="p">:</span> <span class="n">rho_wall</span><span class="p">,</span>
+            <span class="s2">&quot;cp_wall&quot;</span><span class="p">:</span> <span class="n">cp_wall</span><span class="p">,</span>
+            <span class="s2">&quot;h_ext&quot;</span><span class="p">:</span> <span class="n">h_ext</span><span class="p">,</span>
+            <span class="s2">&quot;stepsize&quot;</span><span class="p">:</span> <span class="n">stepsize</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">input_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Compute useful characteristics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_r_w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_ins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_cas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_radii</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_section_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_section_area</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wall_section_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_wall_section_area</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_internal_volume</span><span class="p">()</span>
+
+        <span class="c1"># Pipe internal status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_volume</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temperatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">TEMPERATURE</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wall_temperatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">TEMPERATURE</span><span class="p">])</span>
+
+        <span class="c1"># Pipe internal status at the former time step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_volume</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_temperatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">TEMPERATURE</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_wall_temperatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">TEMPERATURE</span><span class="p">])</span>
+
+        <span class="c1"># Keep track of the last time step ID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_radii</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the radii of the pipe.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        r_w : float</span>
+<span class="sd">            Internal radius (m).</span>
+<span class="sd">        r_s : float</span>
+<span class="sd">            External radius of internal pipe radius (m).</span>
+<span class="sd">        r_ins : float</span>
+<span class="sd">            External radius of the insulation layer (m).</span>
+<span class="sd">        r_cas : float</span>
+<span class="sd">            External radius of pipe casing (m).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span>
+        <span class="n">internal_pipe_thickness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;internal_pipe_thickness&quot;</span><span class="p">]</span>
+        <span class="n">insulation_thickness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;insulation_thickness&quot;</span><span class="p">]</span>
+        <span class="n">casing_thickness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;casing_thickness&quot;</span><span class="p">]</span>
+
+        <span class="n">r_w</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">diameter</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Internal radius</span>
+        <span class="n">r_s</span> <span class="o">=</span> <span class="n">r_w</span> <span class="o">+</span> <span class="n">internal_pipe_thickness</span>  <span class="c1"># Internal pipe radius</span>
+        <span class="n">r_ins</span> <span class="o">=</span> <span class="n">r_s</span> <span class="o">+</span> <span class="n">insulation_thickness</span>  <span class="c1"># Insulation radius</span>
+        <span class="n">r_cas</span> <span class="o">=</span> <span class="n">r_ins</span> <span class="o">+</span> <span class="n">casing_thickness</span>  <span class="c1"># Casing radius</span>
+        <span class="k">return</span> <span class="n">r_w</span><span class="p">,</span> <span class="n">r_s</span><span class="p">,</span> <span class="n">r_ins</span><span class="p">,</span> <span class="n">r_cas</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_section_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the cross-sectional area of the pipe given its diameter.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Cross-Sectional area of the pipe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">diameter</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_wall_section_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the cross-sectional area of ihe internal pipe wall given its</span>
+<span class="sd">        radii.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Cross-Sectional area of the internal pipe wall.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">area_wall</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_r_s</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_w</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">area_wall</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_internal_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the internal volume of the pipe given its cross-sectional</span>
+<span class="sd">        area and length.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Internal volume of the pipe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_area</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_solve_diff_sys</span><span class="p">(</span><span class="n">matrix_A</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">y_0</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Solve a system of two differential equations in the form:</span>
+<span class="sd">            ẋ = Ax + b</span>
+<span class="sd">        that computes the new temperatures in water volumes and wall segments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        matrix_A : np.ndarray</span>
+<span class="sd">            Matrix A.</span>
+<span class="sd">        vector_b : np.ndarray</span>
+<span class="sd">            Vector b.</span>
+<span class="sd">        x_0 : np.ndarray</span>
+<span class="sd">            Initial condition for the first equation.</span>
+<span class="sd">        y_0 : np.ndarray</span>
+<span class="sd">            Initial condition for the second equation.</span>
+<span class="sd">        stepsize : float</span>
+<span class="sd">            Length of the time step in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        res1 : np.ndarray</span>
+<span class="sd">            Solution for the first equation.</span>
+<span class="sd">        res2 : np.ndarray</span>
+<span class="sd">            Solution for the second equation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ma</span> <span class="o">=</span> <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">mb</span> <span class="o">=</span> <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">mc</span> <span class="o">=</span> <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">mk1</span><span class="p">,</span> <span class="n">mk2</span> <span class="o">=</span> <span class="n">vector_b</span>
+
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">matrix_A</span><span class="p">)</span>
+
+        <span class="n">V0</span><span class="p">,</span> <span class="n">V1</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">W0</span><span class="p">,</span> <span class="n">W1</span> <span class="o">=</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">eigenvectors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">l0</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">eigenvalues</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Find particular solutions</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="n">mc</span> <span class="o">*</span> <span class="n">mk1</span> <span class="o">/</span> <span class="n">ma</span> <span class="o">-</span> <span class="n">mk2</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="n">md</span> <span class="o">-</span> <span class="n">mb</span> <span class="o">/</span> <span class="n">ma</span> <span class="o">*</span> <span class="n">mc</span>
+        <span class="n">part_sol_y</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>
+
+        <span class="n">part_sol_x</span> <span class="o">=</span> <span class="o">-</span><span class="n">mb</span> <span class="o">/</span> <span class="n">ma</span> <span class="o">*</span> <span class="n">part_sol_y</span> <span class="o">-</span> <span class="n">mk1</span> <span class="o">/</span> <span class="n">ma</span>
+
+        <span class="n">num</span> <span class="o">=</span> <span class="n">y_0</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">/</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">x_0</span> <span class="o">-</span> <span class="n">part_sol_y</span> <span class="o">+</span> <span class="n">V1</span> <span class="o">/</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">part_sol_x</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="n">W1</span> <span class="o">-</span> <span class="n">V1</span> <span class="o">/</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">W0</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="n">num</span> <span class="o">/</span> <span class="n">denom</span>
+
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">x_0</span> <span class="o">/</span> <span class="n">V0</span> <span class="o">-</span> <span class="n">W0</span> <span class="o">/</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">c2</span> <span class="o">-</span> <span class="n">part_sol_x</span> <span class="o">/</span> <span class="n">V0</span>
+
+        <span class="n">res1</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">part_sol_x</span>
+            <span class="o">+</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">V0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">l0</span> <span class="o">*</span> <span class="n">stepsize</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">W0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">l1</span> <span class="o">*</span> <span class="n">stepsize</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">res2</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">part_sol_y</span>
+            <span class="o">+</span> <span class="n">c1</span> <span class="o">*</span> <span class="n">V1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">l0</span> <span class="o">*</span> <span class="n">stepsize</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">c2</span> <span class="o">*</span> <span class="n">W1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">l1</span> <span class="o">*</span> <span class="n">stepsize</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_temperatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="p">,</span> <span class="n">t_in</span><span class="p">,</span> <span class="n">ts_id</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># If it is a repeated step, restore previous conditions</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">==</span> <span class="n">ts_id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_volumes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_temperatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_temperatures</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_wall_temperatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_wall_temperatures</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Update internal memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_ts</span> <span class="o">=</span> <span class="n">ts_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_volumes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_temperatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temperatures</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_wall_temperatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wall_temperatures</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Get attributes</span>
+        <span class="n">stepsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;stepsize&quot;</span><span class="p">]</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;depth&quot;</span><span class="p">]</span>
+        <span class="n">mdot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">]</span>
+        <span class="n">internal_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_volume</span>
+        <span class="n">section_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_area</span>
+        <span class="n">wall_section_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wall_section_area</span>
+
+        <span class="c1"># If the mass flow is negative, invert the reference frame of the pipe</span>
+        <span class="c1"># for the calculation</span>
+        <span class="n">REVERSED</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mdot</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">REVERSED</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">mdot</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_temperatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temperatures</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wall_temperatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wall_temperatures</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Get pipe properties</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;diameter&quot;</span><span class="p">]</span>
+        <span class="n">k_internal_pipe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;k_internal_pipe&quot;</span><span class="p">]</span>
+        <span class="n">k_insulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;k_insulation&quot;</span><span class="p">]</span>
+        <span class="n">k_casing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;k_casing&quot;</span><span class="p">]</span>
+        <span class="n">reynolds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;reynolds&quot;</span><span class="p">]</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;length&quot;</span><span class="p">]</span>
+        <span class="n">friction_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;friction_factor&quot;</span><span class="p">]</span>
+        <span class="n">h_ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;h_ext&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Get wall additional wall properties</span>
+        <span class="n">rho_wall</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;rho_wall&quot;</span><span class="p">]</span>
+        <span class="n">cp_wall</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span><span class="p">[</span><span class="s2">&quot;cp_wall&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Get soil temperature</span>
+        <span class="n">t_soil</span> <span class="o">=</span> <span class="n">soil</span><span class="o">.</span><span class="n">get_temp</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">ts</span><span class="o">=</span><span class="n">ts_id</span><span class="p">)</span>
+
+        <span class="c1"># Get fluid properties for each volume</span>
+        <span class="n">init_temperatures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_temperatures</span>
+        <span class="n">cp_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_cp</span><span class="p">(</span><span class="n">init_temperatures</span><span class="p">)</span>
+        <span class="n">rho_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_rho</span><span class="p">(</span><span class="n">init_temperatures</span><span class="p">)</span>
+        <span class="n">k_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_k</span><span class="p">(</span><span class="n">init_temperatures</span><span class="p">)</span>
+        <span class="n">mu_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_mu</span><span class="p">(</span><span class="n">init_temperatures</span><span class="p">)</span>
+
+        <span class="c1"># Get dimensionless numbers</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">compute_nusselt</span><span class="p">(</span>
+            <span class="n">reynolds</span><span class="o">=</span><span class="n">reynolds</span><span class="p">,</span>
+            <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+            <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
+            <span class="n">friction_factor</span><span class="o">=</span><span class="n">friction_factor</span><span class="p">,</span>
+            <span class="n">cp_fluid</span><span class="o">=</span><span class="n">cp_fluid</span><span class="p">,</span>
+            <span class="n">mu_fluid</span><span class="o">=</span><span class="n">mu_fluid</span><span class="p">,</span>
+            <span class="n">k_fluid</span><span class="o">=</span><span class="n">k_fluid</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">prandtl</span> <span class="o">=</span> <span class="n">compute_prandtl</span><span class="p">(</span><span class="n">cp_fluid</span><span class="o">=</span><span class="n">cp_fluid</span><span class="p">,</span> <span class="n">mu_fluid</span><span class="o">=</span><span class="n">mu_fluid</span><span class="p">,</span> <span class="n">k_fluid</span><span class="o">=</span><span class="n">k_fluid</span><span class="p">)</span>
+
+        <span class="c1"># Get radii coefficients</span>
+        <span class="n">r_w</span><span class="p">,</span> <span class="n">r_s</span><span class="p">,</span> <span class="n">r_ins</span><span class="p">,</span> <span class="n">r_cas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_ins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_cas</span>
+
+        <span class="c1"># Compute heat transfer coefficients</span>
+        <span class="c1"># Insulation</span>
+        <span class="n">log_arg</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">r_ins</span><span class="p">,</span> <span class="n">r_s</span><span class="p">)</span>
+        <span class="n">h_ins</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">k_insulation</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_arg</span><span class="p">))</span>
+        <span class="c1"># Casing</span>
+        <span class="n">log_arg</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">r_cas</span><span class="p">,</span> <span class="n">r_ins</span><span class="p">)</span>
+        <span class="n">h_cas</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">k_casing</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_arg</span><span class="p">))</span>
+        <span class="c1"># External</span>
+        <span class="n">h_ext_pipe</span> <span class="o">=</span> <span class="n">h_ext</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r_cas</span>
+        <span class="c1"># Insulation + casing + external</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">safe_divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h_ins</span><span class="p">)</span> <span class="o">+</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h_cas</span><span class="p">)</span> <span class="o">+</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h_ext_pipe</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">h_ins_cas</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span>
+        <span class="c1"># Internal pipe</span>
+        <span class="n">log_arg</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">r_s</span><span class="p">,</span> <span class="n">r_w</span><span class="p">)</span>
+        <span class="n">h_s</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">k_internal_pipe</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_arg</span><span class="p">))</span>
+        <span class="c1"># Water core</span>
+        <span class="n">h_w</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">*</span> <span class="n">k_fluid</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="c1"># Water, convective</span>
+        <span class="n">h_w_cv</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">nu</span> <span class="o">*</span> <span class="n">k_fluid</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">diameter</span><span class="p">)</span>  <span class="c1"># see Lienhard book</span>
+        <span class="c1"># Water core + internal pipe</span>
+        <span class="n">denom</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h_w</span><span class="p">)</span> <span class="o">+</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h_s</span><span class="p">)</span>
+        <span class="n">h_b</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">denom</span><span class="p">)</span>
+
+        <span class="c1"># Compute boundary layers</span>
+        <span class="n">thermal_layer_thickness</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">k_fluid</span><span class="p">,</span> <span class="n">h_w_cv</span><span class="p">)</span>
+        <span class="n">momentum_layer_thickness</span> <span class="o">=</span> <span class="n">thermal_layer_thickness</span> <span class="o">*</span> <span class="p">(</span><span class="n">prandtl</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="c1"># Avoid NaNs</span>
+        <span class="n">momentum_layer_thickness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">momentum_layer_thickness</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">momentum_layer_thickness</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Alternative empirical formula proposed by Schlichting and Gersten</span>
+        <span class="c1"># G = 1.35</span>
+        <span class="c1"># momentum_layer_thickness = 122*np.log(reynolds)/(G*reynolds)*diameter</span>
+
+        <span class="c1"># Compute capacities</span>
+        <span class="c1"># Internal pipe wall</span>
+        <span class="n">C_wall</span> <span class="o">=</span> <span class="n">rho_wall</span> <span class="o">*</span> <span class="n">wall_section_area</span> <span class="o">*</span> <span class="n">cp_wall</span>
+        <span class="c1"># Water core</span>
+        <span class="n">core_section_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">r_w</span> <span class="o">-</span> <span class="n">momentum_layer_thickness</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">C_core</span> <span class="o">=</span> <span class="n">core_section_area</span> <span class="o">*</span> <span class="n">cp_fluid</span> <span class="o">*</span> <span class="n">rho_fluid</span>
+        <span class="c1"># Boundary layer</span>
+        <span class="n">boundary_section_area</span> <span class="o">=</span> <span class="n">section_area</span> <span class="o">-</span> <span class="n">core_section_area</span>
+        <span class="n">C_boundary</span> <span class="o">=</span> <span class="n">boundary_section_area</span> <span class="o">*</span> <span class="n">cp_fluid</span> <span class="o">*</span> <span class="n">rho_fluid</span>
+        <span class="c1"># Boundary layer + internal pipe wall</span>
+        <span class="n">C_b</span> <span class="o">=</span> <span class="n">C_boundary</span> <span class="o">+</span> <span class="n">C_wall</span>
+
+        <span class="c1"># Solve differential equation</span>
+        <span class="n">matrix_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">h_b</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">h_b</span><span class="p">,</span> <span class="n">C_core</span><span class="p">)</span>
+        <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">h_b</span><span class="p">,</span> <span class="n">C_core</span><span class="p">)</span>
+        <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">h_b</span><span class="p">,</span> <span class="n">C_b</span><span class="p">)</span>
+        <span class="n">matrix_A</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="p">(</span><span class="n">h_b</span> <span class="o">+</span> <span class="n">h_ins_cas</span><span class="p">),</span> <span class="n">C_b</span><span class="p">)</span>
+
+        <span class="n">vector_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">h_b</span><span class="p">)),</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">h_ins_cas</span><span class="p">,</span> <span class="n">C_b</span><span class="p">)</span> <span class="o">*</span> <span class="n">t_soil</span><span class="p">])</span>
+
+        <span class="c1"># Compute new values</span>
+        <span class="n">new_temps</span><span class="p">,</span> <span class="n">new_wall_temps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_diff_sys</span><span class="p">(</span>
+            <span class="n">matrix_A</span><span class="o">=</span><span class="n">matrix_A</span><span class="p">,</span>
+            <span class="n">vector_b</span><span class="o">=</span><span class="n">vector_b</span><span class="p">,</span>
+            <span class="n">x_0</span><span class="o">=</span><span class="n">init_temperatures</span><span class="p">,</span>
+            <span class="n">y_0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wall_temperatures</span><span class="p">,</span>
+            <span class="n">stepsize</span><span class="o">=</span><span class="n">stepsize</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Compute losses</span>
+        <span class="n">delta_ts</span> <span class="o">=</span> <span class="n">new_temps</span> <span class="o">-</span> <span class="n">init_temperatures</span>
+        <span class="n">delta_qs</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span> <span class="o">*</span> <span class="n">cp_fluid</span> <span class="o">*</span> <span class="n">delta_ts</span> <span class="o">*</span> <span class="n">rho_fluid</span><span class="p">,</span> <span class="mf">3600.0</span><span class="p">)</span>
+        <span class="n">delta_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">delta_qs</span><span class="p">)</span>
+
+        <span class="c1"># Displace volumes</span>
+        <span class="k">if</span> <span class="n">mdot</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rho_fluid_new</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_rho</span><span class="p">(</span><span class="n">t_in</span><span class="p">)</span>
+            <span class="n">new_vol</span> <span class="o">=</span> <span class="n">safe_divide</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mdot</span><span class="p">)</span> <span class="o">*</span> <span class="n">stepsize</span><span class="p">,</span> <span class="n">rho_fluid_new</span><span class="p">)</span>
+            <span class="n">new_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_vol</span><span class="p">)</span>
+            <span class="n">new_temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">new_temps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_in</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_volumes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span>
+
+        <span class="c1"># Find index of remaining and leaving volumes</span>
+        <span class="k">if</span> <span class="n">mdot</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">new_vol</span> <span class="o">==</span> <span class="n">internal_volume</span><span class="p">:</span>
+                <span class="n">out_idx</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">new_volumes</span><span class="p">)</span>
+                <span class="n">out_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cumsum</span> <span class="o">&gt;</span> <span class="n">internal_volume</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">out_part</span> <span class="o">=</span> <span class="n">cumsum</span><span class="p">[</span><span class="n">out_idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">internal_volume</span>
+                <span class="n">in_part</span> <span class="o">=</span> <span class="n">new_volumes</span><span class="p">[</span><span class="n">out_idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">out_part</span>
+                <span class="n">new_volumes</span><span class="p">[</span><span class="n">out_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_part</span>
+                <span class="n">new_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">new_volumes</span><span class="p">,</span> <span class="n">out_idx</span><span class="p">,</span> <span class="n">in_part</span><span class="p">)</span>
+                <span class="n">split_t</span> <span class="o">=</span> <span class="n">new_temps</span><span class="p">[</span><span class="n">out_idx</span><span class="p">]</span>
+                <span class="n">new_temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">new_temps</span><span class="p">,</span> <span class="n">out_idx</span><span class="p">,</span> <span class="n">split_t</span><span class="p">)</span>
+                <span class="n">out_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out_idx</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Compute new volumes and temperatures in pipe</span>
+        <span class="n">staying_volumes</span> <span class="o">=</span> <span class="n">new_volumes</span><span class="p">[:</span><span class="n">out_idx</span><span class="p">]</span>
+        <span class="n">staying_temperatures</span> <span class="o">=</span> <span class="n">new_temps</span><span class="p">[:</span><span class="n">out_idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">mdot</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Compute outlet temperature</span>
+            <span class="n">leaving_volumes</span> <span class="o">=</span> <span class="n">new_volumes</span><span class="p">[</span><span class="n">out_idx</span><span class="p">:]</span>
+            <span class="n">leaving_temperatures</span> <span class="o">=</span> <span class="n">new_temps</span><span class="p">[</span><span class="n">out_idx</span><span class="p">:]</span>
+            <span class="n">t_out</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">leaving_volumes</span> <span class="o">*</span> <span class="n">leaving_temperatures</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">leaving_volumes</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># Update wall discretization to match that of volumes</span>
+            <span class="n">cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">staying_volumes</span><span class="p">)</span>
+            <span class="n">last_cumsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_volumes</span><span class="p">)</span>
+            <span class="n">old_wall_temps</span> <span class="o">=</span> <span class="n">new_wall_temps</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">new_wall_temps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">cumsum</span><span class="p">,</span> <span class="n">last_cumsum</span><span class="p">,</span> <span class="n">old_wall_temps</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If mass flow is 0, use the temperatures of the first and last</span>
+            <span class="c1"># volumes</span>
+            <span class="n">t_out</span> <span class="o">=</span> <span class="n">staying_temperatures</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">t_in</span> <span class="o">=</span> <span class="n">staying_temperatures</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Compute average temperature</span>
+        <span class="n">t_avg</span> <span class="o">=</span> <span class="p">(</span><span class="n">staying_volumes</span> <span class="o">*</span> <span class="n">staying_temperatures</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">staying_volumes</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="c1"># If the mass flow is negative, restore the correct reference frame of</span>
+        <span class="c1"># the pipe</span>
+        <span class="k">if</span> <span class="n">REVERSED</span><span class="p">:</span>
+            <span class="n">staying_volumes</span> <span class="o">=</span> <span class="n">staying_volumes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">staying_temperatures</span> <span class="o">=</span> <span class="n">staying_temperatures</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">new_wall_temps</span> <span class="o">=</span> <span class="n">new_wall_temps</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Update internal memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_volumes</span> <span class="o">=</span> <span class="n">staying_volumes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_temperatures</span> <span class="o">=</span> <span class="n">staying_temperatures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wall_temperatures</span> <span class="o">=</span> <span class="n">new_wall_temps</span>
+
+        <span class="k">return</span> <span class="n">t_in</span><span class="p">,</span> <span class="n">t_out</span><span class="p">,</span> <span class="n">t_avg</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">delta_q</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

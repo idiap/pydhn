@@ -1,0 +1,8 @@
+vector\_functions
+=================
+
+
+.. automodule:: pydhn.components.vector_functions
+   :members:
+   :undoc-members:
+   :show-inheritance:

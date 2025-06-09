@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>loops &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pressure" href="pydhn.solving.pressure.html" />
+    <link rel="prev" title="hydraulic_simulation" href="pydhn.solving.hydraulic_simulation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pydhn.html">pydhn</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pydhn.citysim.html">citysim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.html">classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.controllers.html">controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.html">default_values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.fluids.html">fluids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.networks.html">networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.plotting.html">plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.soils.html">soils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pydhn.solving.html">solving</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.climate.html">climate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.common.html">common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.hydraulic_simulation.html">hydraulic_simulation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">loops</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.solving.loops.AbstractLoop"><code class="docutils literal notranslate"><span class="pre">AbstractLoop</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.solving.loops.Scheduler"><code class="docutils literal notranslate"><span class="pre">Scheduler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.solving.loops.SimpleStep"><code class="docutils literal notranslate"><span class="pre">SimpleStep</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.pressure.html">pressure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.temperature.html">temperature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.thermal_simulation.html">thermal_simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pydhn.html">pydhn</a></li>
+          <li class="breadcrumb-item"><a href="pydhn.solving.html">solving</a></li>
+      <li class="breadcrumb-item active">loops</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pydhn.solving.loops.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pydhn.solving.loops">
+<span id="loops"></span><h1>loops<a class="headerlink" href="#module-pydhn.solving.loops" title="Link to this heading"></a></h1>
+<p>Classes for loops, which control the simulation workflow</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pydhn.solving.loops.AbstractLoop">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AbstractLoop</span></span><a class="reference internal" href="../_modules/pydhn/solving/loops.html#AbstractLoop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.loops.AbstractLoop" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract class for loops</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.solving.loops.AbstractLoop.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/solving/loops.html#AbstractLoop.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.loops.AbstractLoop.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pydhn.solving.loops.AbstractLoop.current_phase">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_phase</span></span><a class="headerlink" href="#pydhn.solving.loops.AbstractLoop.current_phase" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.solving.loops.AbstractLoop.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pydhn.classes.results.html#pydhn.classes.results.Results" title="pydhn.classes.results.Results"><span class="pre">Results</span></a></span></span><a class="reference internal" href="../_modules/pydhn/solving/loops.html#AbstractLoop.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.loops.AbstractLoop.execute" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pydhn.solving.loops.Scheduler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pydhn.solving.loops.AbstractLoop" title="pydhn.solving.loops.AbstractLoop"><span class="pre">AbstractLoop</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_thermal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/solving/loops.html#Scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.loops.Scheduler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydhn.solving.loops.AbstractLoop" title="pydhn.solving.loops.AbstractLoop"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractLoop</span></code></a></p>
+<p>Class for simple multi-step simulations</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.solving.loops.Scheduler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_loop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pydhn.solving.loops.AbstractLoop" title="pydhn.solving.loops.AbstractLoop"><span class="pre">AbstractLoop</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_thermal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/pydhn/solving/loops.html#Scheduler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.loops.Scheduler.__init__" title="Link to this definition"></a></dt>
+<dd><p>Init the Scheduler class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_loop</strong> (<a class="reference internal" href="#pydhn.solving.loops.AbstractLoop" title="pydhn.solving.loops.AbstractLoop"><em>AbstractLoop</em></a><em>, </em><em>optional</em>) – The base loop object to use during the simulation phase. If not
+specified, a <a class="reference internal" href="#pydhn.solving.loops.SimpleStep" title="pydhn.solving.loops.SimpleStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleStep</span></code></a> object will
+be instantiated. The default is None.</p></li>
+<li><p><strong>with_thermal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to carry out the thermal simulation. This argument is
+ignored if a base loop is given. The default is True.</p></li>
+<li><p><strong>schedules</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary containing the schedules to be updated during the
+multi-step simulation. The keys must be strings with the name of
+the attribute to be changed. The values should be Pandas dataframes
+where the index values are the time-step IDs and the column names
+are the name of the edges containing the components for which the
+attribute should be changed. The default is {}.</p></li>
+<li><p><strong>ts_start</strong> (<em>int</em><em>, </em><em>optional</em>) – Starting time-step ID. The default is 0.</p></li>
+<li><p><strong>steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of time-steps. The default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pydhn.solving.loops.SimpleStep">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SimpleStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">with_thermal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hydraulic_sim_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_sim_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/solving/loops.html#SimpleStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.loops.SimpleStep" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydhn.solving.loops.AbstractLoop" title="pydhn.solving.loops.AbstractLoop"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractLoop</span></code></a></p>
+<p>Class for simple simulation step</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydhn.solving.loops.SimpleStep.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">with_thermal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hydraulic_sim_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermal_sim_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/pydhn/solving/loops.html#SimpleStep.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.loops.SimpleStep.__init__" title="Link to this definition"></a></dt>
+<dd><p>Init the SimpleStep class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>with_thermal</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to carry out the thermal simulation. The default is True.</p></li>
+<li><p><strong>hydraulic_sim_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments for
+<a class="reference internal" href="pydhn.solving.hydraulic_simulation.html#pydhn.solving.hydraulic_simulation.solve_hydraulics" title="pydhn.solving.hydraulic_simulation.solve_hydraulics"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_hydraulics()</span></code></a>. The
+default is {}.</p></li>
+<li><p><strong>thermal_sim_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Keyword arguments for
+<a class="reference internal" href="pydhn.solving.thermal_simulation.html#pydhn.solving.thermal_simulation.solve_thermal" title="pydhn.solving.thermal_simulation.solve_thermal"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_thermal()</span></code></a>. The
+default is {}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pydhn.solving.hydraulic_simulation.html" class="btn btn-neutral float-left" title="hydraulic_simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pydhn.solving.pressure.html" class="btn btn-neutral float-right" title="pressure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

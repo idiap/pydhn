@@ -1,0 +1,252 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loops &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pydhn" href="../generated/pydhn.html" />
+    <link rel="prev" title="Simulation" href="simulation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulation.html">Simulation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Loops</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#abstract-loop">Abstract Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simple-step">Simple Step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scheduler">Scheduler</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Loops</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/get_started/loops.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="loops">
+<h1>Loops<a class="headerlink" href="#loops" title="Link to this heading"></a></h1>
+<p>PyDHN includes some classes, called <strong>loops</strong>, to automate the simulation workflow. Loops are used to define the logic of a single simulation step as well as to create a pipeline for a multi-step simulation.</p>
+<section id="abstract-loop">
+<h2>Abstract Loop<a class="headerlink" href="#abstract-loop" title="Link to this heading"></a></h2>
+<p>The class <a class="reference internal" href="../generated/pydhn.solving.loops.html#pydhn.solving.loops.AbstractLoop" title="pydhn.solving.loops.AbstractLoop"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractLoop</span></code></a> provides a blueprint for all loop classes. A loop defines several phases, or steps, and the logic that governs the transition between one phase and the next. In principle, all loops have a “<strong>start</strong>” and an “<strong>end</strong>” phases that constitute the entry and exit point of the loop. For each phase, a private method is implemented which includes a call to <code class="xref py py-meth docutils literal notranslate"><span class="pre">_set_current_phase()</span></code> defining what the next phase will be.</p>
+<p>Once the workflow logic is defined, the process can be initiated using the method <a class="reference internal" href="../generated/pydhn.solving.loops.html#pydhn.solving.loops.AbstractLoop.execute" title="pydhn.solving.loops.AbstractLoop.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> with the relevant arguments.</p>
+</section>
+<section id="simple-step">
+<h2>Simple Step<a class="headerlink" href="#simple-step" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../generated/pydhn.solving.loops.html#pydhn.solving.loops.SimpleStep" title="pydhn.solving.loops.SimpleStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleStep</span></code></a> loop defines the logic for a single simulation step using the default functions <a class="reference internal" href="../generated/pydhn.solving.hydraulic_simulation.html#pydhn.solving.hydraulic_simulation.solve_hydraulics" title="pydhn.solving.hydraulic_simulation.solve_hydraulics"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_hydraulics()</span></code></a> and <a class="reference internal" href="../generated/pydhn.solving.thermal_simulation.html#pydhn.solving.thermal_simulation.solve_thermal" title="pydhn.solving.thermal_simulation.solve_thermal"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_thermal()</span></code></a>. It implements the following logic:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/flow_basestep.png"><img alt="Workflow diagram" src="../_images/flow_basestep.png" style="width: 700px;" />
+</a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Where:</p>
+<ol class="arabic simple">
+<li><p><strong>start</strong> is the workflow entry point.</p></li>
+<li><p><strong>preprocessing</strong> is a placeholder and just sets the next phase.</p></li>
+<li><p><strong>hydraulic_simulation</strong> runs the hydraulic simulation.</p></li>
+<li><p><strong>thermal_simulation</strong> runs the thermal simulation.</p></li>
+<li><p><strong>postprocessing</strong> is a placeholder and just sets the next phase.</p></li>
+<li><p><strong>end</strong> marks the end of the workflow.</p></li>
+</ol>
+<p>The results are returned in a <a class="reference internal" href="../generated/pydhn.classes.results.html#pydhn.classes.results.Results" title="pydhn.classes.results.Results"><code class="xref py py-class docutils literal notranslate"><span class="pre">Results</span></code></a> object.</p>
+<p>The following snippet shows an usage example:</p>
+<div class="highlight-pycon notranslate" id="simpstepsnippet"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.fluids</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantWater</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.networks.load_networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">star_network</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.soils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Soil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.solving</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleStep</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span> <span class="o">=</span> <span class="n">star_network</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fluid</span> <span class="o">=</span> <span class="n">ConstantWater</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">soil</span> <span class="o">=</span> <span class="n">Soil</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">temp</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set the hydraulic setpoint and control type of substations as &quot;mass_flow&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_type_hyd&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_value_hyd&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;mass_flow&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;control_type&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">consumers_mask</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Set the thermal setpoint type of the heating station as &quot;t_out&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">net</span><span class="o">.</span><span class="n">set_edge_attribute</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;t_out&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;setpoint_type_hx&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">producers_mask</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize the base loop with custom kwargs for the simulation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hyd_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;error_threshold&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thermal_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;error_threshold&quot;</span><span class="p">:</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">base_loop</span> <span class="o">=</span> <span class="n">SimpleStep</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">hydraulic_sim_kwargs</span><span class="o">=</span><span class="n">hyd_kwargs</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">thermal_sim_kwargs</span><span class="o">=</span><span class="n">thermal_kwargs</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">with_thermal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Run the simulation, which will return an instance of Results.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">base_loop</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="o">=</span><span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="n">soil</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check the node temperature</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="s1">&#39;temperature&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c1"># °C </span>
+<span class="go">[80.   79.66 79.58 79.56 79.33 79.21 79.2  79.49 49.01 49.17 49.37 49.04</span>
+<span class="go"> 49.14 49.21 49.2  49.49]</span>
+</pre></div>
+</div>
+</section>
+<section id="scheduler">
+<h2>Scheduler<a class="headerlink" href="#scheduler" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../generated/pydhn.solving.loops.html#pydhn.solving.loops.Scheduler" title="pydhn.solving.loops.Scheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scheduler</span></code></a> loop defines the logic for a multi-step simulation using any base loop (by default, <a class="reference internal" href="../generated/pydhn.solving.loops.html#pydhn.solving.loops.SimpleStep" title="pydhn.solving.loops.SimpleStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleStep</span></code></a>) with the possibility of varying any component attribute over time. It implements the following logic:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/flow_scheduler.png"><img alt="Workflow diagram" src="../_images/flow_scheduler.png" style="width: 550px;" />
+</a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Where:</p>
+<ol class="arabic simple">
+<li><p><strong>start</strong> is the workflow entry point.</p></li>
+<li><p><strong>preprocessing</strong> updates component arguments (for example, setpoints) according to the simulation step ID and the provided schedules. Schedules are Pandas dataframes where the index contains the step IDs and the columns are the names of the edges for which the value should be updated. They are passed as a dictionary where the key is the attribute name and the value is the schedule itself.</p></li>
+<li><p><strong>simulation</strong> runs the simulation using the base loop provided.</p></li>
+<li><p><strong>postprocessing</strong> updates the simulation step ID and checks if all the steps have been simulated.</p></li>
+<li><p><strong>end</strong> marks the end of the workflow.</p></li>
+</ol>
+<p>The results are returned in a <a class="reference internal" href="../generated/pydhn.classes.results.html#pydhn.classes.results.Results" title="pydhn.classes.results.Results"><code class="xref py py-class docutils literal notranslate"><span class="pre">Results</span></code></a> object.</p>
+<p>The following code block extends the <a class="reference internal" href="#simpstepsnippet"><span class="std std-ref">previous snippet</span></a> to include an example of usage of the Scheduler loop:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.solving</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scheduler</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Prepare schedules: each schedule will modify one attribute over time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Consumer mass flow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imposed_mass_flows</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;SUB1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;SUB2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s2">&quot;SUB3&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imposed_mass_flows_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">imposed_mass_flows</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Producer outlet temperature</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imposed_t_out</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;main&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">80</span><span class="p">,</span> <span class="mi">81</span><span class="p">,</span> <span class="mi">82</span><span class="p">,</span> <span class="mi">82</span><span class="p">,</span> <span class="mi">84</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imposed_t_out_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">imposed_t_out</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Store the schedules in a dictionary</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schedules</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;setpoint_value_hyd&quot;</span><span class="p">:</span> <span class="n">imposed_mass_flows_df</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;setpoint_value_hx&quot;</span><span class="p">:</span> <span class="n">imposed_t_out_df</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize the scheduler, which will take care of updating the attributes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># according to the schedules and run the specified number of steps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">(</span><span class="n">base_loop</span><span class="o">=</span><span class="n">base_loop</span><span class="p">,</span> <span class="n">schedules</span><span class="o">=</span><span class="n">schedules</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Run the simulation, which will return an instance of Results</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results_sched</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="o">=</span><span class="n">fluid</span><span class="p">,</span> <span class="n">soil</span><span class="o">=</span><span class="n">soil</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Check the node temperatures over time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results_sched</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c1"># °C </span>
+<span class="go">[[80.   71.56 68.1  69.85 66.13 35.   66.84 67.1  31.5  34.86 36.59 34.34</span>
+<span class="go">  34.78  5.   36.84 37.1 ]</span>
+<span class="go"> [81.   76.   73.78 74.97 72.43 35.   73.31 73.13 39.26 41.67 42.77 41.5</span>
+<span class="go">  41.4   5.   43.31 43.13]</span>
+<span class="go"> [82.   78.03 76.44 77.24 74.8  71.56 76.1  75.77 41.97 43.98 45.38 43.36</span>
+<span class="go">  40.01 41.56 46.1  45.77]</span>
+<span class="go"> [82.   79.01 77.77 78.37 76.98 73.63 77.21 77.34 44.28 45.87 47.08 45.14</span>
+<span class="go">  44.2  43.63 47.21 47.34]</span>
+<span class="go"> [84.   80.93 79.64 80.21 79.02 35.   78.43 79.29 46.43 48.11 49.08 47.58</span>
+<span class="go">  48.38  5.   48.43 49.29]]</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="simulation.html" class="btn btn-neutral float-left" title="Simulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../generated/pydhn.html" class="btn btn-neutral float-right" title="pydhn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

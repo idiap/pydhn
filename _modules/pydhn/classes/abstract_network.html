@@ -1,0 +1,1263 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.classes.abstract_network &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.classes.abstract_network</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.classes.abstract_network</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;Base class for networks&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hashable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Consumer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components</span><span class="w"> </span><span class="kn">import</span> <span class="n">Producer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">TEMPERATURE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_network</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">isiter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.geospatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">graph_to_geodataframe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.geospatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">graph_to_geojson</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.graph_utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_linegraph_net</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.graph_utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_nodes_attribute_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.matrices</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_adjacency_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.matrices</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_cycle_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities.matrices</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_incidence_matrix</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;AbstractNetwork&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AbstractNetwork">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AbstractNetwork</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class for DHNs. It incorporates common methods and utilities to</span>
+<span class="sd">    different possible graph representations of DHNs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AbstractNetwork.__init__">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caching</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># Network Graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+
+        <span class="c1"># Caches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caching</span> <span class="o">=</span> <span class="n">caching</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_cache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mask_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># TODO: implement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of edges. If the main elements of the child class</span>
+<span class="sd">        are in nodes, the output should be changed to number of nodes.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&#39;edge 1&#39;, 0, 1)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&#39;edge 2&#39;, 1, 2)</span>
+<span class="sd">            &gt;&gt;&gt; len(net)</span>
+<span class="sd">            2</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_edges</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements indexing of nodes.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;, z=250)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;, z=200)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net[&quot;Node 0&quot;][&quot;z&quot;]</span>
+<span class="sd">            250</span>
+<span class="sd">            &gt;&gt;&gt; net[(&quot;Node 0&quot;, &quot;Node 1&quot;)][&quot;dz&quot;] # Computed automatically</span>
+<span class="sd">            -50</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()[</span><span class="n">key</span><span class="p">]</span>
+
+<div class="viewcode-block" id="AbstractNetwork.copy">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>  <span class="c1"># TODO: replace T with Self for Python 3.11+</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a deep copy of the class.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net_2 = net.copy()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">caching</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the status of self._caching. If True, the outputs of some</span>
+<span class="sd">        computations, such as for example the adjacency matric, will be cached,</span>
+<span class="sd">        allowing for faster simulations.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork(caching=True)</span>
+<span class="sd">            &gt;&gt;&gt; net._caching</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caching</span>
+
+    <span class="nd">@caching</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">caching</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iscaching</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setter method to change the status of self._caching. It also resets the</span>
+<span class="sd">        cache.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        iscaching : bool</span>
+<span class="sd">            Either True to turn on caching or False to turn it off.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork(caching=True)</span>
+<span class="sd">            &gt;&gt;&gt; net.caching = False</span>
+<span class="sd">            &gt;&gt;&gt; net.caching</span>
+<span class="sd">            False</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caching</span> <span class="o">=</span> <span class="n">iscaching</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_cache</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mask_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of nodes in the network.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Number of nodes in the network graph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.n_nodes</span>
+<span class="sd">            2</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of edges in the network. This property has no setter</span>
+<span class="sd">        method, so that it cannot be modified manually.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Number of edges in the network graph.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.n_edges</span>
+<span class="sd">            1</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+
+    <span class="c1"># Matrices ################################################################</span>
+    <span class="c1"># Methods that returns useful network matrices as Numpy arrays.</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">matrix_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">matrix_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generic method for handling caching of matrices.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        matrix_name : str</span>
+<span class="sd">            String used as key of the matrix in the cache dictionary.</span>
+<span class="sd">        matrix_function : Callable</span>
+<span class="sd">            Function used to compute the matrix if not available in the cache.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional arguments for matrix_function.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            The desired matrix, commonly as Numpy array.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caching</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_cache</span><span class="p">[</span><span class="n">matrix_name</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix_function</span><span class="p">(</span><span class="n">net</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_cache</span><span class="p">[</span><span class="n">matrix_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">matrix</span>
+        <span class="k">return</span> <span class="n">matrix</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">adjacency_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the adjacency matrix of the network.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            The adjacency matrix of the network graph as 2D Numpy array of</span>
+<span class="sd">            integers.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.adjacency_matrix</span>
+<span class="sd">            array([[0, 1],</span>
+<span class="sd">                   [0, 0]], dtype=int32)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_matrix</span><span class="p">(</span>
+            <span class="n">matrix_name</span><span class="o">=</span><span class="s2">&quot;adjacency&quot;</span><span class="p">,</span> <span class="n">matrix_function</span><span class="o">=</span><span class="n">compute_adjacency_matrix</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">incidence_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the incidence matrix of the network.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            The incidence matrix of the network graph as 2D Numpy array of</span>
+<span class="sd">            integers.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.incidence_matrix</span>
+<span class="sd">            array([[-1.],</span>
+<span class="sd">                   [ 1.]])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_matrix</span><span class="p">(</span>
+            <span class="n">matrix_name</span><span class="o">=</span><span class="s2">&quot;incidence&quot;</span><span class="p">,</span> <span class="n">matrix_function</span><span class="o">=</span><span class="n">compute_incidence_matrix</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cycle_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the cycle matrix of the network graph computed using Networkx</span>
+<span class="sd">        and converted into a Numpy array. The cycle matrix only includes cycles</span>
+<span class="sd">        from a basis and it is computed from the undirected graph. Edges in a</span>
+<span class="sd">        cycle with opposite direction are given an entry of -1 in the matrix.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+<span class="sd">            The cycle matrix of the network graph as 2D Numpy array of</span>
+<span class="sd">            integers.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&quot;Pipe 1-2&quot;, &quot;Node 1&quot;, &quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&quot;Pipe 2-0&quot;, &quot;Node 2&quot;, &quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.cycle_matrix # doctest: +SKIP</span>
+<span class="sd">            array([[ -1., -1.,  1.]])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_matrix</span><span class="p">(</span>
+            <span class="n">matrix_name</span><span class="o">=</span><span class="s2">&quot;cycle&quot;</span><span class="p">,</span> <span class="n">matrix_function</span><span class="o">=</span><span class="n">compute_cycle_matrix</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;nx&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Pointers ################################################################</span>
+    <span class="c1"># Pointers to specific subgraphs of the network.</span>
+    <span class="c1">###########################################################################</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_edge_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a view of the network graph with only the edges specified by</span>
+<span class="sd">        the mask. The mask is an array of indices based on the order of edges</span>
+<span class="sd">        in the Networkx graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+
+    <span class="c1"># Setters #################################################################</span>
+    <span class="c1"># Methods to add nodes and edges to the graph, as well as their attributes.</span>
+    <span class="c1">###########################################################################</span>
+
+<div class="viewcode-block" id="AbstractNetwork.add_node">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.add_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_node</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">TEMPERATURE</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a single node to the directed graph of the network.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            Unique name or ID of the node.</span>
+<span class="sd">        x : float, optional</span>
+<span class="sd">            X coordinate of the node for plotting. The default is None.</span>
+<span class="sd">        y : float, optional</span>
+<span class="sd">            Y coordinate of the node for plotting. The default is None.</span>
+<span class="sd">        z : float, optional</span>
+<span class="sd">            Z coordinate of the node, used to compute hydrostatic pressure. The</span>
+<span class="sd">            default is 0.</span>
+<span class="sd">        temperature : float, optional</span>
+<span class="sd">            Initial node temperature. The default is TEMPERATURE.</span>
+<span class="sd">        **kwargs :</span>
+<span class="sd">            Additional attributes of the node.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(2)</span>
+<span class="sd">            &gt;&gt;&gt; nodes, _ = net.nodes()</span>
+<span class="sd">            &gt;&gt;&gt; nodes</span>
+<span class="sd">            array([0, 1, 2])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Node names should be unique</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Node already in graph, information will be updated!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add the node to the graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Clear cache</span>
+        <span class="c1"># self._node_cache.clear()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.add_edge">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.add_edge">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_edge</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">start_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">end_node</span><span class="p">:</span> <span class="n">Hashable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a single edge to the directed graph of the network.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : Hashable</span>
+<span class="sd">            Unique name or ID of the edge.</span>
+<span class="sd">        start_node : Hashable</span>
+<span class="sd">            Name of the start node.</span>
+<span class="sd">        end_node : Hashable</span>
+<span class="sd">            Name of the end node.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional attributes of the node.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge((0, 1), 0, 1)</span>
+<span class="sd">            &gt;&gt;&gt; edges = net.edges()</span>
+<span class="sd">            &gt;&gt;&gt; edges</span>
+<span class="sd">            array([[0, 1]])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Edges should be unique</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Edge </span><span class="si">{</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span><span class="w"> </span><span class="n">end_node</span><span class="p">)</span><span class="si">}</span><span class="s2"> already in graph, </span><span class="se">\</span>
+<span class="s2">                 information will be updated!&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">end_node</span><span class="p">,</span> <span class="n">start_node</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Graph already contains an edge </span><span class="si">{</span><span class="p">(</span><span class="n">end_node</span><span class="p">,</span><span class="w"> </span><span class="n">start_node</span><span class="p">)</span><span class="si">}</span><span class="s2">. </span><span class="se">\</span>
+<span class="s2">                 The edge will be reversed and features upadated!&quot;</span>
+            <span class="p">)</span>
+            <span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span> <span class="o">=</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">start_node</span>
+
+        <span class="c1"># Add entry to networkx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Clear cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_matrix_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.set_node_attribute">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_node_attribute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_node_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the same value as the specified attribute (name) for all nodes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Any</span>
+<span class="sd">            Value to be set for all nodes.</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the attribute for which value is set.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1)</span>
+<span class="sd">            &gt;&gt;&gt; net.set_node_attribute(&quot;blue&quot;, &quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.nodes(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;blue&#39;, &#39;blue&#39;], dtype=&#39;&lt;U4&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+        <span class="c1"># self._node_cache.pop(name, None)</span>
+
+<div class="viewcode-block" id="AbstractNetwork.set_edge_attribute">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_edge_attribute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_edge_attribute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the same value as the specified attribute (name) for all edges.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Any</span>
+<span class="sd">            Value to be set for all edges.</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the attribute for which value is set.</span>
+<span class="sd">        mask : array, optional</span>
+<span class="sd">            Array of the indices of edges for which the attribute should be</span>
+<span class="sd">            set. The order is based on the order of edges in the class as</span>
+<span class="sd">            returned by the method .edges().</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 1-2&quot;, &quot;Node 1&quot;, &quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 2-0&quot;, &quot;Node 2&quot;, &quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; edges = net.edges()</span>
+<span class="sd">            &gt;&gt;&gt; edges</span>
+<span class="sd">            array([[&#39;Node 0&#39;, &#39;Node 1&#39;],</span>
+<span class="sd">                   [&#39;Node 1&#39;, &#39;Node 2&#39;],</span>
+<span class="sd">                   [&#39;Node 2&#39;, &#39;Node 0&#39;]], dtype=&#39;&lt;U6&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; net.set_edge_attribute(&quot;red&quot;, &quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.edges(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;red&#39;, &#39;red&#39;, &#39;red&#39;], dtype=&#39;&lt;U3&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; mask = np.array([0, 2])</span>
+<span class="sd">            &gt;&gt;&gt; net.set_edge_attribute(&quot;blue&quot;, &quot;color&quot;, mask)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.edges(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;blue&#39;, &#39;red&#39;, &#39;blue&#39;], dtype=&#39;&lt;U4&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+        <span class="c1"># self._edge_cache.pop(name, None)</span>
+
+<div class="viewcode-block" id="AbstractNetwork.set_node_attributes">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_node_attributes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the specified attribute in nodes. Values can be either a dict</span>
+<span class="sd">        mapping nodes to values or an iterable which has the same length as the</span>
+<span class="sd">        number of nodes in the graph. In this case, the order of values must</span>
+<span class="sd">        match the order of nodes obtained using self.nodes()</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : Union[dict, np.array]</span>
+<span class="sd">            Either a dict with node-value pairs or an iterable containing the</span>
+<span class="sd">            values ordered as the correspondig nodes.</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the attribute for which values are set.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1)</span>
+<span class="sd">            &gt;&gt;&gt; nodes, _ = net.nodes()</span>
+<span class="sd">            &gt;&gt;&gt; nodes</span>
+<span class="sd">            array([0, 1])</span>
+<span class="sd">            &gt;&gt;&gt; values = [&quot;green&quot;, &quot;blue&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; net.set_node_attributes(values, &quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.nodes(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;green&#39;, &#39;blue&#39;], dtype=&#39;&lt;U5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; values = {0: &quot;green&quot;, 1: &quot;red&quot;}</span>
+<span class="sd">            &gt;&gt;&gt; net.set_node_attributes(values, &quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.nodes(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;green&#39;, &#39;red&#39;], dtype=&#39;&lt;U5&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">values_dict</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">values</span><span class="p">))</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values_dict</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+        <span class="c1"># self._node_cache.pop(name, None)</span>
+
+<div class="viewcode-block" id="AbstractNetwork.set_edge_attributes">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.set_edge_attributes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_edge_attributes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the specified attribute in edges. Values can be either a dict</span>
+<span class="sd">        mapping edges to values or an iterable which has the same length as the</span>
+<span class="sd">        number of edges in the graph. In this case, the order of values must</span>
+<span class="sd">        match the order of edges obtained using self.edges()</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : Union[dict, np.array]</span>
+<span class="sd">            Either a dict with edge-value pairs or an iterable containing the</span>
+<span class="sd">            values ordered as the correspondig edges. If a mask is used, the</span>
+<span class="sd">            order should be that of the elements in the mask instead.</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the attribute for which values are set.</span>
+<span class="sd">        mask : array, optional</span>
+<span class="sd">            Array of the indices of edges for which the attribute should be</span>
+<span class="sd">            set. The order is based on the order of edges in the class as</span>
+<span class="sd">            returned by the method .edges().</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 1-2&quot;, &quot;Node 1&quot;, &quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 2-0&quot;, &quot;Node 2&quot;, &quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; edges = net.edges()</span>
+<span class="sd">            &gt;&gt;&gt; edges</span>
+<span class="sd">            array([[&#39;Node 0&#39;, &#39;Node 1&#39;],</span>
+<span class="sd">                   [&#39;Node 1&#39;, &#39;Node 2&#39;],</span>
+<span class="sd">                   [&#39;Node 2&#39;, &#39;Node 0&#39;]], dtype=&#39;&lt;U6&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; values = [&quot;green&quot;, &quot;blue&quot;, &quot;red&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; net.set_edge_attributes(values, &quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.edges(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;green&#39;, &#39;blue&#39;, &#39;red&#39;], dtype=&#39;&lt;U5&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; values = {(&quot;Node 0&quot;, &quot;Node 1&quot;): &quot;purple&quot;}</span>
+<span class="sd">            &gt;&gt;&gt; net.set_edge_attributes(values, &quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.edges(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;purple&#39;, &#39;blue&#39;, &#39;red&#39;], dtype=&#39;&lt;U6&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; mask = np.array([0, 2])</span>
+<span class="sd">            &gt;&gt;&gt; values = [&quot;yellow&quot;, &quot;orange&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; net.set_edge_attributes(values, &quot;color&quot;, mask)</span>
+<span class="sd">            &gt;&gt;&gt; _, colors = net.edges(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;yellow&#39;, &#39;blue&#39;, &#39;orange&#39;], dtype=&#39;&lt;U6&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Input should be a numpy array</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="c1"># The number of values given should be the same as the number of edges</span>
+        <span class="c1"># in the mask</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="c1"># Only use edges that are both in the dictionary and in the mask</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edges</span> <span class="o">&amp;</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">values_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">values</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_pointer</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">edges</span><span class="p">(),</span> <span class="n">values</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></div>
+
+        <span class="c1"># self._edge_cache.pop(name, None)</span>
+
+    <span class="c1"># Getters #################################################################</span>
+    <span class="c1"># Methods to get nodes and edges as well as their attributes.</span>
+    <span class="c1">###########################################################################</span>
+
+<div class="viewcode-block" id="AbstractNetwork.get_nodes_attribute_array">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_nodes_attribute_array">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nodes_attribute_array</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fill_missing</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array containing the values of the specified attribute for</span>
+<span class="sd">        each node of the network graph. The values follow the order of nodes</span>
+<span class="sd">        in the class as returned by the method .nodes().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute : str</span>
+<span class="sd">            Name of the attribute to get.</span>
+<span class="sd">        fill_missing : Any, optional</span>
+<span class="sd">            Value for replacing missing entries. The default is 0.0.</span>
+<span class="sd">        dtype : Type, optional</span>
+<span class="sd">            Data type to which the output array should be casted. The default</span>
+<span class="sd">            is None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        arr : Array</span>
+<span class="sd">            Array containing the values of the requested attribute for each</span>
+<span class="sd">            node. The values follow the order of nodes in the class.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0, color=&quot;blue&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1)</span>
+<span class="sd">            &gt;&gt;&gt; colors = net.get_nodes_attribute_array(&quot;color&quot;, fill_missing=&quot;red&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;blue&#39;, &#39;red&#39;], dtype=&#39;&lt;U4&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if self.caching:</span>
+        <span class="c1">#     try:</span>
+        <span class="c1">#         return self._node_cache[attribute][fill_missing][dtype]</span>
+        <span class="c1">#     except:</span>
+        <span class="c1">#         pass</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">get_nodes_attribute_array</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">fill_missing</span><span class="o">=</span><span class="n">fill_missing</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span>
+        <span class="c1"># self._node_cache[attribute][fill_missing][dtype] = arr</span>
+        <span class="k">return</span> <span class="n">arr</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_cached_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">caching</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_cache</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_cache</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">edges</span>
+
+<div class="viewcode-block" id="AbstractNetwork.get_edges_attribute_array">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_edges_attribute_array">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_edges_attribute_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an array containing the values of the specified attribute for</span>
+<span class="sd">        each edge of the network graph. The values follow the order of edges</span>
+<span class="sd">        in the class as returned by the method .edges().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute : str</span>
+<span class="sd">            Name of the attribute to get.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        arr : Array</span>
+<span class="sd">            Array containing the values of the requested attribute for each</span>
+<span class="sd">            edge. The values follow the order of edges in the class.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;, color=&quot;Blue&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 1-2&quot;, &quot;Node 1&quot;, &quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 2-0&quot;, &quot;Node 2&quot;, &quot;Node 0&quot;, color=&quot;Red&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; edges = net.edges()</span>
+<span class="sd">            &gt;&gt;&gt; edges</span>
+<span class="sd">            array([[&#39;Node 0&#39;, &#39;Node 1&#39;],</span>
+<span class="sd">                   [&#39;Node 1&#39;, &#39;Node 2&#39;],</span>
+<span class="sd">                   [&#39;Node 2&#39;, &#39;Node 0&#39;]], dtype=&#39;&lt;U6&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; values = [&quot;green&quot;, &quot;blue&quot;, &quot;red&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; net.get_edges_attribute_array(&quot;color&quot;)</span>
+<span class="sd">            array([&#39;Blue&#39;, &#39;nan&#39;, &#39;Red&#39;], dtype=&#39;&lt;U32&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cached_edges</span><span class="p">()</span>
+        <span class="n">ls</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_edges</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
+            <span class="n">ls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">][</span><span class="n">attribute</span><span class="p">]</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">arr</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.get_nodes_with_attribute">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_nodes_with_attribute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_nodes_with_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of nodes with the speficied attribute value.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute : str</span>
+<span class="sd">            Name of the attribute to filter.</span>
+<span class="sd">        value : Any</span>
+<span class="sd">            Value of the attribute to be searched.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Array</span>
+<span class="sd">            Array containing the name of nodes where the attribute has the</span>
+<span class="sd">            specified value.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&#39;u&#39;, color=&quot;blue&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&#39;v&#39;, color=&quot;red&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; nodes = net.get_nodes_with_attribute(&quot;color&quot;,&quot;red&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; nodes</span>
+<span class="sd">            array([&#39;v&#39;], dtype=&#39;&lt;U1&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_attribute_array</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">names</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">attr</span> <span class="o">==</span> <span class="n">value</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.get_edges_with_attribute">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.get_edges_with_attribute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_edges_with_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of edges with the speficied attribute value.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute : str</span>
+<span class="sd">            Name of the attribute to filter.</span>
+<span class="sd">        value : Any</span>
+<span class="sd">            Value of the attribute to be searched.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Array</span>
+<span class="sd">            Array containing the name of edges where the attribute has the</span>
+<span class="sd">            specified value.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;, color=&quot;Blue&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 1-2&quot;, &quot;Node 1&quot;, &quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 2-0&quot;, &quot;Node 2&quot;, &quot;Node 0&quot;, color=&quot;Red&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; edges = net.get_edges_with_attribute(&quot;color&quot;, &quot;Blue&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; edges</span>
+<span class="sd">            array([&#39;Pipe 0-1&#39;], dtype=&#39;&lt;U8&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">names</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">attr</span> <span class="o">==</span> <span class="n">value</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.nodes">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.nodes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">nodes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of arrays where the first one contains the node names</span>
+<span class="sd">        and the followings ones contain the requested node data. The values</span>
+<span class="sd">        in the arrays follow the order of nodes in the class. The order of data</span>
+<span class="sd">        arrays follows the order in which they appear in the iterable.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : Optional[Iterable], optional</span>
+<span class="sd">            Names of the attributes to return. If the iterable is a string, a</span>
+<span class="sd">            single attribute with the name matching the string is returned. The</span>
+<span class="sd">            default is np.nan.</span>
+<span class="sd">        mask : Optional[np.array], optional</span>
+<span class="sd">            Array of the indices of nodes that should be returned. The indices</span>
+<span class="sd">            follow the order of nodes in the network graph. The default is</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        Array</span>
+<span class="sd">            Arrays containing the node names and the values for the requested</span>
+<span class="sd">            attributes.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&#39;u&#39;, color=&quot;blue&quot;, size=10)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&#39;v&#39;, color=&quot;red&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; nodes, _ = net.nodes()</span>
+<span class="sd">            &gt;&gt;&gt; nodes</span>
+<span class="sd">            array([&#39;u&#39;, &#39;v&#39;], dtype=&#39;&lt;U1&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; nodes, color = net.nodes(&#39;color&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; color</span>
+<span class="sd">            array([&#39;blue&#39;, &#39;red&#39;], dtype=&#39;&lt;U4&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; nodes, color, size = net.nodes([&#39;color&#39;, &#39;size&#39;])</span>
+<span class="sd">            &gt;&gt;&gt; size</span>
+<span class="sd">            array([10.,  0.])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">isiter</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_attribute_array</span><span class="p">(</span><span class="n">d</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nodes_attribute_array</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="n">mask</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.edges">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.edges">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">edges</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of arrays where the first one contains the edge names</span>
+<span class="sd">        and the followings ones contain the requested edge data. The values</span>
+<span class="sd">        in the arrays follow the order of edges in the class. The order of data</span>
+<span class="sd">        arrays follows the order in which they appear in the iterable.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : Optional[Iterable], optional</span>
+<span class="sd">            Names of the attributes to return. If the iterable is a string, a</span>
+<span class="sd">            single attribute with the name matching the string is returned. The</span>
+<span class="sd">            default is None.</span>
+<span class="sd">        mask : Optional[np.array], optional</span>
+<span class="sd">            Array of the indices of edges that should be returned. The indices</span>
+<span class="sd">            follow the order of nodes in the network graph.. The default is</span>
+<span class="sd">            None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            List containing the arrays with node names and those with the</span>
+<span class="sd">            values of the requested attributes.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import Network</span>
+<span class="sd">            &gt;&gt;&gt; net = Network()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 0&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 1&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(&quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 0-1&quot;, &quot;Node 0&quot;, &quot;Node 1&quot;, color=&quot;Blue&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 1-2&quot;, &quot;Node 1&quot;, &quot;Node 2&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_pipe(&quot;Pipe 2-0&quot;, &quot;Node 2&quot;, &quot;Node 0&quot;, color=&quot;Red&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; edges, colors = net.edges(&quot;color&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; edges</span>
+<span class="sd">            array([[&#39;Node 0&#39;, &#39;Node 1&#39;],</span>
+<span class="sd">                   [&#39;Node 1&#39;, &#39;Node 2&#39;],</span>
+<span class="sd">                   [&#39;Node 2&#39;, &#39;Node 0&#39;]], dtype=&#39;&lt;U6&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; colors</span>
+<span class="sd">            array([&#39;Blue&#39;, &#39;nan&#39;, &#39;Red&#39;], dtype=&#39;&lt;U32&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">single</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_edges</span><span class="p">)</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cached_edges</span><span class="p">()[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">edges</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">single</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">ls</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
+                <span class="n">ls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">][</span><span class="n">data</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
+                <span class="n">single</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">ls</span> <span class="o">=</span> <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                    <span class="n">ls</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">][</span><span class="n">a</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">single</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ls</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ls</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="o">*</span><span class="n">arr</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Plotting ################################################################</span>
+    <span class="c1"># General utilities for plotting.</span>
+    <span class="c1">###########################################################################</span>
+
+<div class="viewcode-block" id="AbstractNetwork.plot_network">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.plot_network">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_network</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+        <span class="n">plot_edge_labels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">plot_node_labels</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method implementing pydhn.plotting.plot_network. Coordinates x and y</span>
+<span class="sd">        must be given for nodes as attributes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        figsize : Tuple[float, float], optional</span>
+<span class="sd">            Size of the figure. The default is (12, 8).</span>
+<span class="sd">        plot_edge_labels : bool, optional</span>
+<span class="sd">            Wether to plot edge names. The default is False.</span>
+<span class="sd">        plot_node_labels : bool, optional</span>
+<span class="sd">            Wether to plot node names. The default is False.</span>
+<span class="sd">        **kwargs :</span>
+<span class="sd">            Keyword arguments for nx.draw_networkx.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">            &gt;&gt;&gt; from pydhn.classes import AbstractNetwork</span>
+<span class="sd">            &gt;&gt;&gt; net = AbstractNetwork()</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(0, x=0, y=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(1, x=1, y=2)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_node(2, x=2, y=0)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&#39;edge 1&#39;, 0, 1)</span>
+<span class="sd">            &gt;&gt;&gt; net.add_edge(&#39;edge 2&#39;, 1, 2)</span>
+<span class="sd">            &gt;&gt;&gt; net.plot_network()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plot_network</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span>
+            <span class="n">plot_edge_labels</span><span class="o">=</span><span class="n">plot_edge_labels</span><span class="p">,</span>
+            <span class="n">plot_node_labels</span><span class="o">=</span><span class="n">plot_node_labels</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># Import and export Utilities #############################################</span>
+    <span class="c1"># Utilities for importing and exporting class data in different formats.</span>
+    <span class="c1">###########################################################################</span>
+
+<div class="viewcode-block" id="AbstractNetwork.to_nx_graph">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_nx_graph">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_nx_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">new_d</span> <span class="o">=</span> <span class="p">{(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">_attrs</span><span class="p">}</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">new_d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.save_graph">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.save_graph">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c1"># pickle.dump(self._graph, open(f&#39;{filename}.txt&#39;, &#39;w&#39;))</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">write_gpickle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gpickle&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.load_graph">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.load_graph">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c1"># TODO: OWN FORMAT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">read_gpickle</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gpickle&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.save_gml">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.save_gml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_gml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">stringify</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">!=</span> <span class="s2">&quot;builtins&quot;</span><span class="p">:</span>
+                <span class="n">my_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">_attrs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">my_json</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;None&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">write_gml</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gml&quot;</span><span class="p">,</span> <span class="n">stringify</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.load_gml">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.load_gml">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_gml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">serialize_component</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
+            <span class="n">component_types</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;base_pipe&quot;</span><span class="p">:</span> <span class="n">Pipe</span><span class="p">,</span>
+                <span class="s2">&quot;base_producer&quot;</span><span class="p">:</span> <span class="n">Producer</span><span class="p">,</span>
+                <span class="s2">&quot;base_consumer&quot;</span><span class="p">:</span> <span class="n">Consumer</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">serialized</span> <span class="o">=</span> <span class="n">component_types</span><span class="p">[</span><span class="n">component</span><span class="p">[</span><span class="s2">&quot;component_type&quot;</span><span class="p">]](</span><span class="o">**</span><span class="n">component</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">serialized</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">destringify</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">read_gml</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.gml&quot;</span><span class="p">,</span> <span class="n">destringizer</span><span class="o">=</span><span class="n">destringify</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;component&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">component_str</span> <span class="o">=</span> <span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span>
+                <span class="n">component</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">component_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">))</span>
+                <span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">][</span><span class="s2">&quot;component&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">serialize_component</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.to_geojson">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_geojson">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_geojson</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">):</span>
+        <span class="n">graph_to_geojson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.to_geodataframe">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_geodataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_geodataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">graph_to_geodataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractNetwork.to_linegraph">
+<a class="viewcode-back" href="../../../generated/pydhn.classes.abstract_network.html#pydhn.classes.abstract_network.AbstractNetwork.to_linegraph">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_linegraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_label</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">compute_linegraph_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_label</span><span class="o">=</span><span class="n">edge_label</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

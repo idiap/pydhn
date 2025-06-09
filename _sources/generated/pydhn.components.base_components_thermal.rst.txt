@@ -1,0 +1,8 @@
+base\_components\_thermal
+=========================
+
+
+.. automodule:: pydhn.components.base_components_thermal
+   :members:
+   :undoc-members:
+   :show-inheritance:

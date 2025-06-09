@@ -1,0 +1,639 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>default_values &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fluids" href="pydhn.fluids.html" />
+    <link rel="prev" title="default_values" href="pydhn.default_values.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pydhn.html">pydhn</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pydhn.citysim.html">citysim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.html">classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.controllers.html">controllers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pydhn.default_values.html">default_values</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">default_values</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.A0"><code class="docutils literal notranslate"><span class="pre">A0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.A1"><code class="docutils literal notranslate"><span class="pre">A1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.A2"><code class="docutils literal notranslate"><span class="pre">A2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.BYPASS_CASING_THICKNESS"><code class="docutils literal notranslate"><span class="pre">BYPASS_CASING_THICKNESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.BYPASS_INSULATION_THICKNESS"><code class="docutils literal notranslate"><span class="pre">BYPASS_INSULATION_THICKNESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.CASING_THICKNESS"><code class="docutils literal notranslate"><span class="pre">CASING_THICKNESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.CONTROL_TYPE_CONS"><code class="docutils literal notranslate"><span class="pre">CONTROL_TYPE_CONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.CP_FLUID"><code class="docutils literal notranslate"><span class="pre">CP_FLUID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.CP_INTERNAL_PIPE"><code class="docutils literal notranslate"><span class="pre">CP_INTERNAL_PIPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.CP_WATER"><code class="docutils literal notranslate"><span class="pre">CP_WATER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.DELTA_P"><code class="docutils literal notranslate"><span class="pre">DELTA_P</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.DELTA_P_FRICTION"><code class="docutils literal notranslate"><span class="pre">DELTA_P_FRICTION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.DELTA_Z"><code class="docutils literal notranslate"><span class="pre">DELTA_Z</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.DEPTH"><code class="docutils literal notranslate"><span class="pre">DEPTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.DISCRETIZATION"><code class="docutils literal notranslate"><span class="pre">DISCRETIZATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.DT_DESIGN"><code class="docutils literal notranslate"><span class="pre">DT_DESIGN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.D_BYPASS"><code class="docutils literal notranslate"><span class="pre">D_BYPASS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.D_HX"><code class="docutils literal notranslate"><span class="pre">D_HX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.D_PIPES"><code class="docutils literal notranslate"><span class="pre">D_PIPES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.HEAT_DEMAND"><code class="docutils literal notranslate"><span class="pre">HEAT_DEMAND</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.H_EXT"><code class="docutils literal notranslate"><span class="pre">H_EXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.INLET_TEMPERATURE"><code class="docutils literal notranslate"><span class="pre">INLET_TEMPERATURE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.INSULATION_THICKNESS"><code class="docutils literal notranslate"><span class="pre">INSULATION_THICKNESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.INTERNAL_BYPASS_THICKNESS"><code class="docutils literal notranslate"><span class="pre">INTERNAL_BYPASS_THICKNESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS"><code class="docutils literal notranslate"><span class="pre">INTERNAL_PIPE_THICKNESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.K2"><code class="docutils literal notranslate"><span class="pre">K2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.KV"><code class="docutils literal notranslate"><span class="pre">KV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.KV_MIN"><code class="docutils literal notranslate"><span class="pre">KV_MIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.K_CASING"><code class="docutils literal notranslate"><span class="pre">K_CASING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.K_FLUID"><code class="docutils literal notranslate"><span class="pre">K_FLUID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.K_INSULATION"><code class="docutils literal notranslate"><span class="pre">K_INSULATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.K_INTERNAL_PIPE"><code class="docutils literal notranslate"><span class="pre">K_INTERNAL_PIPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.K_SOIL"><code class="docutils literal notranslate"><span class="pre">K_SOIL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.K_WATER"><code class="docutils literal notranslate"><span class="pre">K_WATER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.L_BYPASS_PIPES"><code class="docutils literal notranslate"><span class="pre">L_BYPASS_PIPES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.L_PIPES"><code class="docutils literal notranslate"><span class="pre">L_PIPES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.MASS_FLOW"><code class="docutils literal notranslate"><span class="pre">MASS_FLOW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.MASS_FLOW_MIN_CONS"><code class="docutils literal notranslate"><span class="pre">MASS_FLOW_MIN_CONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.MU_FLUID"><code class="docutils literal notranslate"><span class="pre">MU_FLUID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.MU_WATER"><code class="docutils literal notranslate"><span class="pre">MU_WATER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.OUTLET_TEMPERATURE"><code class="docutils literal notranslate"><span class="pre">OUTLET_TEMPERATURE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.POWER_MAX_HX"><code class="docutils literal notranslate"><span class="pre">POWER_MAX_HX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.RHO_FLUID"><code class="docutils literal notranslate"><span class="pre">RHO_FLUID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.RHO_INTERNAL_PIPE"><code class="docutils literal notranslate"><span class="pre">RHO_INTERNAL_PIPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.RHO_WATER"><code class="docutils literal notranslate"><span class="pre">RHO_WATER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.ROUGHNESS"><code class="docutils literal notranslate"><span class="pre">ROUGHNESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.RPM"><code class="docutils literal notranslate"><span class="pre">RPM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.RPM_MAX"><code class="docutils literal notranslate"><span class="pre">RPM_MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_CONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_CONS_REV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_PROD_REV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HX_REV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HYD_CONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_TYPE_HYD_PROD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_CONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_CONS_REV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_PROD_REV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_REV"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HX_REV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_CONS"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HYD_CONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD"><code class="docutils literal notranslate"><span class="pre">SETPOINT_VALUE_HYD_PROD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.STATIC_PRESSURE"><code class="docutils literal notranslate"><span class="pre">STATIC_PRESSURE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.STEPSIZE"><code class="docutils literal notranslate"><span class="pre">STEPSIZE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.TEMPERATURE"><code class="docutils literal notranslate"><span class="pre">TEMPERATURE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.T_OUT_MIN"><code class="docutils literal notranslate"><span class="pre">T_OUT_MIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.T_SECONDARY"><code class="docutils literal notranslate"><span class="pre">T_SECONDARY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.default_values.default_values.T_SOIL"><code class="docutils literal notranslate"><span class="pre">T_SOIL</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.fluids.html">fluids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.networks.html">networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.plotting.html">plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.soils.html">soils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.solving.html">solving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pydhn.html">pydhn</a></li>
+          <li class="breadcrumb-item"><a href="pydhn.default_values.html">default_values</a></li>
+      <li class="breadcrumb-item active">default_values</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pydhn.default_values.default_values.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pydhn.default_values.default_values">
+<span id="default-values"></span><h1>default_values<a class="headerlink" href="#module-pydhn.default_values.default_values" title="Link to this heading"></a></h1>
+<p>Default values for functions</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.A0">
+<span class="sig-name descname"><span class="pre">A0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1200000.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.A0" title="Link to this definition"></a></dt>
+<dd><p>First parameter of the characteristic curve (Pa)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.A1">
+<span class="sig-name descname"><span class="pre">A1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.A1" title="Link to this definition"></a></dt>
+<dd><p>Second parameter of the characteristic curve (Pa·s/kg)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.A2">
+<span class="sig-name descname"><span class="pre">A2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.A2" title="Link to this definition"></a></dt>
+<dd><p>Third parameter of the characteristic curve (Pa·s²/kg²)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.BYPASS_CASING_THICKNESS">
+<span class="sig-name descname"><span class="pre">BYPASS_CASING_THICKNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0054</span></em><a class="headerlink" href="#pydhn.default_values.default_values.BYPASS_CASING_THICKNESS" title="Link to this definition"></a></dt>
+<dd><p>Thickness of external pipe casing (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.BYPASS_INSULATION_THICKNESS">
+<span class="sig-name descname"><span class="pre">BYPASS_INSULATION_THICKNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.031</span></em><a class="headerlink" href="#pydhn.default_values.default_values.BYPASS_INSULATION_THICKNESS" title="Link to this definition"></a></dt>
+<dd><p>Thickness of insulation (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.CASING_THICKNESS">
+<span class="sig-name descname"><span class="pre">CASING_THICKNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.003</span></em><a class="headerlink" href="#pydhn.default_values.default_values.CASING_THICKNESS" title="Link to this definition"></a></dt>
+<dd><p>Default thickness of pipe external casing (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.CONTROL_TYPE_CONS">
+<span class="sig-name descname"><span class="pre">CONTROL_TYPE_CONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'energy'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.CONTROL_TYPE_CONS" title="Link to this definition"></a></dt>
+<dd><p>Default values for heat exchangers</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.CP_FLUID">
+<span class="sig-name descname"><span class="pre">CP_FLUID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4182.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.CP_FLUID" title="Link to this definition"></a></dt>
+<dd><p>Default specific heat capacity of generic fluid (J/(kg·K))</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.CP_INTERNAL_PIPE">
+<span class="sig-name descname"><span class="pre">CP_INTERNAL_PIPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2000.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.CP_INTERNAL_PIPE" title="Link to this definition"></a></dt>
+<dd><p>Default specific heat capacity of inner pipe (J/(kg·K))</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.CP_WATER">
+<span class="sig-name descname"><span class="pre">CP_WATER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4182.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.CP_WATER" title="Link to this definition"></a></dt>
+<dd><p>Default specific heat capacity of water (J/(kg·K))</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.DELTA_P">
+<span class="sig-name descname"><span class="pre">DELTA_P</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.DELTA_P" title="Link to this definition"></a></dt>
+<dd><p>Initial edges pressure difference (Pa)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.DELTA_P_FRICTION">
+<span class="sig-name descname"><span class="pre">DELTA_P_FRICTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.DELTA_P_FRICTION" title="Link to this definition"></a></dt>
+<dd><p>Initial pressure difference due to friction (Pa)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.DELTA_Z">
+<span class="sig-name descname"><span class="pre">DELTA_Z</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.DELTA_Z" title="Link to this definition"></a></dt>
+<dd><p>Default altitude difference between the ends of a pipe (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.DEPTH">
+<span class="sig-name descname"><span class="pre">DEPTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.DEPTH" title="Link to this definition"></a></dt>
+<dd><p>Default burying depth of a pipe measured at the center (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.DISCRETIZATION">
+<span class="sig-name descname"><span class="pre">DISCRETIZATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#pydhn.default_values.default_values.DISCRETIZATION" title="Link to this definition"></a></dt>
+<dd><p>Default length (m) of segments used to discretize the pipes</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.DT_DESIGN">
+<span class="sig-name descname"><span class="pre">DT_DESIGN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-30.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.DT_DESIGN" title="Link to this definition"></a></dt>
+<dd><p>Design temperature difference between outlet and inlet (°C)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.D_BYPASS">
+<span class="sig-name descname"><span class="pre">D_BYPASS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0372</span></em><a class="headerlink" href="#pydhn.default_values.default_values.D_BYPASS" title="Link to this definition"></a></dt>
+<dd><p>Internal diameter (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.D_HX">
+<span class="sig-name descname"><span class="pre">D_HX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.02</span></em><a class="headerlink" href="#pydhn.default_values.default_values.D_HX" title="Link to this definition"></a></dt>
+<dd><p>Internal diameter (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.D_PIPES">
+<span class="sig-name descname"><span class="pre">D_PIPES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0204</span></em><a class="headerlink" href="#pydhn.default_values.default_values.D_PIPES" title="Link to this definition"></a></dt>
+<dd><p>Default value for internal pipe diameter (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.HEAT_DEMAND">
+<span class="sig-name descname"><span class="pre">HEAT_DEMAND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5000.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.HEAT_DEMAND" title="Link to this definition"></a></dt>
+<dd><p>Default hourly heat demand of consumers (Wh)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.H_EXT">
+<span class="sig-name descname"><span class="pre">H_EXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.H_EXT" title="Link to this definition"></a></dt>
+<dd><p>Default values for consumers</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.INLET_TEMPERATURE">
+<span class="sig-name descname"><span class="pre">INLET_TEMPERATURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.INLET_TEMPERATURE" title="Link to this definition"></a></dt>
+<dd><p>Initial edges inlet temperature (°C)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.INSULATION_THICKNESS">
+<span class="sig-name descname"><span class="pre">INSULATION_THICKNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.034</span></em><a class="headerlink" href="#pydhn.default_values.default_values.INSULATION_THICKNESS" title="Link to this definition"></a></dt>
+<dd><p>Default thickness of insulation in pipes (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.INTERNAL_BYPASS_THICKNESS">
+<span class="sig-name descname"><span class="pre">INTERNAL_BYPASS_THICKNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0052</span></em><a class="headerlink" href="#pydhn.default_values.default_values.INTERNAL_BYPASS_THICKNESS" title="Link to this definition"></a></dt>
+<dd><p>Thickness of internal pipe (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS">
+<span class="sig-name descname"><span class="pre">INTERNAL_PIPE_THICKNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.023</span></em><a class="headerlink" href="#pydhn.default_values.default_values.INTERNAL_PIPE_THICKNESS" title="Link to this definition"></a></dt>
+<dd><p>Default thickness of inner pipe (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.K2">
+<span class="sig-name descname"><span class="pre">K2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.K2" title="Link to this definition"></a></dt>
+<dd><p>Default values for pipes</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.KV">
+<span class="sig-name descname"><span class="pre">KV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.KV" title="Link to this definition"></a></dt>
+<dd><p>Default valve Kv [m³/h]</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.KV_MIN">
+<span class="sig-name descname"><span class="pre">KV_MIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-08</span></em><a class="headerlink" href="#pydhn.default_values.default_values.KV_MIN" title="Link to this definition"></a></dt>
+<dd><p>Other</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.K_CASING">
+<span class="sig-name descname"><span class="pre">K_CASING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.4</span></em><a class="headerlink" href="#pydhn.default_values.default_values.K_CASING" title="Link to this definition"></a></dt>
+<dd><p>Default thermal conductivity of pipe external casing (W/(m·K))</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.K_FLUID">
+<span class="sig-name descname"><span class="pre">K_FLUID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.598</span></em><a class="headerlink" href="#pydhn.default_values.default_values.K_FLUID" title="Link to this definition"></a></dt>
+<dd><p>Default values for edges</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.K_INSULATION">
+<span class="sig-name descname"><span class="pre">K_INSULATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.026</span></em><a class="headerlink" href="#pydhn.default_values.default_values.K_INSULATION" title="Link to this definition"></a></dt>
+<dd><p>Default hermal conductivity of insulation in pipes (W/(m·K))</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.K_INTERNAL_PIPE">
+<span class="sig-name descname"><span class="pre">K_INTERNAL_PIPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">45.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.K_INTERNAL_PIPE" title="Link to this definition"></a></dt>
+<dd><p>Default thermal conductivity of inner pipe (W/(m·K))</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.K_SOIL">
+<span class="sig-name descname"><span class="pre">K_SOIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#pydhn.default_values.default_values.K_SOIL" title="Link to this definition"></a></dt>
+<dd><p>Thermal conductivity (W/m·K)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.K_WATER">
+<span class="sig-name descname"><span class="pre">K_WATER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.598</span></em><a class="headerlink" href="#pydhn.default_values.default_values.K_WATER" title="Link to this definition"></a></dt>
+<dd><p>Default values of fluid properties, same as water</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.L_BYPASS_PIPES">
+<span class="sig-name descname"><span class="pre">L_BYPASS_PIPES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.L_BYPASS_PIPES" title="Link to this definition"></a></dt>
+<dd><p>Default values of soil properties</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.L_PIPES">
+<span class="sig-name descname"><span class="pre">L_PIPES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.L_PIPES" title="Link to this definition"></a></dt>
+<dd><p>Default ength of pipes (m)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.MASS_FLOW">
+<span class="sig-name descname"><span class="pre">MASS_FLOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-05</span></em><a class="headerlink" href="#pydhn.default_values.default_values.MASS_FLOW" title="Link to this definition"></a></dt>
+<dd><p>Initial edges mass flow (kg/s)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.MASS_FLOW_MIN_CONS">
+<span class="sig-name descname"><span class="pre">MASS_FLOW_MIN_CONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></em><a class="headerlink" href="#pydhn.default_values.default_values.MASS_FLOW_MIN_CONS" title="Link to this definition"></a></dt>
+<dd><p>Default minimum mass flow through a substation (kg/s)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.MU_FLUID">
+<span class="sig-name descname"><span class="pre">MU_FLUID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0004</span></em><a class="headerlink" href="#pydhn.default_values.default_values.MU_FLUID" title="Link to this definition"></a></dt>
+<dd><p>Default dynamic viscosity of generic fluid (Pa·s)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.MU_WATER">
+<span class="sig-name descname"><span class="pre">MU_WATER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0004</span></em><a class="headerlink" href="#pydhn.default_values.default_values.MU_WATER" title="Link to this definition"></a></dt>
+<dd><p>Default dynamic viscosity of water (Pa·s)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.OUTLET_TEMPERATURE">
+<span class="sig-name descname"><span class="pre">OUTLET_TEMPERATURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.OUTLET_TEMPERATURE" title="Link to this definition"></a></dt>
+<dd><p>Initial edges outlet temperature (°C)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.POWER_MAX_HX">
+<span class="sig-name descname"><span class="pre">POWER_MAX_HX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">nan</span></em><a class="headerlink" href="#pydhn.default_values.default_values.POWER_MAX_HX" title="Link to this definition"></a></dt>
+<dd><p>Maximum power that can be exchanged (W)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.RHO_FLUID">
+<span class="sig-name descname"><span class="pre">RHO_FLUID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">990.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.RHO_FLUID" title="Link to this definition"></a></dt>
+<dd><p>Default density of generic fluid  (kg/m³)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.RHO_INTERNAL_PIPE">
+<span class="sig-name descname"><span class="pre">RHO_INTERNAL_PIPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">940.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.RHO_INTERNAL_PIPE" title="Link to this definition"></a></dt>
+<dd><p>Default density of inner pipe material (kg/m³)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.RHO_WATER">
+<span class="sig-name descname"><span class="pre">RHO_WATER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">990.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.RHO_WATER" title="Link to this definition"></a></dt>
+<dd><p>Default density of water (kg/m³)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.ROUGHNESS">
+<span class="sig-name descname"><span class="pre">ROUGHNESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.045</span></em><a class="headerlink" href="#pydhn.default_values.default_values.ROUGHNESS" title="Link to this definition"></a></dt>
+<dd><p>Default roughness of pipe internal surface (mm)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.RPM">
+<span class="sig-name descname"><span class="pre">RPM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2500.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.RPM" title="Link to this definition"></a></dt>
+<dd><p>Rotational speed (1/min)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.RPM_MAX">
+<span class="sig-name descname"><span class="pre">RPM_MAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5000.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.RPM_MAX" title="Link to this definition"></a></dt>
+<dd><p>Valves</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HX">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'delta_t'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX" title="Link to this definition"></a></dt>
+<dd><p>Functioning of the heat exchanger. Possible options include “delta_t”,
+“delta_q” and “t_out”</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HX_CONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'delta_t'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS" title="Link to this definition"></a></dt>
+<dd><p>Default consumers thermal setpoint type in case of forward flow</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS_REV">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HX_CONS_REV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'delta_t'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_CONS_REV" title="Link to this definition"></a></dt>
+<dd><p>Default consumers thermal setpoint type in case of reverse flow</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HX_PROD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'t_out'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD" title="Link to this definition"></a></dt>
+<dd><p>Functioning of the heat exchanger</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HX_PROD_REV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'delta_t'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_PROD_REV" title="Link to this definition"></a></dt>
+<dd><p>Functioning of the heat exchanger</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HX_REV">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HX_REV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'delta_t'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HX_REV" title="Link to this definition"></a></dt>
+<dd><p>Functioning of the heat exchanger in case of reverse flow. Possible options
+include “delta_t”, “delta_q” and “t_out”</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HYD_CONS">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HYD_CONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mass_flow'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_CONS" title="Link to this definition"></a></dt>
+<dd><p>Default consumers hydraulic setpoint type</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD">
+<span class="sig-name descname"><span class="pre">SETPOINT_TYPE_HYD_PROD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pressure'</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_TYPE_HYD_PROD" title="Link to this definition"></a></dt>
+<dd><p>Either ‘pressure’ or ‘mass_flow’</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HX">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-30.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX" title="Link to this definition"></a></dt>
+<dd><p>Setpoint delta_t (°C), delta_q (Wh) or t_out (°C)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HX_CONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-30.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS" title="Link to this definition"></a></dt>
+<dd><p>Default consumers thermal setpoint value in case of forward flow (K)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS_REV">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HX_CONS_REV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_CONS_REV" title="Link to this definition"></a></dt>
+<dd><p>Default consumers thermal setpoint value in case of reverse flow (K)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HX_PROD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">80.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD" title="Link to this definition"></a></dt>
+<dd><p>Supply temperature (°C)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HX_PROD_REV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_PROD_REV" title="Link to this definition"></a></dt>
+<dd><p>Setpoint in case of reverse flow</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HX_REV">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HX_REV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HX_REV" title="Link to this definition"></a></dt>
+<dd><p>Setpoint in case of reverse flow</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HYD_CONS">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HYD_CONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-06</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_CONS" title="Link to this definition"></a></dt>
+<dd><p>Default consumers hydraulic setpoint value (kg/s)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD">
+<span class="sig-name descname"><span class="pre">SETPOINT_VALUE_HYD_PROD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1000000.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.SETPOINT_VALUE_HYD_PROD" title="Link to this definition"></a></dt>
+<dd><p>Desired pressure lift (Pa) at producers of setpoint type ‘pressure’</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.STATIC_PRESSURE">
+<span class="sig-name descname"><span class="pre">STATIC_PRESSURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">nan</span></em><a class="headerlink" href="#pydhn.default_values.default_values.STATIC_PRESSURE" title="Link to this definition"></a></dt>
+<dd><p>Default values for bypass pipes</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.STEPSIZE">
+<span class="sig-name descname"><span class="pre">STEPSIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3600.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.STEPSIZE" title="Link to this definition"></a></dt>
+<dd><p>Size of a time-step in dynamic simulations (s)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.TEMPERATURE">
+<span class="sig-name descname"><span class="pre">TEMPERATURE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.TEMPERATURE" title="Link to this definition"></a></dt>
+<dd><p>Initial edges temperature (°C)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.T_OUT_MIN">
+<span class="sig-name descname"><span class="pre">T_OUT_MIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">nan</span></em><a class="headerlink" href="#pydhn.default_values.default_values.T_OUT_MIN" title="Link to this definition"></a></dt>
+<dd><p>Minimum outlet temperature (°C)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.T_SECONDARY">
+<span class="sig-name descname"><span class="pre">T_SECONDARY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.T_SECONDARY" title="Link to this definition"></a></dt>
+<dd><p>Default values for producers</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="pydhn.default_values.default_values.T_SOIL">
+<span class="sig-name descname"><span class="pre">T_SOIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8.0</span></em><a class="headerlink" href="#pydhn.default_values.default_values.T_SOIL" title="Link to this definition"></a></dt>
+<dd><p>Default values of CitySim</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pydhn.default_values.html" class="btn btn-neutral float-left" title="default_values" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pydhn.fluids.html" class="btn btn-neutral float-right" title="fluids" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

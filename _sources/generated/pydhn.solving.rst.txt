@@ -1,0 +1,20 @@
+solving
+=======
+
+.. automodule:: pydhn.solving
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+.. toctree::
+   :maxdepth: 4
+
+   pydhn.solving.climate
+   pydhn.solving.common
+   pydhn.solving.hydraulic_simulation
+   pydhn.solving.loops
+   pydhn.solving.pressure
+   pydhn.solving.temperature
+   pydhn.solving.thermal_simulation

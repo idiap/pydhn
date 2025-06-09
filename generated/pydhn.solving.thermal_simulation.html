@@ -1,0 +1,191 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>thermal_simulation &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="utilities" href="pydhn.utilities.html" />
+    <link rel="prev" title="temperature" href="pydhn.solving.temperature.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pydhn.html">pydhn</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pydhn.citysim.html">citysim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.html">classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.controllers.html">controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.html">default_values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.fluids.html">fluids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.networks.html">networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.plotting.html">plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.soils.html">soils</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pydhn.solving.html">solving</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.climate.html">climate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.common.html">common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.hydraulic_simulation.html">hydraulic_simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.loops.html">loops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.pressure.html">pressure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.solving.temperature.html">temperature</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">thermal_simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.solving.thermal_simulation.solve_thermal"><code class="docutils literal notranslate"><span class="pre">solve_thermal()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pydhn.html">pydhn</a></li>
+          <li class="breadcrumb-item"><a href="pydhn.solving.html">solving</a></li>
+      <li class="breadcrumb-item active">thermal_simulation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pydhn.solving.thermal_simulation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pydhn.solving.thermal_simulation">
+<span id="thermal-simulation"></span><h1>thermal_simulation<a class="headerlink" href="#module-pydhn.solving.thermal_simulation" title="Link to this heading"></a></h1>
+<p>Generic functions needed for the thermal simulations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.solving.thermal_simulation.solve_thermal">
+<span class="sig-name descname"><span class="pre">solve_thermal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network" title="pydhn.classes.network.Network"><span class="pre">Network</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid" title="pydhn.fluids.fluids.Fluid"><span class="pre">Fluid</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">soil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pydhn.soils.soils.html#pydhn.soils.soils.Soil" title="pydhn.soils.soils.Soil"><span class="pre">Soil</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">damping_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decreasing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_flow_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/pydhn/solving/thermal_simulation.html#solve_thermal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.solving.thermal_simulation.solve_thermal" title="Link to this definition"></a></dt>
+<dd><p>Runs a thermal simulation of the Network object. The method is based on
+solving the heat balance at each node of the network using the
+Newton-Raphson method.</p>
+<p>The function returns a dictionary with the results of the simulation and
+details on the convergence of each Newton step.
+Temperatures and heat losses of the input Network are also modified in
+place with the results of the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> (<a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network" title="pydhn.classes.network.Network"><em>Network</em></a>) – Network to be simulated.</p></li>
+<li><p><strong>fluid</strong> (<a class="reference internal" href="pydhn.fluids.fluids.html#pydhn.fluids.fluids.Fluid" title="pydhn.fluids.fluids.Fluid"><em>Fluid</em></a>) – Working fluid to be used.</p></li>
+<li><p><strong>soil</strong> (<a class="reference internal" href="pydhn.soils.soils.html#pydhn.soils.soils.Soil" title="pydhn.soils.soils.Soil"><em>Soil</em></a>) – Soil object to be used in the simulation.</p></li>
+<li><p><strong>error_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Error threshold for the solver in Wh. The default is 1e-6.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations for the solver. The default is 100.</p></li>
+<li><p><strong>damping_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Damping factor for the Newton iterations. The default is 1.</p></li>
+<li><p><strong>decreasing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to reduce the damping factor at each Newton iteration. The
+default is False.</p></li>
+<li><p><strong>adaptive</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to reduce the damping factor on plateau. The default is True.</p></li>
+<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>optional</em>) – Controls the verbosity of the simulation. The default is 1.</p></li>
+<li><p><strong>mass_flow_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass flow (kg/s) used to approximate 0. The default is 1e-16.</p></li>
+<li><p><strong>ts_id</strong> (<em>int</em><em>, </em><em>optional</em>) – Specifies the ID of the current time-step. The default is None.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with the simulation results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pydhn.solving.temperature.html" class="btn btn-neutral float-left" title="temperature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pydhn.utilities.html" class="btn btn-neutral float-right" title="utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

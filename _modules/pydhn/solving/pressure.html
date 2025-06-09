@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydhn.solving.pressure &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../generated/pydhn.html">pydhn</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydhn.solving.pressure</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydhn.solving.pressure</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-FileContributor: Roberto Boghetti &lt;roberto.boghetti@idiap.ch&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># SPDX-License-Identifier: AGPL-3.0-only</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions to compute the pressure and its derivatives in the different</span>
+<span class="sd">components of the Network.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.components.vector_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">COMPONENT_FUNCTIONS_DICT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">D_PIPES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.default_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">RHO_FLUID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">isiter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydhn.utilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_divide</span>
+
+<span class="c1"># TODO: use uniform terminology: singular or minor?</span>
+
+
+<span class="c1"># def compute_k_junction(mdot_in, mdot_out, junction_type, angle=&#39;straight&#39;):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Computes the factor k, used to estimate the singular pressure losses in</span>
+<span class="c1">#     3-way junctions.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     assert angle in [&#39;straight&#39;, &#39;T&#39;]</span>
+<span class="c1">#     assert junction_type in [&#39;convergent&#39;, &#39;divergent&#39;]</span>
+<span class="c1">#     if junction_type == &#39;convergent&#39;:</span>
+<span class="c1">#         mdot_ratio = safe_divide(mdot_in, mdot_out)</span>
+<span class="c1">#         if angle == &#39;straight&#39;:</span>
+<span class="c1">#             a, b, c = -1.6, 3.6, -1.1</span>
+<span class="c1">#         elif angle == &#39;T&#39;:</span>
+<span class="c1">#             a, b, c = -0.14, 0.7, 0.039</span>
+<span class="c1">#     elif junction_type == &#39;divergent&#39;:</span>
+<span class="c1">#         mdot_ratio = safe_divide(mdot_out, mdot_in)</span>
+<span class="c1">#         if angle == &#39;straight&#39;:</span>
+<span class="c1">#             a, b, c = 0.74, -0.42, 0.94</span>
+<span class="c1">#         elif angle == &#39;T&#39;:</span>
+<span class="c1">#             a, b, c = 0.78, -0.41, 0.012</span>
+<span class="c1">#     return a*(mdot_ratio)**2 + b*(mdot_ratio) + c</span>
+
+
+<span class="c1"># def compute_k_diameter_change(d_in, d_out):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Computes the factor k, used to estimate the singular pressure losses in</span>
+<span class="c1">#     2-way junctions.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     if d_in &gt;= d_out:</span>
+<span class="c1">#         d_ratio = safe_divide(d_out, d_in)</span>
+<span class="c1">#         return 0.5*(1-(d_ratio)**2)</span>
+<span class="c1">#     elif d_in &lt; d_out:</span>
+<span class="c1">#         d_ratio = safe_divide(d_in, d_out)</span>
+<span class="c1">#         return (1 - (d_ratio)**2)**2</span>
+
+
+<span class="c1"># def compute_dp_junction(mdot, k, rho_fluid, diameter):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Computes the singular pressure losses in junctions, given a known k factor.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     r = safe_divide(diameter, 2)</span>
+<span class="c1">#     num = k*mdot*np.abs(mdot)</span>
+<span class="c1">#     denom = rho_fluid*np.pi*(r)**2</span>
+<span class="c1">#     return safe_divide(num, denom)</span>
+
+
+<span class="c1"># def compute_singular_dp(mdot, diameter, rho_fluid, incidence_matrix):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Computes the singular losses in convergent/divergent junctions and nodes</span>
+<span class="c1">#     that connect pipes of different diameter.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     # TODO: compute angle type</span>
+<span class="c1">#     # TODO: separate singular, distributed, hydrostatic and total?</span>
+<span class="c1">#     # Change pipe edges direction in the incidence matrix to match flow</span>
+<span class="c1">#     sign = np.sign(mdot)</span>
+<span class="c1">#     a_sign = incidence_matrix*sign</span>
+
+<span class="c1">#     # Initialize an empty array for the losses</span>
+<span class="c1">#     dp = np.zeros(diameter.shape)</span>
+<span class="c1">#     k_array = np.zeros(diameter.shape)</span>
+
+<span class="c1">#     # Iterate over nodes to find relevant junctions</span>
+<span class="c1">#     for i in range(incidence_matrix.shape[0]):</span>
+<span class="c1">#         row = a_sign[i]</span>
+<span class="c1">#         # If mass flow in the node is zero:</span>
+<span class="c1">#         if not np.any(row):</span>
+<span class="c1">#             continue</span>
+<span class="c1">#         # Get attributes. The mass flow is taken with the original sign so that</span>
+<span class="c1">#         # the resulting differential pressure complies with the sign convention</span>
+<span class="c1">#         e_in = np.where(row == -1)[0]</span>
+<span class="c1">#         e_out = np.where(row == 1)[0]</span>
+<span class="c1">#         mdot_in = mdot[e_in]</span>
+<span class="c1">#         mdot_out = mdot[e_out]</span>
+<span class="c1">#         d_in = diameter[e_in]</span>
+<span class="c1">#         d_out = diameter[e_out]</span>
+<span class="c1">#         # Check if rho is iterable</span>
+<span class="c1">#         if isiter(rho_fluid):</span>
+<span class="c1">#             rho_i = rho_fluid[i]</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             rho_i = rho_fluid</span>
+<span class="c1">#         # If diameter is not specified (for example for a producer), skip</span>
+<span class="c1">#         if 0. in d_in or 0. in d_out:</span>
+<span class="c1">#             continue</span>
+<span class="c1">#         # If the junction has degree 2 check that pipes have the same diameter</span>
+<span class="c1">#         if len(e_in) == len(e_out):</span>
+<span class="c1">#             # The equation changes if the diameter is increasing or decreasing</span>
+<span class="c1">#             k = compute_k_diameter_change(d_in=d_in, d_out=d_out)</span>
+<span class="c1">#             k_array[e_out] = k</span>
+<span class="c1">#             # computes the loss and assign it to the outlet edge</span>
+<span class="c1">#             dp[e_out] += compute_dp_junction(mdot=mdot_out, diameter=d_out, k=k,</span>
+<span class="c1">#                                              rho=rho_i)</span>
+<span class="c1">#         # If the node is a converging junction</span>
+<span class="c1">#         elif len(e_in) &gt; len(e_out):</span>
+<span class="c1">#             k = compute_k_junction(mdot_in=mdot_in, mdot_out=mdot_out,</span>
+<span class="c1">#                                    junction_type=&#39;convergent&#39;, angle=&#39;straight&#39;)</span>
+<span class="c1">#             k_array[e_in] = k</span>
+<span class="c1">#             dp[e_in] += compute_dp_junction(mdot=mdot_out, diameter=d_out, k=k,</span>
+<span class="c1">#                                              rho=rho_i)</span>
+<span class="c1">#         elif len(e_in) &lt; len(e_out):</span>
+<span class="c1">#             k = compute_k_junction(mdot_in=mdot_in, mdot_out=mdot_out,</span>
+<span class="c1">#                                    junction_type=&#39;divergent&#39;, angle=&#39;straight&#39;)</span>
+<span class="c1">#             k_array[e_out] = k</span>
+<span class="c1">#             dp[e_out] += compute_dp_junction(mdot=mdot_out, diameter=d_out, k=k,</span>
+<span class="c1">#                                              rho=rho_i)</span>
+<span class="c1">#     return dp, k_array</span>
+
+
+<span class="c1"># def compute_dp_junction_der(mdot, k, diameter=D_PIPES, rho_fluid=RHO_FLUID):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Returns the derivative of the function that computes the singular pressure</span>
+<span class="c1">#     losses in pipes.</span>
+
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     mdot : mass flow [kg/s]</span>
+<span class="c1">#     k : minor loss coefficient [-]</span>
+<span class="c1">#     diameter : pipe internal diameter [m]</span>
+<span class="c1">#     rho_fluid : fluid density [kg/m³]</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     return safe_divide(2.*k*np.abs(mdot), (rho_fluid*np.pi*(diameter/2.)**2))</span>
+
+
+<div class="viewcode-block" id="compute_dp">
+<a class="viewcode-back" href="../../../generated/pydhn.solving.pressure.html#pydhn.solving.pressure.compute_dp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_dp</span><span class="p">(</span>
+    <span class="n">net</span><span class="p">,</span>
+    <span class="n">fluid</span><span class="p">,</span>
+    <span class="n">set_values</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">compute_singular</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ts_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+    <span class="c1"># If a mask is not specified, all edges are considered</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">n_edges</span><span class="p">)</span>
+    <span class="c1"># Initialize output arrays as full of zeros</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">n_edges</span><span class="p">)</span>
+    <span class="n">dp_der</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">n_edges</span><span class="p">)</span>
+    <span class="c1"># Get original index of edges</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;dz&quot;</span><span class="p">]</span>
+    <span class="n">edges_orig</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># Iterate over unique component types</span>
+    <span class="n">component_types</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">get_edges_attribute_array</span><span class="p">(</span><span class="s2">&quot;component_type&quot;</span><span class="p">)</span>
+    <span class="n">component_types</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">component_types</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">component_types</span><span class="p">:</span>
+        <span class="n">component_mask</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span>
+            <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;component_type&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">component</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="s2">&quot;equality&quot;</span>
+        <span class="p">)</span>
+        <span class="n">component_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">component_mask</span><span class="p">,</span> <span class="n">assume_unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># If a vector function is specified for the component, use it</span>
+        <span class="n">has_vector</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">COMPONENT_FUNCTIONS_DICT</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;delta_p&quot;</span> <span class="ow">in</span> <span class="n">COMPONENT_FUNCTIONS_DICT</span><span class="p">[</span><span class="n">component</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">has_vector</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">has_vector</span><span class="p">:</span>
+            <span class="n">foo</span> <span class="o">=</span> <span class="n">COMPONENT_FUNCTIONS_DICT</span><span class="p">[</span><span class="n">component</span><span class="p">][</span><span class="s2">&quot;delta_p&quot;</span><span class="p">]</span>
+            <span class="n">out_1</span><span class="p">,</span> <span class="n">out_2</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">component_mask</span><span class="p">,</span> <span class="n">ts_id</span><span class="o">=</span><span class="n">ts_id</span><span class="p">)</span>
+            <span class="n">dp</span><span class="p">[</span><span class="n">component_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_1</span>
+            <span class="n">dp_der</span><span class="p">[</span><span class="n">component_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_2</span>
+        <span class="c1"># Otherwise, compute the value for each component of that type</span>
+        <span class="c1"># separately</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edges_orig</span><span class="p">[</span><span class="n">component_mask</span><span class="p">]):</span>
+                <span class="n">out_1</span><span class="p">,</span> <span class="n">out_2</span> <span class="o">=</span> <span class="n">net</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)]</span><span class="o">.</span><span class="n">_compute_delta_p</span><span class="p">(</span>
+                    <span class="n">fluid</span><span class="p">,</span> <span class="n">compute_hydrostatic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ts_id</span><span class="o">=</span><span class="n">ts_id</span>
+                <span class="p">)</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">component_mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">dp</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_1</span>
+                <span class="n">dp_der</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_2</span>
+
+    <span class="c1"># Add singular losses if selected</span>
+    <span class="k">if</span> <span class="n">compute_singular</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Singular losses not yet implemented. Skipping.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># TODO: dp sign?</span>
+    <span class="c1"># Add hydrostatic if selected</span>
+    <span class="n">dp_friction</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">compute_hydrostatic</span><span class="p">:</span>
+        <span class="n">rho_fluid</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">get_rho</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span>
+        <span class="n">dp_hydro</span> <span class="o">=</span> <span class="n">rho_fluid</span> <span class="o">*</span> <span class="mf">9.81</span> <span class="o">*</span> <span class="n">dz</span>
+        <span class="n">dp_hydro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">dp_hydro</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dp_hydro</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">n_edges</span><span class="p">)</span>
+    <span class="n">dp</span> <span class="o">+=</span> <span class="n">dp_hydro</span>
+    <span class="c1"># If set_values is set to True, set the output to the edges</span>
+    <span class="k">if</span> <span class="n">set_values</span><span class="p">:</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">dp</span><span class="p">,</span> <span class="s2">&quot;delta_p&quot;</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">dp_friction</span><span class="p">,</span> <span class="s2">&quot;delta_p_friction&quot;</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">dp_hydro</span><span class="p">,</span> <span class="s2">&quot;delta_p_hydrostatic&quot;</span><span class="p">)</span>
+        <span class="c1"># if compute_singular:</span>
+        <span class="c1">#     net.set_edge_attributes(dp_s, &quot;delta_p_singular&quot;)</span>
+        <span class="c1">#     net.set_edge_attributes(k_array, &quot;k_singular&quot;)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="p">,</span> <span class="n">dp_friction</span><span class="p">,</span> <span class="n">dp_hydro</span><span class="p">,</span> <span class="n">dp_der</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

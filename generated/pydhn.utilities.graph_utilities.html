@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>graph_utilities &mdash; PyDHN 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="loading" href="pydhn.utilities.loading.html" />
+    <link rel="prev" title="geospatial" href="pydhn.utilities.geospatial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyDHN
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Install PyDHN:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install/install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/network.html">The Network class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/fluids.html">Fluids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/soil.html">Soils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/components.html">Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/simulation.html">Simulation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/loops.html">Loops</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="pydhn.html">pydhn</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pydhn.citysim.html">citysim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.classes.html">classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.components.html">components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.controllers.html">controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.default_values.html">default_values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.fluids.html">fluids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.networks.html">networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.plotting.html">plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.soils.html">soils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydhn.solving.html">solving</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="pydhn.utilities.html">utilities</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pydhn.utilities.caching.html">caching</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.utilities.conversion.html">conversion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.utilities.geospatial.html">geospatial</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">graph_utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.add_time_to_pipes"><code class="docutils literal notranslate"><span class="pre">add_time_to_pipes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.assign_line"><code class="docutils literal notranslate"><span class="pre">assign_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.compute_linegraph"><code class="docutils literal notranslate"><span class="pre">compute_linegraph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.compute_linegraph_net"><code class="docutils literal notranslate"><span class="pre">compute_linegraph_net()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.connect_pairs"><code class="docutils literal notranslate"><span class="pre">connect_pairs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.find_path_with_edge"><code class="docutils literal notranslate"><span class="pre">find_path_with_edge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.get_edges_attribute_array"><code class="docutils literal notranslate"><span class="pre">get_edges_attribute_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.get_furthest_consumers"><code class="docutils literal notranslate"><span class="pre">get_furthest_consumers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.get_longest_paths"><code class="docutils literal notranslate"><span class="pre">get_longest_paths()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.get_nodes_attribute_array"><code class="docutils literal notranslate"><span class="pre">get_nodes_attribute_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.get_pipes_to_consumers_dict"><code class="docutils literal notranslate"><span class="pre">get_pipes_to_consumers_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.get_supply_time"><code class="docutils literal notranslate"><span class="pre">get_supply_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydhn.utilities.graph_utilities.run_sanity_checks"><code class="docutils literal notranslate"><span class="pre">run_sanity_checks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.utilities.loading.html">loading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.utilities.matrices.html">matrices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydhn.utilities.utilities.html">utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about/references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyDHN</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="pydhn.html">pydhn</a></li>
+          <li class="breadcrumb-item"><a href="pydhn.utilities.html">utilities</a></li>
+      <li class="breadcrumb-item active">graph_utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/pydhn.utilities.graph_utilities.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pydhn.utilities.graph_utilities">
+<span id="graph-utilities"></span><h1>graph_utilities<a class="headerlink" href="#module-pydhn.utilities.graph_utilities" title="Link to this heading"></a></h1>
+<p>List of utilities for the Network class</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.add_time_to_pipes">
+<span class="sig-name descname"><span class="pre">add_time_to_pipes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#add_time_to_pipes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.add_time_to_pipes" title="Link to this definition"></a></dt>
+<dd><p>Add time attribute to edges.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.assign_line">
+<span class="sig-name descname"><span class="pre">assign_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#assign_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.assign_line" title="Link to this definition"></a></dt>
+<dd><p>Assign a line - either supply or return - to pipes. It assumes that the
+endpoint of the first Producer is in the supply line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>net</strong> (<a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network" title="pydhn.classes.network.Network"><em>Network</em></a>) – Instance of Network class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.compute_linegraph">
+<span class="sig-name descname"><span class="pre">compute_linegraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#compute_linegraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.compute_linegraph" title="Link to this definition"></a></dt>
+<dd><p>Creates a linegraph of the input graph G preserving coordinates and labels.
+Node and edge features are carried over. New node positions are computed as
+the centroid of the corresponding edge in the original graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<em>DiGraph</em>) – Directed graph of the network.</p></li>
+<li><p><strong>edge_label</strong> (<em>str</em><em>, </em><em>optional</em>) – If specified, nodes are relabeled with the specified label.
+The default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>linegraph</strong> – Linegraph of G.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DiGraph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.compute_linegraph_net">
+<span class="sig-name descname"><span class="pre">compute_linegraph_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#compute_linegraph_net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.compute_linegraph_net" title="Link to this definition"></a></dt>
+<dd><p>Creates a linegraph of the input graph G preserving coordinates and labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>net</strong> (<em>instance</em><em> of </em><em>Network class</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.connect_pairs">
+<span class="sig-name descname"><span class="pre">connect_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#connect_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.connect_pairs" title="Link to this definition"></a></dt>
+<dd><p>For each node and edge in the supply line identifies the correspective
+twin in the return line and vice-versa. Twin elements are stored as
+attributes called “adjacent_node” and “adjacent_edge” respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> (<em>instance</em><em> of </em><em>Network class</em>)</p></li>
+<li><p><strong>verbose</strong> (<em>if True prints a</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.find_path_with_edge">
+<span class="sig-name descname"><span class="pre">find_path_with_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#find_path_with_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.find_path_with_edge" title="Link to this definition"></a></dt>
+<dd><p>Find a path between two nodes that contains a certain edge in a directed
+graph. If such a path does not exist, return None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<em>DiGraph</em>) – Directed graph of the network.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – Source node.</p></li>
+<li><p><strong>target</strong> (<em>str</em>) – Target node.</p></li>
+<li><p><strong>edge</strong> (<em>tuple</em>) – Edge to be included in the path.</p></li>
+<li><p><strong>node_path</strong> (<em>bool</em>) – If true, returns a list of nodes. If false, returns a list of edges.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>path</strong> – List of nodes (or edges) forming the path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.get_edges_attribute_array">
+<span class="sig-name descname"><span class="pre">get_edges_attribute_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#get_edges_attribute_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.get_edges_attribute_array" title="Link to this definition"></a></dt>
+<dd><p>Returns an array containing the value of the specified attribute in each
+edge of the network graph. From Python 3.7 the order of attributes follows
+the insertion order of edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> (<em>instance</em><em> of </em><em>Network class</em>)</p></li>
+<li><p><strong>attribute</strong> (<em>the name</em><em> of </em><em>the desired attribute</em>)</p></li>
+<li><p><strong>fill_missing</strong> (<em>default value when the node does not have the desired</em>) – attribute. (optional)</p></li>
+<li><p><strong>dtype</strong> (<em>specific dtype</em><em> of </em><em>the array items.</em><em> (</em><em>optional</em><em>)</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.get_furthest_consumers">
+<span class="sig-name descname"><span class="pre">get_furthest_consumers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#get_furthest_consumers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.get_furthest_consumers" title="Link to this definition"></a></dt>
+<dd><p>Return a dict of {producer: furthest consumer}.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.get_longest_paths">
+<span class="sig-name descname"><span class="pre">get_longest_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#get_longest_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.get_longest_paths" title="Link to this definition"></a></dt>
+<dd><p>Return a list of directed graphs from each producer to furthest consumer.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.get_nodes_attribute_array">
+<span class="sig-name descname"><span class="pre">get_nodes_attribute_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#get_nodes_attribute_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.get_nodes_attribute_array" title="Link to this definition"></a></dt>
+<dd><p>Returns an array containing the value of the specified attribute in each
+node of the network graph. From Python 3.7 the order of attributes follows
+the insertion order of nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> (<em>instance</em><em> of </em><em>Network class</em>)</p></li>
+<li><p><strong>attribute</strong> (<em>the name</em><em> of </em><em>the desired attribute</em>)</p></li>
+<li><p><strong>fill_missing</strong> (<em>default value when the node does not have the desired</em>) – attribute. (optional)</p></li>
+<li><p><strong>dtype</strong> (<em>specific dtype</em><em> of </em><em>the array items.</em><em> (</em><em>optional</em><em>)</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.get_pipes_to_consumers_dict">
+<span class="sig-name descname"><span class="pre">get_pipes_to_consumers_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#get_pipes_to_consumers_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.get_pipes_to_consumers_dict" title="Link to this definition"></a></dt>
+<dd><p>Returns a list with the indices of all the pipes entering in a consumer
+edge.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.get_supply_time">
+<span class="sig-name descname"><span class="pre">get_supply_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#get_supply_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.get_supply_time" title="Link to this definition"></a></dt>
+<dd><p>Return timedelta to reach the furthest consumer.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pydhn.utilities.graph_utilities.run_sanity_checks">
+<span class="sig-name descname"><span class="pre">run_sanity_checks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_isomorphism</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pydhn/utilities/graph_utilities.html#run_sanity_checks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydhn.utilities.graph_utilities.run_sanity_checks" title="Link to this definition"></a></dt>
+<dd><p>Runs sanity checks on the Network class against common mistakes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> (<a class="reference internal" href="pydhn.classes.network.html#pydhn.classes.network.Network" title="pydhn.classes.network.Network"><em>Network</em></a>) – Instance of Network class.</p></li>
+<li><p><strong>verbose</strong> (<em>Bool</em><em>, </em><em>optional</em>) – Defines the level of verbosity. The default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>errors</strong> – Dictionary with the results of the sanity check. A True value means
+that an error was found during that test.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pydhn.utilities.geospatial.html" class="btn btn-neutral float-left" title="geospatial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pydhn.utilities.loading.html" class="btn btn-neutral float-right" title="loading" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
