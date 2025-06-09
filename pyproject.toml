@@ -1,13 +1,15 @@
 [tool.poetry]
 name = "pydhn"
 version = "0.1.3"
-description = ""
+description = "A library for the simulation of district heating networks."
 authors = [
 	"Roberto Boghetti <roberto.boghetti@idiap.ch>",
 	"Giuseppe Peronato <giuseppe.peronato@idiap.ch>"
 	]
 readme = "README.md"
 license = "AGPL v3"
+homepage = "https://www.github.com/idiap/pydhn"
+repository = "https://www.github.com/idiap/pydhn"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
@@ -24,10 +26,11 @@ coverage = "^7.3.0"
 openpyxl = "^3.1.2"
 sphinx = "^7.3.7"
 sphinx_rtd_theme = "^2.0.0"
+pre-commit = "^3.0.0"
 
 [tool.isort]
 skip = ["__init__.py"]
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
