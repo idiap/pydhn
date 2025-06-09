@@ -18,8 +18,6 @@
 import os
 import sys
 
-import autovalue
-
 project = "PyDHN"
 copyright = (
     "2024, Idiap Research Institute, https://www.idiap.ch, EPFL, https://www.epfl.ch"
@@ -45,6 +43,8 @@ doctest_test_doctest_blocks = "default"
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../pydhn"))
 sys.path.insert(0, os.path.abspath("."))
+
+import autovalue  # noqa: E402
 
 
 def skip(app, what, name, obj, would_skip, options):
