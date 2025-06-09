@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9, '3.10', 3.11, 3.12] 
+        python-version: [3.9, '3.10', 3.11, 3.12]
 
     steps:
       - name: Checkout code
@@ -25,11 +25,11 @@ jobs:
 
       - name: Run Tests with Coverage
         if: ${{ matrix.python-version == 3.12 }}
-        run: |         
+        run: |
           poetry run coverage run --source ./pydhn -m unittest -b
           poetry run coverage report -m
-          
+
       - name: Run Tests
         if: ${{ matrix.python-version != 3.12 }}
-        run: |         
+        run: |
           poetry run python -m unittest -b

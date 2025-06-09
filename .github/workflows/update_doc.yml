@@ -1,17 +1,17 @@
 name: update_doc
- 
+
 # execute this workflow automatically on push to master
 on:
   push:
     branches: [ main ]
- 
+
 jobs:
- 
+
   build_docs_job:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
- 
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.9
- 
+
       - name: Install dependencies
         run: |
           python -m pip install -U sphinx
@@ -28,10 +28,10 @@ jobs:
           python -m pip install sphinx-autoapi
       - name: Install library
         run: |
-          python -m pip install -e .    
+          python -m pip install -e .
       - name: make the sphinx docs
         run: |
-          make -C docs clean 
+          make -C docs clean
           sphinx-apidoc -o docs/source/generated pydhn -f -t docs/source/_templates/apidoc --module-first --implicit-namespaces --separate
           make -C docs html
 

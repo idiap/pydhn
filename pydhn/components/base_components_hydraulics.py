@@ -163,28 +163,29 @@ def compute_dp_pipe(
     return dp, dp_der
 
 
-def compute_dp_pipe_net(net, fluid, mask=None, compute_hydrostatic=False, 
-                        ts_id=None):
+def compute_dp_pipe_net(net, fluid, mask=None, compute_hydrostatic=False, ts_id=None):
     """
     Computes the differential pressure in pipes. The hydrostatic pressure can
     be ignored by setting compute_hydrostatic=False.
     """
-    
+
     # For backward compatibility and to ensure a mask is always used
     if mask is None:
         warn(
             "The 'mask' parameter for compute_dp_pipe_net is highly recommended "
             "and will be required in future versions. Automatically generating "
             "a mask for Pipe and LagrangianPipe components.",
-            DeprecationWarning
+            DeprecationWarning,
         )
         lp_mask = net.mask("component_type", "lagrangian_pipe", condition="equality")
         mask = np.union1d(net.pipes_mask, lp_mask)
-        
+
     # Get attributes
     data = ("mass_flow", "diameter", "length", "dz", "roughness", "temperature")
 
-    _, mass_flow, diameter, length, dz, roughness, temp = net.edges(data=data, mask=mask)
+    _, mass_flow, diameter, length, dz, roughness, temp = net.edges(
+        data=data, mask=mask
+    )
 
     # Get fluid properties
     rho_fluid = fluid.get_rho(temp)
@@ -250,10 +251,10 @@ def compute_dp_valve_net(net, fluid, compute_hydrostatic=False, mask=None, ts_id
             "The 'mask' parameter for compute_dp_valve_net is highly recommended "
             "and will be required in future versions. Automatically generating "
             "a mask for BranchValve components.",
-            DeprecationWarning
+            DeprecationWarning,
         )
         mask = net.mask("component_type", "base_branch_valve", condition="equality")
-        
+
     # Get attributes
     data = ("mass_flow", "kv", "dz", "temperature")
 

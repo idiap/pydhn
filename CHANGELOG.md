@@ -7,6 +7,8 @@
 * Added a warning when a thermal simulation runs without a specified `ts_id`.
 * Added a new test (`tests/test_dynamic_thermal_balance.py`) to verify thermal energy balance in dynamic simulations.
 * Added a new example (`examples/dynamic_simulation.py`) for dynamic simulations with `LagrangainPipe`.
+* **Developer Guidelines:** Added `CONTRIBUTING.md`.
+* **Line Ending Standardization:** Added `.gitattributes` to enforce consistent line endings (LF) across text files.
 
 ### Changed
 
@@ -33,8 +35,8 @@ Released on October 30, 2024
 
 * Improved docstrings and type hints
 * docstring_parameters now ignores curly braces outside the Parameter section of a docstring
-* Modified .pre-commit-config.yaml so that isort ignores init files to avoid circular import issues 
-* Added dependencies needed for docs to pyproject.toml 
+* Modified .pre-commit-config.yaml so that isort ignores init files to avoid circular import issues
+* Added dependencies needed for docs to pyproject.toml
 
 ### Removed
 

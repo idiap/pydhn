@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# SPDX-FileCopyrightText: Copyright © 2023 Idiap Research Institute, EPFL
+#
+# SPDX-FileContributor: Roberto Boghetti <roberto.boghetti@idiap.ch>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -5,6 +14,11 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
+import os
+import sys
+
+import autovalue
 
 project = "PyDHN"
 copyright = (
@@ -28,15 +42,9 @@ templates_path = ["_templates"]
 exclude_patterns = ["generated/modules.rst"]
 doctest_test_doctest_blocks = "default"
 
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../pydhn"))
 sys.path.insert(0, os.path.abspath("."))
-
-
-import autovalue
 
 
 def skip(app, what, name, obj, would_skip, options):

@@ -11,7 +11,6 @@
 
 import unittest
 
-import networkx as nx
 import numpy as np
 
 from pydhn.components.base_components_thermal import compute_hx_temp
@@ -289,15 +288,15 @@ class ReverseHXTestCase(unittest.TestCase):
         """
         # Prepare inputs
         inputs = {
-            "mass_flow": 0.1,  
-            "t_in": 80.,        
+            "mass_flow": 0.1,
+            "t_in": 80.0,
             "power_max": np.nan,
             "t_out_min": np.nan,
             "setpoint_type": "delta_q",
             "setpoint_type_rev": "delta_t",
-            "setpoint_value_rev": 0.,
-            "cp_fluid": 4180.,
-            "stepsize": 1800.,
+            "setpoint_value_rev": 0.0,
+            "cp_fluid": 4180.0,
+            "stepsize": 1800.0,
         }
 
         # --- Scenario 1: Energy Extraction (Cooling) ---
@@ -305,9 +304,9 @@ class ReverseHXTestCase(unittest.TestCase):
         # Power needed: P = m_dot * cp * delta_t = 0.1 * 4180 * (-10) = -4180 W
         # Expected delta_q (Wh) = Power (W) * (stepsize / 3600s/h)
         # Expected delta_q (Wh) = -4180 W * (1800 s / 3600 s/h) = -4180 * 0.5 = -2090 Wh
-        
+
         # setpoint_value is delta_q in Wh
-        inputs["setpoint_value"] = -2090.0 # Wh (to achieve -10K temp drop over 1800s)
+        inputs["setpoint_value"] = -2090.0  # Wh (to achieve -10K temp drop over 1800s)
 
         t_out_foo, t_avg_foo, _, delta_q_actual = compute_hx_temp(**inputs)
 
@@ -317,22 +316,21 @@ class ReverseHXTestCase(unittest.TestCase):
         # Check delta_q output (should be the imposed setpoint_value in Wh)
         self.assertAlmostEqual(delta_q_actual, -2090.0, places=5)
 
-
         # --- Scenario 2: Energy Addition (Heating) ---
         # Target: Delta T of +20°C (from 80 to 100°C)
         # Power needed: P = m_dot * cp * delta_t = 0.1 * 4180 * (20) = 8360 W
         # Expected delta_q (Wh) = 8360 W * (1800 s / 3600 s/h) = 8360 * 0.5 = 4180 Wh
-        
+
         inputs["t_in"] = 80
-        inputs["setpoint_value"] = 4180.0 # Wh (to achieve +20K temp rise over 1800s)
+        inputs["setpoint_value"] = 4180.0  # Wh (to achieve +20K temp rise over 1800s)
 
         t_out_foo, t_avg_foo, _, delta_q_actual = compute_hx_temp(**inputs)
-        
+
         # Expected t_out: 80 + 20 = 100°C
         self.assertAlmostEqual(t_out_foo, 100.0, places=5)
         self.assertAlmostEqual(t_avg_foo, 90.0, places=5)
         self.assertAlmostEqual(delta_q_actual, 4180.0, places=5)
-        
+
     def test_power_max_with_stepsize(self):
         """
         Test that power_max clipping works correctly with stepsize,
@@ -340,15 +338,15 @@ class ReverseHXTestCase(unittest.TestCase):
         """
         # Prepare inputs
         inputs = {
-            "mass_flow": 0.1,  
-            "t_in": 40,        
+            "mass_flow": 0.1,
+            "t_in": 40,
             "t_out_min": np.nan,
-            "setpoint_type": "t_out", 
-            "setpoint_value": 80,    
+            "setpoint_type": "t_out",
+            "setpoint_value": 80,
             "setpoint_type_rev": "delta_t",
             "setpoint_value_rev": 0,
             "cp_fluid": 4180,
-            "stepsize": 1800.0, # seconds (30 minutes)
+            "stepsize": 1800.0,  # seconds (30 minutes)
         }
 
         # --- Scenario 1: Power_max limits energy addition ---
@@ -358,15 +356,17 @@ class ReverseHXTestCase(unittest.TestCase):
 
         # Let's set power_max_hx to limit it to a 20K rise instead
         # Power limit: 0.1 * 4180 * 20 = 8360 W
-        inputs["power_max"] = 8360 # W
+        inputs["power_max"] = 8360  # W
 
         # Expected actual delta_q (Wh) based on power_max and stepsize:
         # 8360 W * (1800 s / 3600 s/h) = 4180 Wh
         expected_delta_q_Wh = 4180.0
-        
+
         # Expected actual delta_t (based on power_max): 20K
-        expected_delta_t = inputs["power_max"] / (inputs["mass_flow"] * inputs["cp_fluid"])
-        
+        expected_delta_t = inputs["power_max"] / (
+            inputs["mass_flow"] * inputs["cp_fluid"]
+        )
+
         # Expected t_out: t_in + expected_delta_t = 40 + 20 = 60°C
         expected_t_out = inputs["t_in"] + expected_delta_t
         expected_t_avg = (inputs["t_in"] + expected_t_out) / 2
@@ -377,22 +377,25 @@ class ReverseHXTestCase(unittest.TestCase):
         self.assertAlmostEqual(t_avg_foo, expected_t_avg, places=5)
         self.assertAlmostEqual(delta_q_actual, expected_delta_q_Wh, places=5)
 
-
         # --- Scenario 2: Power_max limits energy extraction ---
         inputs["t_in"] = 80
         inputs["setpoint_type"] = "t_out"
-        inputs["setpoint_value"] = 40 # Desired t_out (would require -40K drop)
-        
+        inputs["setpoint_value"] = 40  # Desired t_out (would require -40K drop)
+
         # Power limit for extraction: -8360 W (to allow only -20K drop)
-        inputs["power_max"] = 8360 # power_max is positive, clipping handles negative delta_q
-        
+        inputs[
+            "power_max"
+        ] = 8360  # power_max is positive, clipping handles negative delta_q
+
         # Expected actual delta_q (Wh) based on power_max and stepsize for extraction:
         # -8360 W * (1800 s / 3600 s/h) = -4180 Wh
         expected_delta_q_Wh = -4180.0
 
         # Expected actual delta_t (based on power_max): -20K
-        expected_delta_t = -inputs["power_max"] / (inputs["mass_flow"] * inputs["cp_fluid"])
-        
+        expected_delta_t = -inputs["power_max"] / (
+            inputs["mass_flow"] * inputs["cp_fluid"]
+        )
+
         # Expected t_out: t_in + expected_delta_t = 80 - 20 = 60°C
         expected_t_out = inputs["t_in"] + expected_delta_t
         expected_t_avg = (inputs["t_in"] + expected_t_out) / 2
