@@ -181,9 +181,9 @@ def compute_dp(
                 has_vector = True
         if has_vector:
             foo = COMPONENT_FUNCTIONS_DICT[component]["delta_p"]
-            out_1, out_2 = foo(net, fluid, ts_id=ts_id)
-            dp[component_mask] = out_1[component_mask]
-            dp_der[component_mask] = out_2[component_mask]
+            out_1, out_2 = foo(net, fluid, mask=component_mask, ts_id=ts_id)
+            dp[component_mask] = out_1
+            dp_der[component_mask] = out_2
         # Otherwise, compute the value for each component of that type
         # separately
         else:

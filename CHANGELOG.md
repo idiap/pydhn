@@ -10,6 +10,7 @@
 
 ### Changed
 
+* **Hydraulic pressure calculation refactor:** Solved an issue where Reynolds number and friction factor were not consistently set for all pipe types, particularly `LagrangianPipe`. The `compute_dp_pipe_net` and `compute_dp_valve_net` functions now accept a `mask` parameter, processing and returning results only for the specified components. Consequently, their `dp` and `dp_der` outputs now have a dimensionality corresponding to the masked subset, rather than the entire network. The `compute_dp` function has been updated to correctly pass component masks to these vector functions and integrate their masked outputs into the overall pressure arrays. (See #6)
 * Fixed a bug in `pipe_test` related to local data reading.
 * **Heat exchanger model:** Refined the heat exchanger model's behavior (`compute_hx_temp` and related functions) for consistent energy interpretation in dynamic simulations. The `delta_q` parameter and return values are now uniformly treated as Watt-hours (Wh). A new `stepsize` parameter (in seconds), defaulting to `3600.0`s for backward compatibility, was added for internal energy-to-power conversions. Users with non-hourly `stepsize` in dynamic simulations should now explicitly pass their `stepsize` to consumers and producers. (See #5)
 * Changed the sign of `LagrangianPipe`'s `delta_q` to be negative when heat is lost.
