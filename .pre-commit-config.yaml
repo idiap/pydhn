@@ -15,7 +15,9 @@ repos:
       - id: check-ast
       - id: check-case-conflict
       - id: trailing-whitespace
+        exclude: \.csv$
       - id: end-of-file-fixer
+        exclude: \.csv$
       - id: debug-statements
       - id: check-added-large-files
       - id: check-docstring-first
